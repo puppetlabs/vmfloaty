@@ -2,7 +2,7 @@ require 'thor'
 require 'net/http'
 
 class CLI < Thor
-  desc "get <OPERATING SYSTEM,...> [--withpe]", "Gets a VM"
+  desc "get <OPERATING SYSTEM,...> [--withpe version]", "Gets a VM"
   option :withpe
   def get(os_list)
     # POST -d os_list vmpooler.company.com/vm
