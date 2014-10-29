@@ -7,12 +7,21 @@ class CLI < Thor
   desc "get <OPERATING SYSTEM,...> [--withpe version]", "Gets a VM"
   option :withpe
   def get(os_list)
-    # POST -d os_list vmpooler.company.com/vm
+    # HTTP POST -d os_list vmpooler.company.com/vm
+
+    uri = URI.parse("#{$vmpooler_url}/vm/#{os_list.gsub(",","+")}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Post.new(uri.request_uri)
+    response = http.request(request)
+
+    host_res = JSON.parse(response.body)
+
+    puts host_res
 
     if options[:withpe]
-      say "Get a #{os_list} VM here and provision with PE verison #{options[:withpe]}"
+      # say "Get a #{os_list} VM here and provision with PE verison #{options[:withpe]}"
     else
-      say "Get a #{os_list} VM here"
+      # ?
     end
   end
 
@@ -43,10 +52,22 @@ class CLI < Thor
     puts hosts
   end
 
-  desc "release <HOSTNAME>", "Schedules a VM for deletion"
-  def release(hostname)
+  desc "release [HOSTNAME,...]", "Schedules a VM for deletion"
+  def release(hostname_list)
     # HTTP DELETE vmpooler.company.com/vm/#{hostname}
     # { "ok": true }
-    say 'Releases a VM'
+
+    hostname_arr = hostname_list.split(',')
+
+    hostname_arr.each do |hostname|
+      say "Releasing host #{hostname}..."
+      uri = URI.parse("#{$vmpooler_url}/vm/#{hostname}")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Delete.new(uri.request_uri)
+      response = http.request(request)
+      res = JSON.parse(response.body)
+
+      puts res
+    end
   end
 end
