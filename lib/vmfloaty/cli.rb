@@ -4,8 +4,7 @@ require 'uri'
 require 'json'
 
 class CLI < Thor
-  desc "get <OPERATING SYSTEM,...> [--withpe version]", "Gets a VM"
-  option :withpe
+  desc "get <OPERATING SYSTEM,...>", "Gets a VM"
   def get(os_list)
     # HTTP POST -d os_list vmpooler.company.com/vm
 
@@ -17,12 +16,6 @@ class CLI < Thor
     host_res = JSON.parse(response.body)
 
     puts host_res
-
-    if options[:withpe]
-      # say "Get a #{os_list} VM here and provision with PE verison #{options[:withpe]}"
-    else
-      # ?
-    end
   end
 
   desc "modify <HOSTNAME>", "Modify a VM"
@@ -52,7 +45,7 @@ class CLI < Thor
     puts hosts
   end
 
-  desc "release [HOSTNAME,...]", "Schedules a VM for deletion"
+  desc "release <HOSTNAME,...>", "Schedules a VM for deletion"
   def release(hostname_list)
     # HTTP DELETE vmpooler.company.com/vm/#{hostname}
     # { "ok": true }
