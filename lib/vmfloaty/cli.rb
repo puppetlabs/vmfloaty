@@ -16,6 +16,8 @@ class CLI < Thor
     host_res = JSON.parse(response.body)
 
     puts host_res
+
+    # parse host names/os's and save
   end
 
   desc "modify <HOSTNAME>", "Modify a VM"
@@ -45,22 +47,27 @@ class CLI < Thor
     puts hosts
   end
 
-  desc "release <HOSTNAME,...>", "Schedules a VM for deletion"
-  def release(hostname_list)
+  desc "release <HOSTNAME,...> [--all]", "Schedules a VM for deletion"
+  options :all
+  def release(hostname_list=nil)
     # HTTP DELETE vmpooler.company.com/vm/#{hostname}
     # { "ok": true }
 
-    hostname_arr = hostname_list.split(',')
+    if options[:all]
+      # release all hosts managed by vmfloaty
+    end
+      hostname_arr = hostname_list.split(',')
 
-    hostname_arr.each do |hostname|
-      say "Releasing host #{hostname}..."
-      uri = URI.parse("#{$vmpooler_url}/vm/#{hostname}")
-      http = Net::HTTP.new(uri.host, uri.port)
-      request = Net::HTTP::Delete.new(uri.request_uri)
-      response = http.request(request)
-      res = JSON.parse(response.body)
+      hostname_arr.each do |hostname|
+        say "Releasing host #{hostname}..."
+        uri = URI.parse("#{$vmpooler_url}/vm/#{hostname}")
+        http = Net::HTTP.new(uri.host, uri.port)
+        request = Net::HTTP::Delete.new(uri.request_uri)
+        response = http.request(request)
+        res = JSON.parse(response.body)
 
-      puts res
+        puts res
+      end
     end
   end
 end
