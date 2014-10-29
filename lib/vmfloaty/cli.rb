@@ -35,11 +35,12 @@ class CLI < Thor
 
     if pattern
       # Filtering VMs based on pattern
+      hosts = host_res.select { |i| i[/#{pattern}/] }
     else
-      # list all vms
+      hosts = host_res
     end
 
-    puts host_res
+    puts hosts
   end
 
   desc "release <HOSTNAME>", "Schedules a VM for deletion"
