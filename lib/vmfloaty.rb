@@ -1,5 +1,6 @@
 require 'vmfloaty/cli'
 require 'vmfloaty/provision'
+require 'vmfloaty/hosts'
 
 class Vmfloaty
 
