@@ -19,10 +19,10 @@ _note:_ subject to change
 
 ```
 Commands:
-  floaty get <OPERATING SYSTEM,...> [--withpe version]  # Gets a VM
-  floaty help [COMMAND]                                 # Describe available commands or one specific command
-  floaty list [PATTERN]                                 # List all open VMs
-  floaty modify <HOSTNAME>                              # Modify a VM
-  floaty release [HOSTNAME,...]                         # Schedules a VM for deletion
-  floaty status                                         # List status of all active VMs
+  floaty get <OPERATING SYSTEM,...>      # Gets a VM
+  floaty help [COMMAND]                  # Describe available commands or one specific command
+  floaty list [PATTERN]                  # List all open VMs
+  floaty modify <HOSTNAME>               # Modify a VM
+  floaty release <HOSTNAME,...> [--all]  # Schedules a VM for deletion
+  floaty status                          # List status of all active VMs
 ```
