@@ -48,14 +48,14 @@ class CLI < Thor
   end
 
   desc "release <HOSTNAME,...> [--all]", "Schedules a VM for deletion"
-  options :all
+  option :all
   def release(hostname_list=nil)
     # HTTP DELETE vmpooler.company.com/vm/#{hostname}
     # { "ok": true }
 
     if options[:all]
       # release all hosts managed by vmfloaty
-    end
+    else
       hostname_arr = hostname_list.split(',')
 
       hostname_arr.each do |hostname|
