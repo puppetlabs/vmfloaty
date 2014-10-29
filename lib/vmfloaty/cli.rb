@@ -2,7 +2,7 @@ require 'thor'
 require 'net/http'
 
 class CLI < Thor
-  desc "get [operating system,...] [--withpe]", "Gets a VM"
+  desc "get <OPERATING SYSTEM,...> [--withpe]", "Gets a VM"
   option :withpe
   def get(os)
     say "vmpooler: #{@vmpooler_url}"
@@ -13,7 +13,7 @@ class CLI < Thor
     end
   end
 
-  desc "modify [hostname]", "Modify a VM"
+  desc "modify <HOSTNAME>", "Modify a VM"
   def modify(hostname)
     say 'Modify a vm'
   end
@@ -23,12 +23,16 @@ class CLI < Thor
     say 'List of active VMs'
   end
 
-  desc "list", "List all open VMs"
-  def list
-    say 'Listing open vms on vmpooler'
+  desc "list [PATTERN]", "List all open VMs"
+  def list(pattern=nil)
+    if pattern
+      say "Filtering VMs based on #{pattern}"
+    else
+      say 'Listing open vms on vmpooler'
+    end
   end
 
-  desc "release [hostname]", "Schedules a VM for deletion"
+  desc "release <HOSTNAME>", "Schedules a VM for deletion"
   def release(hostname)
     say 'Releases a VM'
   end
