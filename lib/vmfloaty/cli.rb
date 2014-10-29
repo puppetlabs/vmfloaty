@@ -4,12 +4,13 @@ require 'net/http'
 class CLI < Thor
   desc "get <OPERATING SYSTEM,...> [--withpe]", "Gets a VM"
   option :withpe
-  def get(os)
+  def get(os_list)
+    # POST -d os_list vmpooler.company.com/vm
     say "vmpooler: #{@vmpooler_url}"
     if options[:withpe]
-      say "Get a #{os} VM here and provision with PE verison #{options[:withpe]}"
+      say "Get a #{os_list} VM here and provision with PE verison #{options[:withpe]}"
     else
-      say "Get a #{os} VM here"
+      say "Get a #{os_list} VM here"
     end
   end
 
@@ -25,6 +26,7 @@ class CLI < Thor
 
   desc "list [PATTERN]", "List all open VMs"
   def list(pattern=nil)
+    # HTTP GET vmpooler.company.com/vm
     if pattern
       say "Filtering VMs based on #{pattern}"
     else
@@ -34,6 +36,8 @@ class CLI < Thor
 
   desc "release <HOSTNAME>", "Schedules a VM for deletion"
   def release(hostname)
+    # HTTP DELETE vmpooler.company.com/vm/#{hostname}
+    # { "ok": true }
     say 'Releases a VM'
   end
 end
