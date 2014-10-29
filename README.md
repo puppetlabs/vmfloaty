@@ -23,6 +23,6 @@ Commands:
   floaty help [COMMAND]                                 # Describe available commands or one specific command
   floaty list [PATTERN]                                 # List all open VMs
   floaty modify <HOSTNAME>                              # Modify a VM
-  floaty release <HOSTNAME>                             # Schedules a VM for deletion
+  floaty release [HOSTNAME,...]                         # Schedules a VM for deletion
   floaty status                                         # List status of all active VMs
 ```
