@@ -6,7 +6,6 @@ class CLI < Thor
   option :withpe
   def get(os_list)
     # POST -d os_list vmpooler.company.com/vm
-    say "vmpooler: #{@vmpooler_url}"
     if options[:withpe]
       say "Get a #{os_list} VM here and provision with PE verison #{options[:withpe]}"
     else
