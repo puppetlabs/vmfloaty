@@ -3,8 +3,6 @@ vmfloaty
 
 A CLI helper tool for Puppet Labs vmpooler to help you stay afloat.
 
-_NOTE:_ Hack day(s?) project... we'll see where this goes :)
-
 ## Install
 
 __note:__ this doesn't work yet. Have not published this to ruby gems

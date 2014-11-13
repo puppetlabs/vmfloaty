@@ -13,9 +13,23 @@ class CLI < Thor
     request = Net::HTTP::Post.new(uri.request_uri)
     response = http.request(request)
 
-    host_res = JSON.parse(response.body)
+    if response.code.to_i == 200
+      hosts = JSON.parse(response.body)
 
-    puts host_res
+      # puts hosts
+
+      save_hosts = {}
+      hosts.each do |k,v|
+        unless k == 'ok' || k == 'domain'
+          save_hosts[k] = v['hostname']
+        end
+      end
+
+      puts 'New Hosts:'
+      puts save_hosts
+
+      #hosts.add_host save_hosts
+    end
 
     # parse host names/os's and save
   end
@@ -27,7 +41,7 @@ class CLI < Thor
 
   desc "status", "List status of all active VMs"
   def status
-    say 'List of active VMs'
+    #$hosts.print_host_list
   end
 
   desc "list [PATTERN]", "List all open VMs"
