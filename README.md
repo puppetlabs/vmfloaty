@@ -20,7 +20,7 @@ Commands:
   floaty get <OPERATING SYSTEM,...>      # Gets a VM
   floaty help [COMMAND]                  # Describe available commands or one specific command
   floaty list [PATTERN]                  # List all open VMs
-  floaty modify <HOSTNAME>               # Modify a VM
+  floaty modify <HOSTNAME>               # (TODO STILL) Modify a VM
   floaty release <HOSTNAME,...> [--all]  # Schedules a VM for deletion
-  floaty status                          # List status of all active VMs
+  floaty status                          # (TODO STILL) List status of all active VMs
 ```
