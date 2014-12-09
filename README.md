@@ -5,7 +5,7 @@ A CLI helper tool for Puppet Labs vmpooler to help you stay afloat.
 
 ## Install
 
-__note:__ this doesn't work yet. Have not published this to ruby gems
+Grab the latest from ruby gems...
 
 ```
 gem install vmfloaty
