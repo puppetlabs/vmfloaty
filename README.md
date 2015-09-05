@@ -13,14 +13,26 @@ gem install vmfloaty
 
 ## Usage
 
-_note:_ subject to change
-
 ```
-Commands:
-  floaty get <OPERATING SYSTEM,...>      # Gets a VM
-  floaty help [COMMAND]                  # Describe available commands or one specific command
-  floaty list [PATTERN]                  # List all open VMs
-  floaty modify <HOSTNAME>               # (TODO STILL) Modify a VM
-  floaty release <HOSTNAME,...> [--all]  # Schedules a VM for deletion
-  floaty status                          # (TODO STILL) List status of all active VMs
+    delete   Schedules the deletion of a host or hosts
+    get      Gets a vm or vms based on the os flag
+    help     Display global or [command] help documentation
+    list     Shows a list of available vms from the pooler
+    modify
+    query
+    revert
+    snapshot
+    status   Prints the status of vmpooler
+    summary
+
+  GLOBAL OPTIONS:
+
+    -h, --help
+        Display help documentation
+
+    -v, --version
+        Display version information
+
+    -t, --trace
+        Display backtrace when an error occurs
 ```

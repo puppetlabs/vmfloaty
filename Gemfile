@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'thor'
+gem 'commander'
+gem 'faraday'
 
 gemspec
