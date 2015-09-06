@@ -62,5 +62,14 @@ class Pooler
 
     response = conn.get '/v1/status'
     res_body = JSON.parse(response.body)
+    puts res_body
+  end
+
+  def self.summary(url)
+    conn = Http.get_conn(url)
+
+    response = conn.get '/v1/summary'
+    res_body = JSON.parse(response.body)
+    puts res_body
   end
 end

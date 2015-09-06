@@ -17,7 +17,6 @@ class Vmfloaty
     config = read_config
 
     command :get do |c|
-      puts config
       c.syntax = 'floaty get [options]'
       c.summary = 'Gets a vm or vms based on the os flag'
       c.description = ''
@@ -135,12 +134,14 @@ class Vmfloaty
 
     command :summary do |c|
       c.syntax = 'floaty summary [options]'
-      c.summary = ''
+      c.summary = 'Prints the summary of vmpooler'
       c.description = ''
-      c.example 'description', 'command example'
-      c.option '--some-switch', 'Some switch that does something'
+      c.example 'Gets the current day summary of vmpooler', 'floaty summary --url http://vmpooler.example.com'
+      c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
-        # Do something or c.when_called Floaty::Commands::Summary
+        url = options.url ||= config['url']
+
+        Pooler.summary(url)
       end
     end
 

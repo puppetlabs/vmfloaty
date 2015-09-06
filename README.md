@@ -23,7 +23,7 @@ gem install vmfloaty
     revert
     snapshot
     status   Prints the status of vmpooler
-    summary
+    summary  Prints the summary of vmpooler
 
   GLOBAL OPTIONS:
 
