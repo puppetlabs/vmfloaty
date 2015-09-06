@@ -36,3 +36,15 @@ gem install vmfloaty
     -t, --trace
         Display backtrace when an error occurs
 ```
+
+### vmfloaty dotfile
+
+If you do not wish to continuely specify various config options with the cli, you can have a dotfile in your home directory for some defaults. For example:
+
+```yaml
+#file at /Users/me/.vmpooler.yml
+url: 'http://vmpooler.mycompany.net'
+user: 'brian'
+```
+
+Now vmfloaty will use those config files if no flag was specified.

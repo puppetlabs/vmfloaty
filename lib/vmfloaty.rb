@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'commander'
+require 'yaml'
 require 'vmfloaty/auth'
 require 'vmfloaty/http'
 require 'vmfloaty/pooler'
@@ -13,7 +14,10 @@ class Vmfloaty
     program :version, '0.2.0'
     program :description, 'A CLI helper tool for Puppet Labs vmpooler to help you stay afloat'
 
+    config = read_config
+
     command :get do |c|
+      puts config
       c.syntax = 'floaty get [options]'
       c.summary = 'Gets a vm or vms based on the os flag'
       c.description = ''
@@ -24,13 +28,13 @@ class Vmfloaty
       c.option '--os STRING', String, 'Operating systems to retrieve'
       c.action do |args, options|
         token = options.token
-        user = options.user
-        url = options.url
+        user = options.user ||= config['user']
+        url = options.url ||= config['url']
         os_types = options.os
         pass = password "Enter your password please:", '*'
 
         unless options.token
-          token = Auth.get_token(user, url, password)
+          token = Auth.get_token(user, url, pass)
         end
 
         unless os_types.nil?
@@ -51,7 +55,7 @@ class Vmfloaty
       c.action do |args, options|
         # Do something or c.when_called Floaty::Commands::Query
         filter = options.filter
-        url = options.url
+        url = options.url ||= config['url']
 
         Pooler.list(url, filter)
       end
@@ -88,7 +92,7 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
         hosts = options.hosts
-        url = options.url
+        url = options.url ||= config['url']
 
         Pool.delete(hosts, url)
       end
@@ -123,7 +127,7 @@ class Vmfloaty
       c.example 'Gets the current vmpooler status', 'floaty status --url http://vmpooler.example.com'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
-        url = options.url
+        url = options.url ||= config['url']
 
         Pooler.status(url)
       end
@@ -141,5 +145,10 @@ class Vmfloaty
     end
 
     run!
+  end
+
+  def read_config
+    conf = YAML.load_file("#{Dir.home}/.vmfloaty.yml")
+    conf
   end
 end
