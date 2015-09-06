@@ -53,11 +53,7 @@ class Vmfloaty
         filter = options.filter
         url = options.url
 
-        unless filter.nil?
-          Pooler.list(url, filter)
-        else
-          Pooler.list(url)
-        end
+        Pooler.list(url, filter)
       end
     end
 
