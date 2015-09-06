@@ -48,3 +48,7 @@ user: 'brian'
 ```
 
 Now vmfloaty will use those config files if no flag was specified.
+
+## vmpooler API
+
+This cli tool uses the [vmpooler API](https://github.com/puppetlabs/vmpooler/blob/master/API.md).
