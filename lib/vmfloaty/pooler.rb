@@ -40,12 +40,18 @@ class Pooler
     puts JSON.parse(response.body)
   end
 
-  def self.modify(hostname, token, url, lifetime, tags)
+  def self.modify(url, hostname, token, lifetime, tags)
     modify_body = {'lifetime'=>lifetime, 'tags'=>tags}
     conn = Http.get_conn(url)
+
+    # need to use token
+    response = conn.put "/v1/#{hostname}"
+    res_body = JSON.parse(response.body)
+
+    puts res_body
   end
 
-  def self.delete(hostnames, url)
+  def self.delete(url, hostname)
     hosts = hostnames.split(',')
     conn = Http.get_conn(url)
 
@@ -69,6 +75,33 @@ class Pooler
     conn = Http.get_conn(url)
 
     response = conn.get '/v1/summary'
+    res_body = JSON.parse(response.body)
+    puts res_body
+  end
+
+  def self.query(url, hostname)
+    conn = Http.get_conn(url)
+
+    response = conn.get "/v1/vm/#{hostname}"
+    res_body = JSON.parse(response.body)
+
+    puts res_body
+  end
+
+  def self.snapshot(url, hostname, token)
+    conn = Http.get_conn(url)
+
+    # need to use token
+    response = conn.post "/v1/#{hostname}/snapshot"
+    res_body = JSON.parse(response.body)
+    puts res_body
+  end
+
+  def self.revert(url, hostname, token, snapshot_sha)
+    conn = Http.get_conn(url)
+
+    # need to use token
+    response = conn.post "/v1/#{hostname}/snapshot/#{snapshot}"
     res_body = JSON.parse(response.body)
     puts res_body
   end

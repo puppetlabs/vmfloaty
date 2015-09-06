@@ -18,10 +18,10 @@ gem install vmfloaty
     get      Gets a vm or vms based on the os flag
     help     Display global or [command] help documentation
     list     Shows a list of available vms from the pooler
-    modify
-    query
-    revert
-    snapshot
+    modify   Modify a vms tags and TTL
+    query    Get information about a given vm
+    revert   Reverts a vm to a specified snapshot
+    snapshot Takes a snapshot of a given vm
     status   Prints the status of vmpooler
     summary  Prints the summary of vmpooler
 

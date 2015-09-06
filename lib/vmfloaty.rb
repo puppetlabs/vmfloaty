@@ -52,7 +52,6 @@ class Vmfloaty
       c.option '--filter STRING', String, 'A filter to apply to the list'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
-        # Do something or c.when_called Floaty::Commands::Query
         filter = options.filter
         url = options.url ||= config['url']
 
@@ -62,23 +61,37 @@ class Vmfloaty
 
     command :query do |c|
       c.syntax = 'floaty query [options]'
-      c.summary = ''
+      c.summary = 'Get information about a given vm'
       c.description = ''
-      c.example 'description', 'command example'
-      c.option '--some-switch', 'Some switch that does something'
+      c.example 'Get information about a sample host', 'floaty query --url http://vmpooler.example.com --host myvmhost.example.com'
+      c.option '--url STRING', String, 'URL of vmpooler'
+      c.option '--host STRING', String, 'Hostname to query'
       c.action do |args, options|
-        # Do something or c.when_called Floaty::Commands::Query
+        url = options.url ||= config['url']
+        hostname = options.hostname
+
+        Pooler.query(url, hostname)
       end
     end
 
     command :modify do |c|
       c.syntax = 'floaty modify [options]'
-      c.summary = ''
+      c.summary = 'Modify a vms tags and TTL'
       c.description = ''
       c.example 'description', 'command example'
-      c.option '--some-switch', 'Some switch that does something'
+      c.option '--url STRING', String, 'URL of vmpooler'
+      c.option '--token STRING', String, 'Token for vmpooler'
+      c.option '--host STRING', String, 'Hostname to modify'
+      c.option '--lifetime INT', Integer, 'VM TTL (Integer, in hours)'
+      c.option '--tags HASH', Hash, 'free-form VM tagging'
       c.action do |args, options|
-        # Do something or c.when_called Floaty::Commands::Modify
+        url = options.url ||= config['url']
+        hostname = options.hostname
+        lifetime = options.lifetime
+        tags = options.tags
+        token = options.token
+
+        Pooler.modify(url, hostname, token, lifetime, tags)
       end
     end
 
@@ -93,29 +106,43 @@ class Vmfloaty
         hosts = options.hosts
         url = options.url ||= config['url']
 
-        Pool.delete(hosts, url)
+        Pool.delete(url, hosts)
       end
     end
 
     command :snapshot do |c|
       c.syntax = 'floaty snapshot [options]'
-      c.summary = ''
+      c.summary = 'Takes a snapshot of a given vm'
       c.description = ''
-      c.example 'description', 'command example'
-      c.option '--some-switch', 'Some switch that does something'
+      c.example 'Takes a snapshot for a given host', 'floaty snapshot --url http://vmpooler.example.com --host myvm.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
+      c.option '--url STRING', String, 'URL of vmpooler'
+      c.option '--host STRING', String, 'Hostname to modify'
+      c.option '--token STRING', String, 'Token for vmpooler'
       c.action do |args, options|
-        # Do something or c.when_called Floaty::Commands::Snapshot
+        url = options.url ||= config['url']
+        hostname = options.hostname
+        token = options.token
+
+        Pooler.snapshot(url, hostname, token)
       end
     end
 
     command :revert do |c|
       c.syntax = 'floaty revert [options]'
-      c.summary = ''
+      c.summary = 'Reverts a vm to a specified snapshot'
       c.description = ''
-      c.example 'description', 'command example'
-      c.option '--some-switch', 'Some switch that does something'
+      c.example 'Reverts to a snapshot for a given host', 'floaty revert --url http://vmpooler.example.com --host myvm.example.com --token a9znth9dn01t416hrguu56ze37t790bl --snapshot n4eb4kdtp7rwv4x158366vd9jhac8btq'
+      c.option '--url STRING', String, 'URL of vmpooler'
+      c.option '--host STRING', String, 'Hostname to modify'
+      c.option '--token STRING', String, 'Token for vmpooler'
+      c.option '--snapshot STRING', String, 'SHA of snapshot'
       c.action do |args, options|
-        # Do something or c.when_called Floaty::Commands::Revert
+        url = options.url ||= config['url']
+        hostname = options.hostname
+        token = options.token
+        snapshot_sha = options.snapshot
+
+        Pooler.revert(url, hostname, token, snapshot_sha)
       end
     end
 
