@@ -3,6 +3,8 @@ vmfloaty
 
 A CLI helper tool for Puppet Labs vmpooler to help you stay afloat.
 
+<img src="http://i.imgur.com/xGcGwuH.jpg" width=200 height=200>
+
 ## Install
 
 Grab the latest from ruby gems...
