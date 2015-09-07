@@ -24,6 +24,7 @@ gem install vmfloaty
     snapshot Takes a snapshot of a given vm
     status   Prints the status of vmpooler
     summary  Prints the summary of vmpooler
+    token    Retrieves or deletes a token
 
   GLOBAL OPTIONS:
 
