@@ -1,7 +1,7 @@
 vmfloaty
 ========
 
-A CLI helper tool for Puppet Labs vmpooler to help you stay afloat.
+A CLI helper tool for [Puppet Labs vmpooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.
 
 <img src="http://i.imgur.com/xGcGwuH.jpg" width=200 height=200>
 
