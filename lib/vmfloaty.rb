@@ -33,7 +33,7 @@ class Vmfloaty
         pass = password "Enter your password please:", '*'
 
         unless options.token
-          token = Auth.get_token(user, url, pass)
+          token = Auth.get_token(url, user, pass)
         end
 
         unless os_types.nil?
@@ -169,6 +169,34 @@ class Vmfloaty
         url = options.url ||= config['url']
 
         Pooler.summary(url)
+      end
+    end
+
+    command :token do |c|
+      c.syntax = 'floaty token [get | delete | status]'
+      c.summary = 'Retrieves or deletes a token'
+      c.description = ''
+      c.example '', ''
+      c.option '--url STRING', String, 'URL of vmpooler'
+      c.option '--user STRING', String, 'User to authenticate with'
+      c.option '--token STRING', String, 'Token for vmpooler'
+      c.action do |args, options|
+        action = args.first
+        url = options.url ||= config['url']
+        token = options.token
+        user = options.user ||= config['user']
+        pass = password "Enter your password please:", '*'
+
+        case action
+        when "get"
+          puts Auth.get_token(url, user, pass)
+        when "delete"
+          Auth.delete_token(url, user, pass, token)
+        when "status"
+          Auth.token_status(url, user, pass, token)
+        else
+          puts "Unknown action: #{action}"
+        end
       end
     end
 
