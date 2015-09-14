@@ -27,6 +27,7 @@ class Vmfloaty
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--os STRING', String, 'Operating systems to retrieve'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         token = options.token
         user = options.user ||= config['user']
         url = options.url ||= config['url']
@@ -54,6 +55,7 @@ class Vmfloaty
       c.option '--filter STRING', String, 'A filter to apply to the list'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         filter = options.filter
         url = options.url ||= config['url']
 
@@ -70,6 +72,7 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--host STRING', String, 'Hostname to query'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = options.hostname
 
@@ -89,6 +92,7 @@ class Vmfloaty
       c.option '--lifetime INT', Integer, 'VM TTL (Integer, in hours)'
       c.option '--tags HASH', Hash, 'free-form VM tagging'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = options.hostname
         lifetime = options.lifetime
@@ -108,6 +112,7 @@ class Vmfloaty
       c.option '--hosts STRING', String, 'Hostname(s) to delete'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         hosts = options.hosts
         url = options.url ||= config['url']
 
@@ -125,6 +130,7 @@ class Vmfloaty
       c.option '--host STRING', String, 'Hostname to modify'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = options.hostname
         token = options.token
@@ -144,6 +150,7 @@ class Vmfloaty
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--snapshot STRING', String, 'SHA of snapshot'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = options.hostname
         token = options.token
@@ -161,6 +168,7 @@ class Vmfloaty
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
 
         Pooler.status(url)
@@ -175,6 +183,7 @@ class Vmfloaty
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
 
         Pooler.summary(url)
@@ -191,6 +200,7 @@ class Vmfloaty
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.action do |args, options|
+        verbose = options.verbose || config['verbose']
         action = args.first
         url = options.url ||= config['url']
         token = options.token
