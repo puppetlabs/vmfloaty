@@ -6,7 +6,7 @@ class Pooler
   def self.list(url, os_filter=nil)
     conn = Http.get_conn(url)
 
-    response = conn.get '/v1/vm'
+    response = conn.get '/vm'
     response_body = JSON.parse(response.body)
 
     if os_filter
@@ -32,7 +32,7 @@ class Pooler
     end
 
     response = conn.post do |req|
-        req.url '/v1/vm'
+        req.url '/vm'
         req.headers['Content-Type'] = 'application/json'
         req.body = os_body
       end
@@ -45,7 +45,7 @@ class Pooler
     conn = Http.get_conn(url)
 
     # need to use token
-    response = conn.put "/v1/#{hostname}"
+    response = conn.put "/#{hostname}"
     res_body = JSON.parse(response.body)
 
     puts res_body
@@ -57,7 +57,7 @@ class Pooler
 
     hosts.each do |host|
       puts "Scheduling host #{host} for deletion"
-      response = conn.delete "/v1/#{host}"
+      response = conn.delete "/#{host}"
       res_body = JSON.parse(response.body)
       puts res_body
     end
@@ -66,7 +66,7 @@ class Pooler
   def self.status(url)
     conn = Http.get_conn(url)
 
-    response = conn.get '/v1/status'
+    response = conn.get '/status'
     res_body = JSON.parse(response.body)
     puts res_body
   end
@@ -74,7 +74,7 @@ class Pooler
   def self.summary(url)
     conn = Http.get_conn(url)
 
-    response = conn.get '/v1/summary'
+    response = conn.get '/summary'
     res_body = JSON.parse(response.body)
     puts res_body
   end
@@ -82,7 +82,7 @@ class Pooler
   def self.query(url, hostname)
     conn = Http.get_conn(url)
 
-    response = conn.get "/v1/vm/#{hostname}"
+    response = conn.get "/vm/#{hostname}"
     res_body = JSON.parse(response.body)
 
     puts res_body
@@ -92,7 +92,7 @@ class Pooler
     conn = Http.get_conn(url)
 
     # need to use token
-    response = conn.post "/v1/#{hostname}/snapshot"
+    response = conn.post "/#{hostname}/snapshot"
     res_body = JSON.parse(response.body)
     puts res_body
   end
@@ -101,7 +101,7 @@ class Pooler
     conn = Http.get_conn(url)
 
     # need to use token
-    response = conn.post "/v1/#{hostname}/snapshot/#{snapshot}"
+    response = conn.post "/#{hostname}/snapshot/#{snapshot}"
     res_body = JSON.parse(response.body)
     puts res_body
   end
