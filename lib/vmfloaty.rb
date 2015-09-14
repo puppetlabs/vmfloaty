@@ -21,6 +21,7 @@ class Vmfloaty
       c.summary = 'Gets a vm or vms based on the os flag'
       c.description = ''
       c.example 'Gets 3 vms', 'floaty get --user brian --url http://vmpooler.example.com --os centos,centos,debian'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'
@@ -49,6 +50,7 @@ class Vmfloaty
       c.summary = 'Shows a list of available vms from the pooler'
       c.description = ''
       c.example 'Filter the list on centos', 'floaty list --filter centos --url http://vmpooler.example.com'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--filter STRING', String, 'A filter to apply to the list'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
@@ -64,6 +66,7 @@ class Vmfloaty
       c.summary = 'Get information about a given vm'
       c.description = ''
       c.example 'Get information about a sample host', 'floaty query --url http://vmpooler.example.com --host myvmhost.example.com'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--host STRING', String, 'Hostname to query'
       c.action do |args, options|
@@ -79,6 +82,7 @@ class Vmfloaty
       c.summary = 'Modify a vms tags and TTL'
       c.description = ''
       c.example 'description', 'command example'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--host STRING', String, 'Hostname to modify'
@@ -100,6 +104,7 @@ class Vmfloaty
       c.summary = 'Schedules the deletion of a host or hosts'
       c.description = ''
       c.example 'Schedules the deletion of a host or hosts', 'floaty delete --hosts myhost1,myhost2 --url http://vmpooler.example.com'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--hosts STRING', String, 'Hostname(s) to delete'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
@@ -115,6 +120,7 @@ class Vmfloaty
       c.summary = 'Takes a snapshot of a given vm'
       c.description = ''
       c.example 'Takes a snapshot for a given host', 'floaty snapshot --url http://vmpooler.example.com --host myvm.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--host STRING', String, 'Hostname to modify'
       c.option '--token STRING', String, 'Token for vmpooler'
@@ -132,6 +138,7 @@ class Vmfloaty
       c.summary = 'Reverts a vm to a specified snapshot'
       c.description = ''
       c.example 'Reverts to a snapshot for a given host', 'floaty revert --url http://vmpooler.example.com --host myvm.example.com --token a9znth9dn01t416hrguu56ze37t790bl --snapshot n4eb4kdtp7rwv4x158366vd9jhac8btq'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--host STRING', String, 'Hostname to modify'
       c.option '--token STRING', String, 'Token for vmpooler'
@@ -151,6 +158,7 @@ class Vmfloaty
       c.summary = 'Prints the status of vmpooler'
       c.description = ''
       c.example 'Gets the current vmpooler status', 'floaty status --url http://vmpooler.example.com'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
         url = options.url ||= config['url']
@@ -164,6 +172,7 @@ class Vmfloaty
       c.summary = 'Prints the summary of vmpooler'
       c.description = ''
       c.example 'Gets the current day summary of vmpooler', 'floaty summary --url http://vmpooler.example.com'
+      c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
         url = options.url ||= config['url']
@@ -177,6 +186,7 @@ class Vmfloaty
       c.summary = 'Retrieves or deletes a token'
       c.description = ''
       c.example '', ''
+      c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--token STRING', String, 'Token for vmpooler'
