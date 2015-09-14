@@ -204,7 +204,12 @@ class Vmfloaty
   end
 
   def read_config
-    conf = YAML.load_file("#{Dir.home}/.vmfloaty.yml")
+    conf = {}
+    begin
+      conf = YAML.load_file("#{Dir.home}/.vmfloaty.yml")
+    rescue
+      STDERR.puts "There was no config file at #{Dir.home}/.vmfloaty.yml"
+    end
     conf
   end
 end
