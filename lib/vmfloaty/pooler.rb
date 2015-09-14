@@ -10,7 +10,7 @@ class Pooler
     response_body = JSON.parse(response.body)
 
     if os_filter
-      hosts = response_body.select { |i| i[/#{pattern}/] }
+      hosts = response_body.select { |i| i[/#{os_filter}/] }
     else
       hosts = response_body
     end
