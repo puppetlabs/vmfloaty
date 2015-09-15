@@ -7,7 +7,7 @@ class Auth
     conn = Http.get_conn(verbose, url)
 
     resp = conn.post do |req|
-            req.url '/v1/token'
+            req.url '/token'
             req.headers['Content-Type'] = 'application/json'
           end
 
@@ -23,7 +23,7 @@ class Auth
 
     conn = Http.get_conn(verbose, url)
 
-    response = conn.delete "/v1/token/#{token}"
+    response = conn.delete "/token/#{token}"
     res_body = JSON.parse(response)
     puts res_body
   end
@@ -36,7 +36,7 @@ class Auth
 
     conn = Http.get_conn(verbose, url)
 
-    response = conn.get "/v1/token/#{token}"
+    response = conn.get "/token/#{token}"
     res_body = JSON.parse(response.body)
     puts res_body
   end
