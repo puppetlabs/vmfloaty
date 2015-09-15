@@ -8,12 +8,12 @@ class Auth
 
     resp = conn.post "/token"
 
-    resp_body = JSON.parse(resp.body)
-    if resp_body["ok"]
-      return resp_body["token"]
+    res_body = JSON.parse(resp.body)
+    if res_body["ok"]
+      return res_body["token"]
     else
       STDERR.puts "There was a problem with your request:"
-      puts resp_body
+      puts res_body
       exit 1
     end
   end
@@ -28,11 +28,11 @@ class Auth
 
     response = conn.delete "/token/#{token}"
     res_body = JSON.parse(response)
-    if resp_body["ok"]
-      puts resp_body
+    if res_body["ok"]
+      puts res_body
     else
       STDERR.puts "There was a problem with your request:"
-      puts resp_body
+      puts res_body
       exit 1
     end
   end
@@ -48,11 +48,11 @@ class Auth
     response = conn.get "/token/#{token}"
     res_body = JSON.parse(response.body)
 
-    if resp_body["ok"]
-      puts resp_body
+    if res_body["ok"]
+      puts res_body
     else
       STDERR.puts "There was a problem with your request:"
-      puts resp_body
+      puts res_body
       exit 1
     end
   end
