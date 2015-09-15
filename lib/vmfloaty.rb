@@ -104,7 +104,7 @@ class Vmfloaty
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
-        hostname = options.hostname
+        hostname = options.host
         lifetime = options.lifetime
         tags = options.tags
         token = options.token
@@ -143,7 +143,7 @@ class Vmfloaty
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
-        hostname = options.hostname
+        hostname = options.host
         token = options.token
 
         res_body = Pooler.snapshot(verbose, url, hostname, token)
@@ -164,7 +164,7 @@ class Vmfloaty
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
-        hostname = options.hostname
+        hostname = options.host
         token = options.token
         snapshot_sha = options.snapshot
 
