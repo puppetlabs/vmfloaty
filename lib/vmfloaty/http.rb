@@ -7,7 +7,7 @@ class Http
       exit 1
     end
 
-    conn = Faraday.new(:url => url) do |faraday|
+    conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
       faraday.request :url_encoded
       faraday.response :logger if verbose
       faraday.adapter Faraday.default_adapter
@@ -27,7 +27,7 @@ class Http
       exit 1
     end
 
-    conn = Faraday.new(:url => url) do |faraday|
+    conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
       faraday.request :url_encoded
       faraday.request :basic_auth, user, password
       faraday.response :logger if verbose
@@ -48,7 +48,7 @@ class Http
       exit 1
     end
 
-    conn = Faraday.new(:url => url) do |faraday|
+    conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
       faraday.request :url_encoded
       faraday.request :token_auth, token
       faraday.response :logger if verbose
