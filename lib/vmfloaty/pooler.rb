@@ -36,6 +36,7 @@ class Pooler
   def self.modify(verbose, url, hostname, token, lifetime, tags)
     modify_body = {'lifetime'=>lifetime, 'tags'=>tags}
     conn = Http.get_conn_with_token(verbose, url, token)
+    conn.headers['X-AUTH-TOKEN']
 
     response = conn.put do |req|
       req.url "/vm/#{hostname}"
@@ -84,6 +85,7 @@ class Pooler
 
   def self.snapshot(verbose, url, hostname, token)
     conn = Http.get_conn_with_token(verbose, url, token)
+    conn.headers['X-AUTH-TOKEN']
 
     response = conn.post "/vm/#{hostname}/snapshot"
     res_body = JSON.parse(response.body)
@@ -92,6 +94,7 @@ class Pooler
 
   def self.revert(verbose, url, hostname, token, snapshot_sha)
     conn = Http.get_conn_with_token(verbose, url, token)
+    conn.headers['X-AUTH-TOKEN']
 
     response = conn.post "/vm/#{hostname}/snapshot/#{snapshot}"
     res_body = JSON.parse(response.body)
