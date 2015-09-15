@@ -221,8 +221,10 @@ class Vmfloaty
           Auth.delete_token(verbose, url, user, pass, token)
         when "status"
           Auth.token_status(verbose, url, user, pass, token)
+        when nil
+          STDERR.puts "No action provided"
         else
-          puts "Unknown action: #{action}"
+          STDERR.puts "Unknown action: #{action}"
         end
       end
     end
