@@ -35,11 +35,11 @@ class Vmfloaty
         pass = password "Enter your password please:", '*'
 
         unless options.token
-          token = Auth.get_token(url, user, pass)
+          token = Auth.get_token(verbose, url, user, pass)
         end
 
         unless os_types.nil?
-          response = Pooler.retrieve(os_types, token, url)
+          response = Pooler.retrieve(verbose, os_types, token, url)
           puts response
         else
           puts 'You did not provide an OS to get'
@@ -60,7 +60,7 @@ class Vmfloaty
         filter = options.filter
         url = options.url ||= config['url']
 
-        os_list = Pooler.list(url, filter)
+        os_list = Pooler.list(verbose, url, filter)
         puts os_list
       end
     end
@@ -78,7 +78,7 @@ class Vmfloaty
         url = options.url ||= config['url']
         hostname = options.hostname
 
-        query = Pooler.query(url, hostname)
+        query = Pooler.query(verbose, url, hostname)
         puts query
       end
     end
@@ -102,7 +102,7 @@ class Vmfloaty
         tags = options.tags
         token = options.token
 
-        res_body = Pooler.modify(url, hostname, token, lifetime, tags)
+        res_body = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
         puts res_body
       end
     end
@@ -120,7 +120,7 @@ class Vmfloaty
         hosts = options.hosts
         url = options.url ||= config['url']
 
-        Pool.delete(url, hosts)
+        Pool.delete(verbose, url, hosts)
       end
     end
 
@@ -139,7 +139,7 @@ class Vmfloaty
         hostname = options.hostname
         token = options.token
 
-        res_body = Pooler.snapshot(url, hostname, token)
+        res_body = Pooler.snapshot(verbose, url, hostname, token)
         puts res_body
       end
     end
@@ -161,7 +161,7 @@ class Vmfloaty
         token = options.token
         snapshot_sha = options.snapshot
 
-        res_body = Pooler.revert(url, hostname, token, snapshot_sha)
+        res_body = Pooler.revert(verbose, url, hostname, token, snapshot_sha)
         puts res_body
       end
     end
@@ -177,7 +177,7 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
 
-        status = Pooler.status(url)
+        status = Pooler.status(verbose, url)
         puts status
       end
     end
@@ -193,7 +193,7 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
 
-        summary = Pooler.summary(url)
+        summary = Pooler.summary(verbose, url)
         puts summary
       end
     end
@@ -217,11 +217,11 @@ class Vmfloaty
 
         case action
         when "get"
-          puts Auth.get_token(url, user, pass)
+          puts Auth.get_token(verbose, url, user, pass)
         when "delete"
-          Auth.delete_token(url, user, pass, token)
+          Auth.delete_token(verbose, url, user, pass, token)
         when "status"
-          Auth.token_status(url, user, pass, token)
+          Auth.token_status(verbose, url, user, pass, token)
         else
           puts "Unknown action: #{action}"
         end
