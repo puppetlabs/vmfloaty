@@ -47,6 +47,11 @@ class Pooler
   end
 
   def self.delete(verbose, url, hostnames)
+    if hostnames.nil?
+      STDERR.puts "You did not provide any hosts to delete"
+      exit 1
+    end
+
     hosts = hostnames.split(',')
     conn = Http.get_conn(verbose, url)
 
