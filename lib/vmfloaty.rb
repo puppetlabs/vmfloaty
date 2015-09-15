@@ -83,7 +83,7 @@ class Vmfloaty
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
-        hostname = options.hostname
+        hostname = options.host
 
         query = Pooler.query(verbose, url, hostname)
         puts query
