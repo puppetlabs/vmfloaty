@@ -127,7 +127,7 @@ class Vmfloaty
         hosts = options.hosts
         url = options.url ||= config['url']
 
-        Pool.delete(verbose, url, hosts)
+        Pooler.delete(verbose, url, hosts)
       end
     end
 

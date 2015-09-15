@@ -45,7 +45,7 @@ class Pooler
     res_body
   end
 
-  def self.delete(verbose, url, hostname)
+  def self.delete(verbose, url, hostnames)
     hosts = hostnames.split(',')
     conn = Http.get_conn(verbose, url)
 
