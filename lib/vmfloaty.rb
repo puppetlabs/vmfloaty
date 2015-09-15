@@ -10,7 +10,7 @@ class Vmfloaty
   include Commander::Methods
 
   def run
-    program :version, '0.2.0'
+    program :version, '0.2.1'
     program :description, 'A CLI helper tool for Puppet Labs vmpooler to help you stay afloat'
 
     config = read_config
@@ -40,7 +40,7 @@ class Vmfloaty
           return
         end
 
-        unless options.token
+        unless token
           pass = password "Enter your password please:", '*'
           token = Auth.get_token(verbose, url, user, pass)
         end
