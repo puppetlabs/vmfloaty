@@ -107,7 +107,7 @@ class Vmfloaty
         hostname = options.host
         lifetime = options.lifetime
         tags = options.tags
-        token = options.token
+        token = options.token || config['token']
 
         res_body = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
         puts res_body
@@ -144,7 +144,7 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = options.host
-        token = options.token
+        token = options.token ||= config['token']
 
         res_body = Pooler.snapshot(verbose, url, hostname, token)
         puts res_body
@@ -165,7 +165,7 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = options.host
-        token = options.token
+        token = options.token || config['token']
         snapshot_sha = options.snapshot
 
         res_body = Pooler.revert(verbose, url, hostname, token, snapshot_sha)
@@ -218,7 +218,7 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         action = args.first
         url = options.url ||= config['url']
-        token = options.token
+        token = options.token ||= config['token']
         user = options.user ||= config['user']
         pass = password "Enter your password please:", '*'
 
