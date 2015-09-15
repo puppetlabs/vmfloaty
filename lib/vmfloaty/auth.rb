@@ -6,10 +6,7 @@ class Auth
   def self.get_token(verbose, url, user, password)
     conn = Http.get_conn_with_auth(verbose, url, user, password)
 
-    resp = conn.post do |req|
-            req.url '/token'
-            req.headers['Content-Type'] = 'application/json'
-          end
+    resp = conn.post "/token"
 
     resp_body = JSON.parse(resp.body)
     if resp_body["ok"]
