@@ -39,7 +39,8 @@ class Vmfloaty
         end
 
         unless os_types.nil?
-          Pooler.retrieve(os_types, token, url)
+          response = Pooler.retrieve(os_types, token, url)
+          puts response
         else
           puts 'You did not provide an OS to get'
         end
@@ -59,7 +60,8 @@ class Vmfloaty
         filter = options.filter
         url = options.url ||= config['url']
 
-        Pooler.list(url, filter)
+        os_list = Pooler.list(url, filter)
+        puts os_list
       end
     end
 
@@ -76,7 +78,8 @@ class Vmfloaty
         url = options.url ||= config['url']
         hostname = options.hostname
 
-        Pooler.query(url, hostname)
+        query = Pooler.query(url, hostname)
+        puts query
       end
     end
 
@@ -99,7 +102,8 @@ class Vmfloaty
         tags = options.tags
         token = options.token
 
-        Pooler.modify(url, hostname, token, lifetime, tags)
+        res_body = Pooler.modify(url, hostname, token, lifetime, tags)
+        puts res_body
       end
     end
 
@@ -135,7 +139,8 @@ class Vmfloaty
         hostname = options.hostname
         token = options.token
 
-        Pooler.snapshot(url, hostname, token)
+        res_body = Pooler.snapshot(url, hostname, token)
+        puts res_body
       end
     end
 
@@ -156,7 +161,8 @@ class Vmfloaty
         token = options.token
         snapshot_sha = options.snapshot
 
-        Pooler.revert(url, hostname, token, snapshot_sha)
+        res_body = Pooler.revert(url, hostname, token, snapshot_sha)
+        puts res_body
       end
     end
 
@@ -171,7 +177,8 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
 
-        Pooler.status(url)
+        status = Pooler.status(url)
+        puts status
       end
     end
 
@@ -186,7 +193,8 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
 
-        Pooler.summary(url)
+        summary = Pooler.summary(url)
+        puts summary
       end
     end
 

@@ -15,7 +15,7 @@ class Pooler
       hosts = response_body
     end
 
-    puts hosts
+    hosts
   end
 
   def self.retrieve(os_type, token, url)
@@ -37,7 +37,8 @@ class Pooler
         req.body = os_body
       end
 
-    puts JSON.parse(response.body)
+    res_body = JSON.parse(response.body)
+    res_body
   end
 
   def self.modify(url, hostname, token, lifetime, tags)
@@ -48,7 +49,7 @@ class Pooler
     response = conn.put "/#{hostname}"
     res_body = JSON.parse(response.body)
 
-    puts res_body
+    res_body
   end
 
   def self.delete(url, hostname)
@@ -68,7 +69,7 @@ class Pooler
 
     response = conn.get '/status'
     res_body = JSON.parse(response.body)
-    puts res_body
+    res_body
   end
 
   def self.summary(url)
@@ -76,7 +77,7 @@ class Pooler
 
     response = conn.get '/summary'
     res_body = JSON.parse(response.body)
-    puts res_body
+    res_body
   end
 
   def self.query(url, hostname)
@@ -85,7 +86,7 @@ class Pooler
     response = conn.get "/vm/#{hostname}"
     res_body = JSON.parse(response.body)
 
-    puts res_body
+    res_body
   end
 
   def self.snapshot(url, hostname, token)
@@ -94,7 +95,7 @@ class Pooler
     # need to use token
     response = conn.post "/#{hostname}/snapshot"
     res_body = JSON.parse(response.body)
-    puts res_body
+    res_body
   end
 
   def self.revert(url, hostname, token, snapshot_sha)
@@ -103,6 +104,6 @@ class Pooler
     # need to use token
     response = conn.post "/#{hostname}/snapshot/#{snapshot}"
     res_body = JSON.parse(response.body)
-    puts res_body
+    res_body
   end
 end
