@@ -16,7 +16,7 @@ class Http
     return conn
   end
 
-  def self.get_conn(verbose, url, user, password)
+  def self.get_conn_with_auth(verbose, url, user, password)
     if url.nil?
       STDERR.puts "The url you provided was empty"
       exit 1

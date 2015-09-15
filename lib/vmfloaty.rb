@@ -4,7 +4,6 @@ require 'rubygems'
 require 'commander'
 require 'yaml'
 require 'vmfloaty/auth'
-require 'vmfloaty/http'
 require 'vmfloaty/pooler'
 
 class Vmfloaty

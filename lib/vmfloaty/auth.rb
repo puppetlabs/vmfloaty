@@ -4,7 +4,7 @@ require 'vmfloaty/http'
 
 class Auth
   def self.get_token(verbose, url, user, password)
-    conn = Http.get_conn(verbose, url, user, password)
+    conn = Http.get_conn_with_auth(verbose, url, user, password)
 
     resp = conn.post do |req|
             req.url '/token'
@@ -27,7 +27,7 @@ class Auth
       exit 1
     end
 
-    conn = Http.get_conn(verbose, url, user, password)
+    conn = Http.get_conn_with_auth(verbose, url, user, password)
 
     response = conn.delete "/token/#{token}"
     res_body = JSON.parse(response)
@@ -46,7 +46,7 @@ class Auth
       exit 1
     end
 
-    conn = Http.get_conn(verbose, url, user, password)
+    conn = Http.get_conn_with_auth(verbose, url, user, password)
 
     response = conn.get "/token/#{token}"
     res_body = JSON.parse(response.body)
