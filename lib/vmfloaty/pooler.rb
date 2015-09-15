@@ -27,7 +27,7 @@ class Pooler
       unless os_body.has_key?(os_type)
         os_body[os_type] = 1
       else
-        os_body[os_type] = os_body[os_type] + 1
+        os_body[os_type]++
       end
     end
 
