@@ -12,7 +12,13 @@ class Auth
           end
 
     resp_body = JSON.parse(resp.body)
-    resp_body
+    if resp_body["ok"]
+      return resp_body["token"]
+    else
+      STDERR.puts "There was a problem with your request:"
+      puts resp_body
+      exit 1
+    end
   end
 
   def self.delete_token(verbose, url, user, password, token)
@@ -25,7 +31,13 @@ class Auth
 
     response = conn.delete "/token/#{token}"
     res_body = JSON.parse(response)
-    puts res_body
+    if resp_body["ok"]
+      puts resp_body
+    else
+      STDERR.puts "There was a problem with your request:"
+      puts resp_body
+      exit 1
+    end
   end
 
   def self.token_status(verbose, url, user, password, token)
@@ -38,6 +50,13 @@ class Auth
 
     response = conn.get "/token/#{token}"
     res_body = JSON.parse(response.body)
-    puts res_body
+
+    if resp_body["ok"]
+      puts resp_body
+    else
+      STDERR.puts "There was a problem with your request:"
+      puts resp_body
+      exit 1
+    end
   end
 end
