@@ -19,22 +19,15 @@ class Pooler
   end
 
   def self.retrieve(verbose, os_type, token, url)
-    os = os_type.split(',')
-    conn = Http.get_conn_with_token(verbose, url, token)
-    os_body = {}
-
-    os.each do |os_type|
-      unless os_body.has_key?(os_type)
-        os_body[os_type] = 1
-      else
-        os_body[os_type] += 1
-      end
+    os = os_type.gsub(',','+')
+    if token.nil?
+      conn = Http.get_conn(verbose, url)
+    else
+      conn = Http.get_conn_with_token(verbose, url, token)
+      conn.headers['X-AUTH-TOKEN']
     end
 
-    response = conn.post do |req|
-        req.url '/vm'
-        req.body = os_body
-      end
+    response = conn.post "/vm/#{os}"
 
     res_body = JSON.parse(response.body)
     res_body

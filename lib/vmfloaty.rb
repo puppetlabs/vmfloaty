@@ -25,12 +25,20 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--os STRING', String, 'Operating systems to retrieve'
+      c.option '--notoken', 'Makes a request without a token'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         token = options.token || config['token']
         user = options.user ||= config['user']
         url = options.url ||= config['url']
         os_types = options.os
+        no_token = options.notoken
+
+        unless no_token.nil?
+          response = Pooler.retrieve(verbose, os_types, token, url)
+          puts response
+          return
+        end
 
         unless options.token
           pass = password "Enter your password please:", '*'
