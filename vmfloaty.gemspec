@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'vmfloaty'
-  s.version = '0.2.0'
+  s.version = '0.2.1'
   s.authors = ['Brian Cain']
   s.email = ['brian.cain@puppetlabs.com']
   s.license = 'Apache'
@@ -11,4 +11,5 @@ Gem::Specification.new do |s|
   s.files = Dir['LICENSE', 'README.md', 'lib/**/*']
   s.test_files = Dir['spec/**/*']
   s.require_path = 'lib'
+  s.add_dependency 'commander', '~> 4.3'
 end
