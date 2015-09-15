@@ -27,13 +27,13 @@ class Vmfloaty
       c.option '--os STRING', String, 'Operating systems to retrieve'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
-        token = options.token
+        token = options.token || config['token']
         user = options.user ||= config['user']
         url = options.url ||= config['url']
         os_types = options.os
-        pass = password "Enter your password please:", '*'
 
         unless options.token
+          pass = password "Enter your password please:", '*'
           token = Auth.get_token(verbose, url, user, pass)
         end
 
