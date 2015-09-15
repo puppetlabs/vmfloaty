@@ -27,7 +27,7 @@ class Auth
     conn = Http.get_conn_with_auth(verbose, url, user, password)
 
     response = conn.delete "/token/#{token}"
-    res_body = JSON.parse(response)
+    res_body = JSON.parse(response.body)
     if res_body["ok"]
       puts res_body
     else
