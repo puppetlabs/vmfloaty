@@ -45,7 +45,7 @@ gem install vmfloaty
 If you do not wish to continuely specify various config options with the cli, you can have a dotfile in your home directory for some defaults. For example:
 
 ```yaml
-#file at /Users/me/.vmpooler.yml
+#file at /Users/me/.vmfloaty.yml
 url: 'http://vmpooler.mycompany.net'
 user: 'brian'
 ```
