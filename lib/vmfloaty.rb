@@ -10,7 +10,7 @@ class Vmfloaty
   include Commander::Methods
 
   def run
-    program :version, '0.2.1'
+    program :version, '0.2.3'
     program :description, 'A CLI helper tool for Puppet Labs vmpooler to help you stay afloat'
 
     config = read_config
