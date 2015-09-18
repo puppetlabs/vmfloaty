@@ -96,13 +96,13 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--lifetime INT', Integer, 'VM TTL (Integer, in hours)'
-      c.option '--tags HASH', Hash, 'free-form VM tagging'
+      c.option '--tags STRING', String, 'free-form VM tagging (json)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = args[0]
         lifetime = options.lifetime
-        tags = options.tags
+        tags = JSON.parse(options.tags)
         token = options.token || config['token']
 
         res_body = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
