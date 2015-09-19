@@ -91,7 +91,7 @@ class Vmfloaty
       c.syntax = 'floaty modify [hostname]'
       c.summary = 'Modify a vms tags and TTL'
       c.description = ''
-      c.example 'description', 'command example'
+      c.example 'Modifies myhost1 to have a TTL of 12 hours and adds a custom tag', 'floaty modify myhost1 --lifetime 12 --url https://myurl --token mytokenstring --tags \'{"tag":"myvalue"}\''
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'

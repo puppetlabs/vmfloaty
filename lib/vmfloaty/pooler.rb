@@ -34,15 +34,20 @@ class Pooler
   end
 
   def self.modify(verbose, url, hostname, token, lifetime, tags)
-    modify_body = {'lifetime'=>lifetime, 'tags'=>tags}
+    modify_body = {}
+    if lifetime
+      modify_body['lifetime'] = lifetime
+    end
+    if tags
+      modify_body['tags'] = tags
+    end
+
+    puts modify_body
     conn = Http.get_conn_with_token(verbose, url, token)
     conn.headers['X-AUTH-TOKEN']
 
-    response = conn.put do |req|
-      req.url "/vm/#{hostname}"
-    end
+    response = conn.put "/vm/#{hostname}"
     res_body = JSON.parse(response.body)
-
     res_body
   end
 
