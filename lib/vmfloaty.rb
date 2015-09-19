@@ -102,7 +102,7 @@ class Vmfloaty
         url = options.url ||= config['url']
         hostname = args[0]
         lifetime = options.lifetime
-        tags = JSON.parse(options.tags)
+        tags = JSON.parse(options.tags) if options.tags
         token = options.token || config['token']
 
         res_body = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
