@@ -33,7 +33,7 @@ class Vmfloaty
         os_types = args[0]
         no_token = options.notoken
 
-        unless no_token.nil?
+        if no_token
           response = Pooler.retrieve(verbose, os_types, token, url)
           puts response
           return
