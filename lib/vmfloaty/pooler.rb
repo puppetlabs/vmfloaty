@@ -64,7 +64,11 @@ class Pooler
       puts "Scheduling host #{host} for deletion"
       response = conn.delete "/vm/#{host}"
       res_body = JSON.parse(response.body)
-      puts res_body
+      if res_body['ok']
+        puts "Deletion for vm #{host} successfully scheduled"
+      else
+        STDERR.puts "There was a problem with your request for vm #{host}"
+      end
     end
   end
 
