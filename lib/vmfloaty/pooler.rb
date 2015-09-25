@@ -42,7 +42,6 @@ class Pooler
       modify_body['tags'] = tags
     end
 
-    puts modify_body
     conn = Http.get_conn_with_token(verbose, url, token)
     conn.headers['X-AUTH-TOKEN']
 
