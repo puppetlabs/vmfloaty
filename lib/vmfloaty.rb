@@ -10,7 +10,7 @@ class Vmfloaty
   include Commander::Methods
 
   def run
-    program :version, '0.2.4'
+    program :version, '0.2.5'
     program :description, 'A CLI helper tool for Puppet Labs vmpooler to help you stay afloat'
 
     config = read_config
@@ -34,7 +34,7 @@ class Vmfloaty
         no_token = options.notoken
 
         if no_token
-          response = Pooler.retrieve(verbose, os_types, token, url)
+          response = Pooler.retrieve(verbose, os_types, nil, url)
           puts response
           return
         end
