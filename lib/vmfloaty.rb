@@ -10,7 +10,7 @@ class Vmfloaty
   include Commander::Methods
 
   def run
-    program :version, '0.2.3'
+    program :version, '0.2.4'
     program :description, 'A CLI helper tool for Puppet Labs vmpooler to help you stay afloat'
 
     config = read_config
@@ -116,13 +116,15 @@ class Vmfloaty
       c.description = ''
       c.example 'Schedules the deletion of a host or hosts', 'floaty delete myhost1,myhost2 --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
+      c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         hosts = args[0]
+        token = options.token || config['token']
         url = options.url ||= config['url']
 
-        Pooler.delete(verbose, url, hosts)
+        Pooler.delete(verbose, url, hosts, token)
       end
     end
 

@@ -37,24 +37,4 @@ class Http
     return conn
   end
 
-  def self.get_conn_with_token(verbose, url, token)
-    if url.nil?
-      STDERR.puts "The url you provided was empty"
-      exit 1
-    end
-
-    if token.nil?
-      STDERR.puts "The token you provided was empty"
-      exit 1
-    end
-
-    conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
-      faraday.request :url_encoded
-      faraday.request :token_auth, token
-      faraday.response :logger if verbose
-      faraday.adapter Faraday.default_adapter
-    end
-
-    return conn
-  end
 end

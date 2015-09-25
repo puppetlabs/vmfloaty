@@ -20,11 +20,9 @@ class Pooler
 
   def self.retrieve(verbose, os_type, token, url)
     os = os_type.gsub(',','+')
-    if token.nil?
-      conn = Http.get_conn(verbose, url)
-    else
-      conn = Http.get_conn_with_token(verbose, url, token)
-      conn.headers['X-AUTH-TOKEN']
+    conn = Http.get_conn(verbose, url)
+    if token
+      conn.headers['X-AUTH-TOKEN'] = token
     end
 
     response = conn.post "/vm/#{os}"
@@ -42,15 +40,18 @@ class Pooler
       modify_body['tags'] = tags
     end
 
-    conn = Http.get_conn_with_token(verbose, url, token)
-    conn.headers['X-AUTH-TOKEN']
+    conn = Http.get_conn(verbose, url)
+    conn.headers['X-AUTH-TOKEN'] = token
 
-    response = conn.put "/vm/#{hostname}"
+    response = conn.put do |req|
+      req.url "/vm/#{hostname}"
+      req.body = modify_body
+    end
     res_body = JSON.parse(response.body)
     res_body
   end
 
-  def self.delete(verbose, url, hostnames)
+  def self.delete(verbose, url, hostnames, token)
     if hostnames.nil?
       STDERR.puts "You did not provide any hosts to delete"
       exit 1
@@ -58,6 +59,10 @@ class Pooler
 
     hosts = hostnames.split(',')
     conn = Http.get_conn(verbose, url)
+
+    if token
+      conn.headers['X-AUTH-TOKEN'] = token
+    end
 
     hosts.each do |host|
       puts "Scheduling host #{host} for deletion"
@@ -97,8 +102,8 @@ class Pooler
   end
 
   def self.snapshot(verbose, url, hostname, token)
-    conn = Http.get_conn_with_token(verbose, url, token)
-    conn.headers['X-AUTH-TOKEN']
+    conn = Http.get_conn(verbose, url)
+    conn.headers['X-AUTH-TOKEN'] = token
 
     response = conn.post "/vm/#{hostname}/snapshot"
     res_body = JSON.parse(response.body)
@@ -106,8 +111,8 @@ class Pooler
   end
 
   def self.revert(verbose, url, hostname, token, snapshot_sha)
-    conn = Http.get_conn_with_token(verbose, url, token)
-    conn.headers['X-AUTH-TOKEN']
+    conn = Http.get_conn(verbose, url)
+    conn.headers['X-AUTH-TOKEN'] = token
 
     response = conn.post "/vm/#{hostname}/snapshot/#{snapshot}"
     res_body = JSON.parse(response.body)
