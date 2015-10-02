@@ -40,6 +40,22 @@ gem install vmfloaty
         Display backtrace when an error occurs
 ```
 
+### Example workflow
+
+Grabbing a token for authenticated pooler requests:
+
+```
+floaty token get --user me --url https://vmpooler.mycompany.net
+```
+
+This command will then ask you to log in. If successful, it will return a token that you can save either in a dotfile or use with other cli commands.
+
+Grabbing vms:
+
+```
+floaty get centos-7,debian-7,windows-10 --token mytokenstring --url https://vmpooler.mycompany.net
+```
+
 ### vmfloaty dotfile
 
 If you do not wish to continuely specify various config options with the cli, you can have a dotfile in your home directory for some defaults. For example:
