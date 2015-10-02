@@ -2,10 +2,10 @@
 
 require 'rubygems'
 require 'commander'
-require 'yaml'
 require 'vmfloaty/auth'
 require 'vmfloaty/pooler'
 require 'vmfloaty/version'
+require 'vmfloaty/conf'
 
 class Vmfloaty
   include Commander::Methods
@@ -14,7 +14,7 @@ class Vmfloaty
     program :version, Version.get
     program :description, 'A CLI helper tool for Puppet Labs vmpooler to help you stay afloat'
 
-    config = read_config
+    config = Conf.read_config
 
     command :get do |c|
       c.syntax = 'floaty get [hostname,...]'
@@ -234,15 +234,5 @@ class Vmfloaty
     end
 
     run!
-  end
-
-  def read_config
-    conf = {}
-    begin
-      conf = YAML.load_file("#{Dir.home}/.vmfloaty.yml")
-    rescue
-      STDERR.puts "WARNING: There was no config file at #{Dir.home}/.vmfloaty.yml"
-    end
-    conf
   end
 end
