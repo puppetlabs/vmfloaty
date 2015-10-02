@@ -5,12 +5,13 @@ require 'commander'
 require 'yaml'
 require 'vmfloaty/auth'
 require 'vmfloaty/pooler'
+require 'vmfloaty/version'
 
 class Vmfloaty
   include Commander::Methods
 
   def run
-    program :version, '0.2.5'
+    program :version, Version.get
     program :description, 'A CLI helper tool for Puppet Labs vmpooler to help you stay afloat'
 
     config = read_config
