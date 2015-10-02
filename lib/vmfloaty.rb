@@ -6,6 +6,7 @@ require 'vmfloaty/auth'
 require 'vmfloaty/pooler'
 require 'vmfloaty/version'
 require 'vmfloaty/conf'
+require 'vmfloaty/format'
 
 class Vmfloaty
   include Commander::Methods
