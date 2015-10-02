@@ -48,9 +48,24 @@ If you do not wish to continuely specify various config options with the cli, yo
 #file at /Users/me/.vmfloaty.yml
 url: 'http://vmpooler.mycompany.net'
 user: 'brian'
+token: 'tokenstring'
 ```
 
 Now vmfloaty will use those config files if no flag was specified.
+
+#### Valid config keys
+
+Here are the keys that vmfloaty currently supports:
+
+- verbose
+  + true
+  + false
+- token
+  + :token-string
+- user
+  + :username
+- url
+  + :pooler-url
 
 ## vmpooler API
 
