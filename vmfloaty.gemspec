@@ -12,4 +12,5 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*']
   s.require_path = 'lib'
   s.add_dependency 'commander', '~> 4.3'
+  s.add_dependency 'faraday', '~> 0.9'
 end
