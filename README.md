@@ -53,7 +53,7 @@ This command will then ask you to log in. If successful, it will return a token 
 Grabbing vms:
 
 ```
-floaty get centos-7,debian-7,windows-10 --token mytokenstring --url https://vmpooler.mycompany.net
+floaty get centos-7-x86_64=2 debian-7-x86_64=1 windows-10=3 --token mytokenstring --url https://vmpooler.mycompany.net
 ```
 
 ### vmfloaty dotfile

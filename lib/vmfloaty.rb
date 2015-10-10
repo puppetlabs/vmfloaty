@@ -18,10 +18,10 @@ class Vmfloaty
     config = Conf.read_config
 
     command :get do |c|
-      c.syntax = 'floaty get [hostname,...]'
+      c.syntax = 'floaty get os_type1=x ox_type2=y ...'
       c.summary = 'Gets a vm or vms based on the os flag'
       c.description = ''
-      c.example 'Gets 3 vms', 'floaty get centos,centos,debian --user brian --url http://vmpooler.example.com'
+      c.example 'Gets 3 vms', 'floaty get centos=3 debian=1 --user brian --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -32,7 +32,13 @@ class Vmfloaty
         token = options.token || config['token']
         user = options.user ||= config['user']
         url = options.url ||= config['url']
-        os_types = args[0]
+
+        os_types = {}
+        args.each do |arg|
+          os_arr = arg.split("=")
+          os_types[os_arr[0]] = os_arr[1].to_i
+        end
+
         no_token = options.notoken
 
         if no_token
