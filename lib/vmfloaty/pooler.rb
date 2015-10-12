@@ -33,6 +33,11 @@ class Pooler
 
     os_string = os_string.chomp("+")
 
+    if os_string.size == 0
+      STDERR.puts "No request was made, os hash specified no vms #{os_type}"
+      exit 1
+    end
+
     response = conn.post "/vm/#{os_string}"
 
     res_body = JSON.parse(response.body)

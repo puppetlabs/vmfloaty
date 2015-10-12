@@ -33,6 +33,10 @@ class Vmfloaty
         user = options.user ||= config['user']
         url = options.url ||= config['url']
 
+        if args.empty?
+          STDERR.puts "You did not provide any vms to grab"
+        end
+
         os_types = {}
         args.each do |arg|
           os_arr = arg.split("=")
