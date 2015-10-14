@@ -41,7 +41,13 @@ class Pooler
     response = conn.post "/vm/#{os_string}"
 
     res_body = JSON.parse(response.body)
-    res_body
+    if res_body["ok"]
+      res_body
+    else
+      STDERR.puts "There was a problem with your request"
+      STDERR.puts res_body
+      exit 1
+    end
   end
 
   def self.modify(verbose, url, hostname, token, lifetime, tags)
@@ -127,7 +133,7 @@ class Pooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
-    response = conn.post "/vm/#{hostname}/snapshot/#{snapshot}"
+    response = conn.post "/vm/#{hostname}/snapshot/#{snapshot_sha}"
     res_body = JSON.parse(response.body)
     res_body
   end

@@ -5,5 +5,6 @@ gem 'faraday'
 
 gem 'rspec'
 gem 'webmock'
+gem 'rake'
 
 gemspec

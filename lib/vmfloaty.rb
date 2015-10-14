@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'commander'
+require 'pp'
 require 'vmfloaty/auth'
 require 'vmfloaty/pooler'
 require 'vmfloaty/version'
@@ -58,7 +59,7 @@ class Vmfloaty
 
         unless os_types.nil?
           response = Pooler.retrieve(verbose, os_types, token, url)
-          puts response
+          Format.get_hosts(response)
         else
           puts 'You did not provide an OS to get'
         end
@@ -94,8 +95,8 @@ class Vmfloaty
         url = options.url ||= config['url']
         hostname = args[0]
 
-        query = Pooler.query(verbose, url, hostname)
-        puts query
+        query_req = Pooler.query(verbose, url, hostname)
+        pp query_req
       end
     end
 
@@ -117,8 +118,10 @@ class Vmfloaty
         tags = JSON.parse(options.tags) if options.tags
         token = options.token || config['token']
 
-        res_body = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
-        puts res_body
+        modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
+        if modify_req["ok"]
+          puts "Successfully modified vm #{hostname}."
+        end
       end
     end
 
@@ -154,8 +157,8 @@ class Vmfloaty
         hostname = args[0]
         token = options.token ||= config['token']
 
-        res_body = Pooler.snapshot(verbose, url, hostname, token)
-        puts res_body
+        snapshot_req = Pooler.snapshot(verbose, url, hostname, token)
+        pp snapshot_req
       end
     end
 
@@ -175,8 +178,8 @@ class Vmfloaty
         token = options.token || config['token']
         snapshot_sha = options.snapshot
 
-        res_body = Pooler.revert(verbose, url, hostname, token, snapshot_sha)
-        puts res_body
+        revert_req = Pooler.revert(verbose, url, hostname, token, snapshot_sha)
+        pp revert_req
       end
     end
 
@@ -192,7 +195,7 @@ class Vmfloaty
         url = options.url ||= config['url']
 
         status = Pooler.status(verbose, url)
-        puts status
+        pp status
       end
     end
 
@@ -208,7 +211,7 @@ class Vmfloaty
         url = options.url ||= config['url']
 
         summary = Pooler.summary(verbose, url)
-        puts summary
+        pp summary
       end
     end
 
