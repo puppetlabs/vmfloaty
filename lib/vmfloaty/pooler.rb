@@ -36,7 +36,13 @@ class Pooler
     response = conn.post "/vm/#{os_string}"
 
     res_body = JSON.parse(response.body)
-    res_body
+    if res_body["ok"]
+      res_body
+    else
+      STDERR.puts "There was a problem with your request"
+      STDERR.puts res_body
+      exit 1
+    end
   end
 
   def self.modify(verbose, url, hostname, token, lifetime, tags)
