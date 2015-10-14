@@ -122,7 +122,7 @@ class Pooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
-    response = conn.post "/vm/#{hostname}/snapshot/#{snapshot}"
+    response = conn.post "/vm/#{hostname}/snapshot/#{snapshot_sha}"
     res_body = JSON.parse(response.body)
     res_body
   end
