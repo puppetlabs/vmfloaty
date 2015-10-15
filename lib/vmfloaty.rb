@@ -121,6 +121,10 @@ class Vmfloaty
         modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
         if modify_req["ok"]
           puts "Successfully modified vm #{hostname}."
+        else
+          STDERR.puts "Something went wrong with your request"
+          puts modify_req
+          exit 1
         end
       end
     end
