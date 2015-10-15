@@ -64,8 +64,9 @@ class Pooler
 
     response = conn.put do |req|
       req.url "/vm/#{hostname}"
-      req.body = modify_body
+      req.body = modify_body.to_json
     end
+
     res_body = JSON.parse(response.body)
     res_body
   end
