@@ -7,7 +7,11 @@ class Format
 
     hostname_hash.delete("ok")
     hostname_hash.each do |type, hosts|
-      host_hash[type] = hosts["hostname"]
+      if type == "domain"
+        host_hash[type] = hosts
+      else
+        host_hash[type] = hosts["hostname"]
+      end
     end
 
     puts host_hash.to_json
