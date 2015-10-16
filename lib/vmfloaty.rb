@@ -41,7 +41,12 @@ class Vmfloaty
         os_types = {}
         args.each do |arg|
           os_arr = arg.split("=")
-          os_types[os_arr[0]] = os_arr[1].to_i
+          if os_arr.size == 1
+            # assume they didn't specify an = sign if split returns 1 size
+            os_types[os_arr[0]] = 1
+          else
+            os_types[os_arr[0]] = os_arr[1].to_i
+          end
         end
 
         no_token = options.notoken
