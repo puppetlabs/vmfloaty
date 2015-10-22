@@ -14,6 +14,6 @@ class Format
       end
     end
 
-    puts host_hash.to_json
+    host_hash.to_json
   end
 end

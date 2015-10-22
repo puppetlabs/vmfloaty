@@ -64,7 +64,7 @@ class Vmfloaty
 
         unless os_types.nil?
           response = Pooler.retrieve(verbose, os_types, token, url)
-          Format.get_hosts(response)
+          puts Format.get_hosts(response)
         else
           puts 'You did not provide an OS to get'
         end
