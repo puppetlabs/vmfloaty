@@ -37,13 +37,13 @@ class Auth
     end
   end
 
-  def self.token_status(verbose, url, user, password, token)
+  def self.token_status(verbose, url, token)
     if token.nil?
       STDERR.puts 'You did not provide a token'
       exit 1
     end
 
-    conn = Http.get_conn_with_auth(verbose, url, user, password)
+    conn = Http.get_conn(verbose, url)
 
     response = conn.get "/token/#{token}"
     res_body = JSON.parse(response.body)

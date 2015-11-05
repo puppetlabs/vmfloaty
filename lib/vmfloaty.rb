@@ -239,15 +239,16 @@ class Vmfloaty
         url = options.url ||= config['url']
         token = options.token ||= config['token']
         user = options.user ||= config['user']
-        pass = password "Enter your password please:", '*'
 
         case action
         when "get"
+          pass = password "Enter your password please:", '*'
           puts Auth.get_token(verbose, url, user, pass)
         when "delete"
+          pass = password "Enter your password please:", '*'
           Auth.delete_token(verbose, url, user, pass, token)
         when "status"
-          Auth.token_status(verbose, url, user, pass, token)
+          Auth.token_status(verbose, url, token)
         when nil
           STDERR.puts "No action provided"
         else
