@@ -144,10 +144,16 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
-        hosts = args[0]
+        hostnames = args[0]
         token = options.token || config['token']
         url = options.url ||= config['url']
 
+        if hostnames.nil?
+          STDERR.puts "You did not provide any hosts to delete"
+          exit 1
+        end
+
+        hosts = hostnames.split(',')
         Pooler.delete(verbose, url, hosts, token)
       end
     end

@@ -71,13 +71,7 @@ class Pooler
     res_body
   end
 
-  def self.delete(verbose, url, hostnames, token)
-    if hostnames.nil?
-      STDERR.puts "You did not provide any hosts to delete"
-      exit 1
-    end
-
-    hosts = hostnames.split(',')
+  def self.delete(verbose, url, hosts, token)
     conn = Http.get_conn(verbose, url)
 
     if token

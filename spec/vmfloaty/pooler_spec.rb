@@ -101,7 +101,7 @@ describe Pooler do
         with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.1', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @delete_response_body_success, :headers => {})
 
-      #expect(Pooler.delete(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile')).to output(/Scheduling host fq6qlpjlsskycq6 for deletion/).to_stdout
+      #expect(Pooler.delete(false, @vmpooler_url, ['fq6qlpjlsskycq6'], 'mytokenfile')).to output(/Scheduling host fq6qlpjlsskycq6 for deletion/).to_stdout
     end
   end
 
