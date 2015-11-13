@@ -140,6 +140,7 @@ class Vmfloaty
       c.description = ''
       c.example 'Schedules the deletion of a host or hosts', 'floaty delete myhost1,myhost2 --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
+      c.option '--all', 'Deletes all vms acquired by a token'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
@@ -147,6 +148,36 @@ class Vmfloaty
         hostnames = args[0]
         token = options.token || config['token']
         url = options.url ||= config['url']
+        delete_all = options.all
+
+        if delete_all
+          # get vms with token
+          status = Auth.token_status(verbose, url, token)
+          # print vms
+          vms = status[token]['vms']
+          if vms.nil?
+            STDERR.puts "You have no running vms"
+            exit 0
+          end
+
+          running_vms = vms['running']
+
+          if ! running_vms.nil?
+            puts "Running VMs:"
+            running_vms.each do |vm|
+              puts "- #{vm}"
+            end
+            # query y/n
+            puts ""
+            ans = agree("Delete all VMs associated with token #{token}? [y/N]")
+            if ans
+              # delete vms
+              Pooler.delete(verbose, url, running_vms, token)
+            end
+          end
+
+          exit 0
+        end
 
         if hostnames.nil?
           STDERR.puts "You did not provide any hosts to delete"
@@ -254,7 +285,7 @@ class Vmfloaty
           pass = password "Enter your password please:", '*'
           Auth.delete_token(verbose, url, user, pass, token)
         when "status"
-          Auth.token_status(verbose, url, token)
+          puts Auth.token_status(verbose, url, token)
         when nil
           STDERR.puts "No action provided"
         else
