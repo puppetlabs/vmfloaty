@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'json'
-require_relative '../../lib/vmfloaty/format'
+require_relative '../../lib/vmfloaty/utils'
 
-describe Pooler do
+describe Utils do
 
   describe "#get_hosts" do
     before :each do
@@ -12,7 +12,7 @@ describe Pooler do
 
     it "formats a hostname hash into os, hostnames, and domain name" do
 
-      expect(Format.get_hosts(JSON.parse(@hostname_hash))).to eq @format_hash
+      expect(Utils.format_hosts(JSON.parse(@hostname_hash))).to eq @format_hash
     end
   end
 end

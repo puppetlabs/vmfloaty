@@ -34,8 +34,7 @@ class Pooler
     os_string = os_string.chomp("+")
 
     if os_string.size == 0
-      STDERR.puts "No request was made, os hash specified no vms #{os_type}"
-      exit 1
+      raise "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
     end
 
     response = conn.post "/vm/#{os_string}"
@@ -44,9 +43,7 @@ class Pooler
     if res_body["ok"]
       res_body
     else
-      STDERR.puts "There was a problem with your request"
-      STDERR.puts res_body
-      exit 1
+      raise "Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. #{res_body}"
     end
   end
 
@@ -85,7 +82,8 @@ class Pooler
       if res_body['ok']
         puts "Deletion for vm #{host} successfully scheduled"
       else
-        STDERR.puts "There was a problem with your request for vm #{host}"
+        STDERR.puts "There was a problem with your request for vm #{host}."
+        STDERR.puts res_body
       end
     end
   end
