@@ -3,8 +3,7 @@ require 'faraday'
 class Http
   def self.get_conn(verbose, url)
     if url.nil?
-      STDERR.puts "The url you provided was empty"
-      exit 1
+      raise "Did not provide a url to connect to"
     end
 
     conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
@@ -18,13 +17,11 @@ class Http
 
   def self.get_conn_with_auth(verbose, url, user, password)
     if url.nil?
-      STDERR.puts "The url you provided was empty"
-      exit 1
+      raise "Did not provide a url to connect to"
     end
 
     if user.nil?
-      STDERR.puts "You did not provide a user to authenticate with"
-      exit 1
+      raise "You did not provide a user to authenticate with"
     end
 
     conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
