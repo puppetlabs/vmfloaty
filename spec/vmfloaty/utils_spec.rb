@@ -15,4 +15,20 @@ describe Utils do
       expect(Utils.format_hosts(JSON.parse(@hostname_hash))).to eq @format_hash
     end
   end
+
+  describe "#generate_os_hash" do
+    before :each do
+      @host_hash = {"centos"=>1, "debian"=>5, "windows"=>1}
+    end
+
+    it "takes an array of os arguments and returns a formatted hash" do
+      host_arg = ["centos", "debian=5", "windows=1"]
+      expect(Utils.generate_os_hash(host_arg)).to eq @host_hash
+    end
+
+    it "returns an empty hash if there are no arguments provided" do
+      host_arg = []
+      expect(Utils.generate_os_hash(host_arg)).to be_empty
+    end
+  end
 end
