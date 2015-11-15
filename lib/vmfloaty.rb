@@ -168,6 +168,7 @@ class Vmfloaty
           end
 
           exit 0
+        end
 
         if hostnames.nil?
           STDERR.puts "You did not provide any hosts to delete"
