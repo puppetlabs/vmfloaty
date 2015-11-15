@@ -280,12 +280,15 @@ class Vmfloaty
         case action
         when "get"
           pass = password "Enter your password please:", '*'
-          puts Auth.get_token(verbose, url, user, pass)
+          token = Auth.get_token(verbose, url, user, pass)
+          puts token
         when "delete"
           pass = password "Enter your password please:", '*'
-          Auth.delete_token(verbose, url, user, pass, token)
+          result = Auth.delete_token(verbose, url, user, pass, token)
+          puts result
         when "status"
-          puts Auth.token_status(verbose, url, token)
+          status = Auth.token_status(verbose, url, token)
+          puts status
         when nil
           STDERR.puts "No action provided"
         else
