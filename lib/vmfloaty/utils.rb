@@ -43,7 +43,7 @@ class Utils
 
   def self.prettyprint_hosts(hosts)
     puts "Running VMs:"
-    running_vms.each do |vm|
+    hosts.each do |vm|
       puts "- #{vm}"
     end
   end
