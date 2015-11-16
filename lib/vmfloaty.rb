@@ -52,6 +52,8 @@ class Vmfloaty
               puts "No token found. Retrieving a token..."
               pass = password "Enter your password please:", '*'
               token = Auth.get_token(verbose, url, user, pass)
+              puts "\nToken retrieved!"
+              puts token
             end
 
             response = Pooler.retrieve(verbose, os_types, token, url)
