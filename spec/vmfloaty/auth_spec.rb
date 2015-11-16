@@ -33,7 +33,7 @@ describe Pooler do
         with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.1'}).
         to_return(:status => 200, :body => @delete_token_response, :headers => {})
 
-      #expect(Auth.delete_token(false, @vmpooler_url, "first.last", "password", @token)).to eq @delete_token_response
+      expect(Auth.delete_token(false, @vmpooler_url, "first.last", "password", @token)).to eq JSON.parse(@delete_token_response)
     end
   end
 

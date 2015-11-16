@@ -7,7 +7,7 @@ require 'vmfloaty/auth'
 require 'vmfloaty/pooler'
 require 'vmfloaty/version'
 require 'vmfloaty/conf'
-require 'vmfloaty/format'
+require 'vmfloaty/utils'
 
 class Vmfloaty
   include Commander::Methods
@@ -22,7 +22,7 @@ class Vmfloaty
       c.syntax = 'floaty get os_type1=x ox_type2=y ...'
       c.summary = 'Gets a vm or vms based on the os flag'
       c.description = ''
-      c.example 'Gets 3 vms', 'floaty get centos=3 debian=1 --user brian --url http://vmpooler.example.com'
+      c.example 'Gets 3 vms', 'floaty get centos=3 debian --user brian --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -33,40 +33,36 @@ class Vmfloaty
         token = options.token || config['token']
         user = options.user ||= config['user']
         url = options.url ||= config['url']
-
-        if args.empty?
-          STDERR.puts "You did not provide any vms to grab"
-        end
-
-        os_types = {}
-        args.each do |arg|
-          os_arr = arg.split("=")
-          if os_arr.size == 1
-            # assume they didn't specify an = sign if split returns 1 size
-            os_types[os_arr[0]] = 1
-          else
-            os_types[os_arr[0]] = os_arr[1].to_i
-          end
-        end
-
         no_token = options.notoken
 
-        if no_token
-          response = Pooler.retrieve(verbose, os_types, nil, url)
-          puts response
-          return
+        if args.empty?
+          STDERR.puts "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
+          exit 1
         end
 
-        unless token
-          pass = password "Enter your password please:", '*'
-          token = Auth.get_token(verbose, url, user, pass)
-        end
+        os_types = Utils.generate_os_hash(args)
 
-        unless os_types.nil?
-          response = Pooler.retrieve(verbose, os_types, token, url)
-          puts Format.get_hosts(response)
+        unless os_types.empty?
+          if no_token
+            response = Pooler.retrieve(verbose, os_types, nil, url)
+            puts response
+            exit 0
+          else
+            unless token
+              puts "No token found. Retrieving a token..."
+              pass = password "Enter your password please:", '*'
+              token = Auth.get_token(verbose, url, user, pass)
+              puts "\nToken retrieved!"
+              puts token
+            end
+
+            response = Pooler.retrieve(verbose, os_types, token, url)
+            puts Utils.format_hosts(response)
+            exit 0
+          end
         else
-          puts 'You did not provide an OS to get'
+          STDERR.puts "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
+          exit 1
         end
       end
     end
@@ -127,7 +123,7 @@ class Vmfloaty
         if modify_req["ok"]
           puts "Successfully modified vm #{hostname}."
         else
-          STDERR.puts "Something went wrong with your request"
+          STDERR.puts "Could not modify given host #{hostname} at #{url}."
           puts modify_req
           exit 1
         end
@@ -163,10 +159,7 @@ class Vmfloaty
           running_vms = vms['running']
 
           if ! running_vms.nil?
-            puts "Running VMs:"
-            running_vms.each do |vm|
-              puts "- #{vm}"
-            end
+            Utils.prettyprint_hosts(running_vms)
             # query y/n
             puts ""
             ans = agree("Delete all VMs associated with token #{token}? [y/N]")
@@ -182,10 +175,11 @@ class Vmfloaty
         if hostnames.nil?
           STDERR.puts "You did not provide any hosts to delete"
           exit 1
+        else
+          hosts = hostnames.split(',')
+          Pooler.delete(verbose, url, hosts, token)
+          exit 0
         end
-
-        hosts = hostnames.split(',')
-        Pooler.delete(verbose, url, hosts, token)
       end
     end
 
@@ -280,12 +274,15 @@ class Vmfloaty
         case action
         when "get"
           pass = password "Enter your password please:", '*'
-          puts Auth.get_token(verbose, url, user, pass)
+          token = Auth.get_token(verbose, url, user, pass)
+          puts token
         when "delete"
           pass = password "Enter your password please:", '*'
-          Auth.delete_token(verbose, url, user, pass, token)
+          result = Auth.delete_token(verbose, url, user, pass, token)
+          puts result
         when "status"
-          puts Auth.token_status(verbose, url, token)
+          status = Auth.token_status(verbose, url, token)
+          puts status
         when nil
           STDERR.puts "No action provided"
         else

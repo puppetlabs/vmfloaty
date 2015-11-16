@@ -29,7 +29,7 @@ class Auth
     response = conn.delete "/token/#{token}"
     res_body = JSON.parse(response.body)
     if res_body["ok"]
-      puts res_body
+      return res_body
     else
       STDERR.puts "There was a problem with your request:"
       puts res_body
@@ -49,7 +49,7 @@ class Auth
     res_body = JSON.parse(response.body)
 
     if res_body["ok"]
-      res_body
+      return res_body
     else
       STDERR.puts "There was a problem with your request:"
       puts res_body
