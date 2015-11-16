@@ -41,10 +41,18 @@ class Utils
     os_types
   end
 
-  def self.prettyprint_hosts(hosts)
+  def self.prettyprint_hosts(hosts, verbose, url)
     puts "Running VMs:"
     hosts.each do |vm|
-      puts "- #{vm}"
+      vm_info = Pooler.query(verbose, url, vm)
+      if vm_info['ok']
+        domain = vm_info[vm]['domain']
+        template = vm_info[vm]['template']
+        lifetime = vm_info[vm]['lifetime']
+        running = vm_info[vm]['running']
+
+        puts "- #{vm}.#{domain} (#{template}, #{running}/#{lifetime} hours)"
+      end
     end
   end
 end

@@ -22,7 +22,7 @@ class Vmfloaty
       c.syntax = 'floaty get os_type1=x ox_type2=y ...'
       c.summary = 'Gets a vm or vms based on the os flag'
       c.description = ''
-      c.example 'Gets 3 vms', 'floaty get centos=3 debian --user brian --url http://vmpooler.example.com'
+      c.example 'Gets a few vms', 'floaty get centos=3 debian --user brian --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -73,14 +73,36 @@ class Vmfloaty
       c.description = ''
       c.example 'Filter the list on centos', 'floaty list centos --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
+      c.option '--active', 'Prints information about active vms for a given token'
+      c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         filter = args[0]
         url = options.url ||= config['url']
+        token = options.token || config['token']
+        active = options.active
 
-        os_list = Pooler.list(verbose, url, filter)
-        puts os_list
+        if active
+          # list active vms
+          status = Auth.token_status(verbose, url, token)
+          # print vms
+          vms = status[token]['vms']
+          if vms.nil?
+            STDERR.puts "You have no running vms"
+            exit 0
+          end
+
+          running_vms = vms['running']
+
+          if ! running_vms.nil?
+            Utils.prettyprint_hosts(running_vms, verbose, url)
+          end
+        else
+          # list available vms from pooler
+          os_list = Pooler.list(verbose, url, filter)
+          puts os_list
+        end
       end
     end
 
@@ -159,7 +181,7 @@ class Vmfloaty
           running_vms = vms['running']
 
           if ! running_vms.nil?
-            Utils.prettyprint_hosts(running_vms)
+            Utils.prettyprint_hosts(running_vms, verbose, url)
             # query y/n
             puts ""
             ans = agree("Delete all VMs associated with token #{token}? [y/N]")
