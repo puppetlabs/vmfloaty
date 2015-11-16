@@ -51,7 +51,7 @@ class Utils
         lifetime = vm_info[vm]['lifetime']
         running = vm_info[vm]['running']
 
-        puts "- #{vm}#{domain} (#{running}/#{lifetime} hours)"
+        puts "- #{vm}.#{domain} (#{template}, #{running}/#{lifetime} hours)"
       end
     end
   end
