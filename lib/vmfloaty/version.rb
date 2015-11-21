@@ -1,6 +1,6 @@
 
 class Version
-  @version = '0.2.17'
+  @version = '0.2.18'
 
   def self.get
     @version
