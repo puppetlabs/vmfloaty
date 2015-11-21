@@ -159,7 +159,7 @@ class Vmfloaty
       c.example 'Schedules the deletion of a host or hosts', 'floaty delete myhost1,myhost2 --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--all', 'Deletes all vms acquired by a token'
-      c.option '--f', 'Does not prompt user when deleting all vms'
+      c.option '-f', 'Does not prompt user when deleting all vms'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
