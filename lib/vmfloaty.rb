@@ -159,6 +159,7 @@ class Vmfloaty
       c.example 'Schedules the deletion of a host or hosts', 'floaty delete myhost1,myhost2 --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--all', 'Deletes all vms acquired by a token'
+      c.option '--f', 'Does not prompt user when deleting all vms'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.action do |args, options|
@@ -167,6 +168,7 @@ class Vmfloaty
         token = options.token || config['token']
         url = options.url ||= config['url']
         delete_all = options.all
+        force = options.f
 
         if delete_all
           # get vms with token
@@ -183,8 +185,14 @@ class Vmfloaty
           if ! running_vms.nil?
             Utils.prettyprint_hosts(running_vms, verbose, url)
             # query y/n
-            puts ""
-            ans = agree("Delete all VMs associated with token #{token}? [y/N]")
+            puts
+
+            if force
+              ans = true
+            else
+              ans = agree("Delete all VMs associated with token #{token}? [y/N]")
+            end
+
             if ans
               # delete vms
               Pooler.delete(verbose, url, running_vms, token)
