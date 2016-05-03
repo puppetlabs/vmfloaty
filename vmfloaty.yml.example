@@ -1,2 +1,3 @@
-url: 'http://vmpooler.example.com'
+url: 'http://vmpooler.example.com/api/v1'
 user: 'brian'
+token: 'token here'

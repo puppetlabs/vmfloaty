@@ -47,7 +47,7 @@ gem install vmfloaty
 Grabbing a token for authenticated pooler requests:
 
 ```
-floaty token get --user me --url https://vmpooler.mycompany.net
+floaty token get --user me --url https://vmpooler.mycompany.net/api/v1
 ```
 
 This command will then ask you to log in. If successful, it will return a token that you can save either in a dotfile or use with other cli commands.
@@ -55,7 +55,7 @@ This command will then ask you to log in. If successful, it will return a token 
 Grabbing vms:
 
 ```
-floaty get centos-7-x86_64=2 debian-7-x86_64=1 windows-10=3 --token mytokenstring --url https://vmpooler.mycompany.net
+floaty get centos-7-x86_64=2 debian-7-x86_64=1 windows-10=3 --token mytokenstring --url https://vmpooler.mycompany.net/api/v1
 ```
 
 ### vmfloaty dotfile
@@ -64,7 +64,7 @@ If you do not wish to continuely specify various config options with the cli, yo
 
 ```yaml
 #file at /Users/me/.vmfloaty.yml
-url: 'http://vmpooler.mycompany.net'
+url: 'http://vmpooler.mycompany.net/api/v1'
 user: 'brian'
 token: 'tokenstring'
 ```
@@ -143,7 +143,7 @@ end
 
 if __FILE__ == $0
   verbose = true
-  url = 'https://vmpooler.mycompany.net'
+  url = 'https://vmpooler.mycompany.net/api/v1'
   token = aquire_token(verbose, url)
   os = ARGV[0]
 
