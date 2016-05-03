@@ -6,7 +6,7 @@ class Auth
   def self.get_token(verbose, url, user, password)
     conn = Http.get_conn_with_auth(verbose, url, user, password)
 
-    resp = conn.post "/token"
+    resp = conn.post "token"
 
     res_body = JSON.parse(resp.body)
     if res_body["ok"]
@@ -26,7 +26,7 @@ class Auth
 
     conn = Http.get_conn_with_auth(verbose, url, user, password)
 
-    response = conn.delete "/token/#{token}"
+    response = conn.delete "token/#{token}"
     res_body = JSON.parse(response.body)
     if res_body["ok"]
       return res_body
@@ -45,7 +45,7 @@ class Auth
 
     conn = Http.get_conn(verbose, url)
 
-    response = conn.get "/token/#{token}"
+    response = conn.get "token/#{token}"
     res_body = JSON.parse(response.body)
 
     if res_body["ok"]

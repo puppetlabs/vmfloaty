@@ -125,29 +125,46 @@ class Vmfloaty
 
     command :modify do |c|
       c.syntax = 'floaty modify [hostname]'
-      c.summary = 'Modify a vms tags and TTL'
+      c.summary = 'Modify a vms tags, TTL, and disk space'
       c.description = ''
       c.example 'Modifies myhost1 to have a TTL of 12 hours and adds a custom tag', 'floaty modify myhost1 --lifetime 12 --url https://myurl --token mytokenstring --tags \'{"tag":"myvalue"}\''
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--lifetime INT', Integer, 'VM TTL (Integer, in hours)'
+      c.option '--disk INT', Integer, 'Increases VM disk space (Integer, in gb)'
       c.option '--tags STRING', String, 'free-form VM tagging (json)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
         hostname = args[0]
         lifetime = options.lifetime
+        disk = options.disk
         tags = JSON.parse(options.tags) if options.tags
         token = options.token || config['token']
 
-        modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
-        if modify_req["ok"]
-          puts "Successfully modified vm #{hostname}."
+        if lifetime || tags
+          modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
+
+          if modify_req["ok"]
+            puts "Successfully modified vm #{hostname}."
+          else
+            STDERR.puts "Could not modify given host #{hostname} at #{url}."
+            puts modify_req
+            exit 1
+          end
+        end
+
+        if disk
+          disk_req = Pooler.disk(verbose, url, hostname, token, disk)
+          if disk_req["ok"]
+            puts "Successfully updated disk space of vm #{hostname}."
+          else
+            STDERR.puts "Could not modify given host #{hostname} at #{url}."
+            puts disk_req
+            exit 1
+          end
         else
-          STDERR.puts "Could not modify given host #{hostname} at #{url}."
-          puts modify_req
-          exit 1
         end
       end
     end

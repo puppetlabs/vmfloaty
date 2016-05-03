@@ -6,7 +6,7 @@ class Pooler
   def self.list(verbose, url, os_filter=nil)
     conn = Http.get_conn(verbose, url)
 
-    response = conn.get '/vm'
+    response = conn.get 'vm'
     response_body = JSON.parse(response.body)
 
     if os_filter
@@ -37,7 +37,7 @@ class Pooler
       raise "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
     end
 
-    response = conn.post "/vm/#{os_string}"
+    response = conn.post "vm/#{os_string}"
 
     res_body = JSON.parse(response.body)
     if res_body["ok"]
@@ -60,9 +60,19 @@ class Pooler
     conn.headers['X-AUTH-TOKEN'] = token
 
     response = conn.put do |req|
-      req.url "/vm/#{hostname}"
+      req.url "vm/#{hostname}"
       req.body = modify_body.to_json
     end
+
+    res_body = JSON.parse(response.body)
+    res_body
+  end
+
+  def self.disk(verbose, url, hostname, token, disk)
+    conn = Http.get_conn(verbose, url)
+    conn.headers['X-AUTH-TOKEN'] = token
+
+    response = conn.post "vm/#{hostname}/disk/#{disk}"
 
     res_body = JSON.parse(response.body)
     res_body
@@ -77,7 +87,7 @@ class Pooler
 
     hosts.each do |host|
       puts "Scheduling host #{host} for deletion"
-      response = conn.delete "/vm/#{host}"
+      response = conn.delete "vm/#{host}"
       res_body = JSON.parse(response.body)
       if res_body['ok']
         puts "Deletion for vm #{host} successfully scheduled"
@@ -107,7 +117,7 @@ class Pooler
   def self.query(verbose, url, hostname)
     conn = Http.get_conn(verbose, url)
 
-    response = conn.get "/vm/#{hostname}"
+    response = conn.get "vm/#{hostname}"
     res_body = JSON.parse(response.body)
 
     res_body
@@ -117,7 +127,7 @@ class Pooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
-    response = conn.post "/vm/#{hostname}/snapshot"
+    response = conn.post "vm/#{hostname}/snapshot"
     res_body = JSON.parse(response.body)
     res_body
   end
@@ -126,7 +136,7 @@ class Pooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
-    response = conn.post "/vm/#{hostname}/snapshot/#{snapshot_sha}"
+    response = conn.post "vm/#{hostname}/snapshot/#{snapshot_sha}"
     res_body = JSON.parse(response.body)
     res_body
   end
