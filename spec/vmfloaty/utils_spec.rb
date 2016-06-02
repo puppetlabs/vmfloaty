@@ -31,4 +31,61 @@ describe Utils do
       expect(Utils.generate_os_hash(host_arg)).to be_empty
     end
   end
+
+  describe '#prettyprint_hosts' do
+    let(:host_without_tags) { 'mcpy42eqjxli9g2' }
+    let(:host_with_tags)    { 'aiydvzpg23r415q' }
+    let(:url)               { 'http://pooler.example.com' }
+
+    let(:host_info_with_tags) do
+      {
+        host_with_tags => {
+          "template" => "redhat-7-x86_64",
+          "lifetime" => 48,
+          "running"  => 7.67,
+          "tags"     => {
+            "user" => "bob",
+            "role" => "agent"
+          },
+          "domain" => "delivery.puppetlabs.net"
+        }
+      }
+    end
+
+    let(:host_info_without_tags) do
+      {
+        host_without_tags => {
+          "template" => "ubuntu-1604-x86_64",
+          "lifetime" => 12,
+          "running"  => 9.66,
+          "domain"   => "delivery.puppetlabs.net"
+        }
+      }
+    end
+
+    let(:output_with_tags)    { "- #{host_with_tags}.delivery.puppetlabs.net (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)" }
+    let(:output_without_tags) { "- #{host_without_tags}.delivery.puppetlabs.net (ubuntu-1604-x86_64, 9.66/12 hours)" }
+
+    it 'prints an output with host fqdn, template and duration info' do
+      allow(Utils).to receive(:get_vm_info).
+        with(host_without_tags, false, url).
+        and_return(host_info_without_tags)
+
+      expect(Utils).to receive(:puts).with("Running VMs:")
+      expect(Utils).to receive(:puts).with(output_without_tags)
+
+      Utils.prettyprint_hosts(host_without_tags, false, url)
+    end
+
+    it 'prints an output with host fqdn, template, duration info, and tags when supplied' do
+      allow(Utils).to receive(:get_vm_info).
+        with(host_with_tags, false, url).
+        and_return(host_info_with_tags)
+
+      expect(Utils).to receive(:puts).with("Running VMs:")
+      expect(Utils).to receive(:puts).with(output_with_tags)
+
+      Utils.prettyprint_hosts(host_with_tags, false, url)
+    end
+  end
 end
