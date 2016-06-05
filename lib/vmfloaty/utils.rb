@@ -51,6 +51,7 @@ class Utils
         vms[host]['template'] = vm_info[host]['template']
         vms[host]['lifetime'] = vm_info[host]['lifetime']
         vms[host]['running'] = vm_info[host]['running']
+        vms[host]['tags'] = vm_info[host]['tags']
       end
     end
     vms
@@ -64,8 +65,13 @@ class Utils
       template = info['template']
       lifetime = info['lifetime']
       running = info['running']
+      tags = info['tags'] || {}
 
-      puts "- #{vm}.#{domain} (#{template}, #{running}/#{lifetime} hours)"
+      tag_pairs = tags.map {|key,value| "#{key}: #{value}" }
+      duration = "#{running}/#{lifetime} hours"
+      metadata = [template, duration, *tag_pairs]
+
+      puts "- #{vm}.#{domain} (#{metadata.join(", ")})"
     end
   end
 end
