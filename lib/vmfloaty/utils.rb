@@ -8,10 +8,15 @@ class Utils
     host_hash = {}
 
     hostname_hash.delete("ok")
+    domain = hostname_hash["domain"]
     hostname_hash.each do |type, hosts|
-      if type == "domain"
-        host_hash[type] = hosts
-      else
+      if type != "domain"
+        if hosts["hostname"].kind_of?(Array)
+          hosts["hostname"].map!{|host| host + "." + domain }
+        else
+          hosts["hostname"] = hosts["hostname"] + "." + domain
+        end
+
         host_hash[type] = hosts["hostname"]
       end
     end
