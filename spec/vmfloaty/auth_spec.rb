@@ -14,7 +14,7 @@ describe Pooler do
 
     it "returns a token from vmpooler" do
       stub_request(:post, "https://first.last:password@vmpooler.example.com/token").
-                 with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.1'}).
+                 with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2'}).
                  to_return(:status => 200, :body => @get_token_response, :headers => {})
 
       token = Auth.get_token(false, @vmpooler_url, "first.last", "password")
@@ -30,7 +30,7 @@ describe Pooler do
 
     it "deletes the specified token" do
       stub_request(:delete, "https://first.last:password@vmpooler.example.com/token/utpg2i2xswor6h8ttjhu3d47z53yy47y").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.1'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.2'}).
         to_return(:status => 200, :body => @delete_token_response, :headers => {})
 
       expect(Auth.delete_token(false, @vmpooler_url, "first.last", "password", @token)).to eq JSON.parse(@delete_token_response)
@@ -45,7 +45,7 @@ describe Pooler do
 
     it "checks the status of a token" do
       stub_request(:get, "#{@vmpooler_url}/token/utpg2i2xswor6h8ttjhu3d47z53yy47y").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.1'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.2'}).
         to_return(:status => 200, :body => @token_status_response, :headers => {})
 
       expect(Auth.token_status(false, @vmpooler_url, @token)).to eq JSON.parse(@token_status_response)

@@ -46,7 +46,7 @@ describe Pooler do
 
     it "retrieves a single vm with a token" do
       stub_request(:post, "#{@vmpooler_url}/vm/debian-7-i386").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.1', 'X-Auth-Token'=>'mytokenfile'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @retrieve_response_body_single, :headers => {})
 
       vm_hash = {}
@@ -59,7 +59,7 @@ describe Pooler do
 
     it "retrieves a multiple vms with a token" do
       stub_request(:post, "#{@vmpooler_url}/vm/debian-7-i386+debian-7-i386+centos-7-x86_64").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.1', 'X-Auth-Token'=>'mytokenfile'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @retrieve_response_body_double, :headers => {})
 
       vm_hash = {}
@@ -83,7 +83,7 @@ describe Pooler do
     it "modifies the TTL of a vm" do
       stub_request(:put, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6").
         with(:body => {"{\"lifetime\":12}"=>true},
-             :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Faraday v0.9.1', 'X-Auth-Token'=>'mytokenfile'}).
+             :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @modify_response_body_success, :headers => {})
 
       modify_req = Pooler.modify(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', 12, nil)
@@ -99,7 +99,7 @@ describe Pooler do
 
     it "deletes a specified vm" do
       stub_request(:delete, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.1', 'X-Auth-Token'=>'mytokenfile'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @delete_response_body_success, :headers => {})
 
       expect(Pooler.delete(false, @vmpooler_url, ['fq6qlpjlsskycq6'], 'mytokenfile')).to eq @delete_response
@@ -114,7 +114,7 @@ describe Pooler do
 
     it "prints the status" do
       stub_request(:get, "#{@vmpooler_url}/status").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.1'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.2'}).
         to_return(:status => 200, :body => @status_response_body, :headers => {})
 
       status = Pooler.status(false, @vmpooler_url)
@@ -138,7 +138,7 @@ describe Pooler do
 
     it "makes a query about a vm" do
       stub_request(:get, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.1'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.9.2'}).
         to_return(:status => 200, :body => @query_response_body, :headers => {})
 
       query_req = Pooler.query(false, @vmpooler_url, 'fq6qlpjlsskycq6')
@@ -153,7 +153,7 @@ describe Pooler do
 
     it "makes a snapshot for a single vm" do
       stub_request(:post, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6/snapshot").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.1', 'X-Auth-Token'=>'mytokenfile'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @snapshot_response_body, :headers => {})
 
       snapshot_req = Pooler.snapshot(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile')
@@ -168,7 +168,7 @@ describe Pooler do
 
     it "makes a request to revert a vm from a snapshot" do
       stub_request(:post, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6/snapshot/dAfewKNfaweLKNve").
-        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.1', 'X-Auth-Token'=>'mytokenfile'}).
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @revert_response_body, :headers => {})
 
       revert_req = Pooler.revert(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', 'dAfewKNfaweLKNve')
