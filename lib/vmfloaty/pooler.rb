@@ -85,17 +85,15 @@ class Pooler
       conn.headers['X-AUTH-TOKEN'] = token
     end
 
+    response_body = {}
+
     hosts.each do |host|
-      puts "Scheduling host #{host} for deletion"
       response = conn.delete "vm/#{host}"
       res_body = JSON.parse(response.body)
-      if res_body['ok']
-        puts "Deletion for vm #{host} successfully scheduled"
-      else
-        STDERR.puts "There was a problem with your request for vm #{host}."
-        STDERR.puts res_body
-      end
+      response_body[host] = res_body
     end
+
+    response_body
   end
 
   def self.status(verbose, url)

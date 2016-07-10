@@ -212,7 +212,14 @@ class Vmfloaty
 
             if ans
               # delete vms
-              Pooler.delete(verbose, url, running_vms, token)
+              puts "Scheduling all vms for for deletion"
+              response = Pooler.delete(verbose, url, running_vms, token)
+              response.each do |host,vals|
+                if vals['ok'] == false
+                  STDERR.puts "There was a problem with your request for vm #{host}."
+                  STDERR.puts vals
+                end
+              end
             end
           end
 
