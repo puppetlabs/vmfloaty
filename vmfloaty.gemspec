@@ -2,7 +2,7 @@ require 'vmfloaty/version'
 
 Gem::Specification.new do |s|
   s.name = 'vmfloaty'
-  s.version = Version.get
+  s.version = '0.5.0'
   s.authors = ['Brian Cain']
   s.email = ['brian.cain@puppetlabs.com']
   s.license = 'Apache'
