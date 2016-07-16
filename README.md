@@ -91,6 +91,10 @@ This cli tool uses the [vmpooler API](https://github.com/puppetlabs/vmpooler/blo
 
 ## Using the Pooler class
 
+An example of an application using vmfloaty as a library can be seen in [vagrant-vmpooler](https://github.com/briancain/vagrant-vmpooler).
+
+### Scripting
+
 If you want to write some ruby scripts around the vmpooler api, vmfloaty provides a `Pooler` and `Auth` class to make things easier. The ruby script below shows off an example of a script that gets a token, grabs a vm, runs some commands through ssh, and then destroys the vm.
 
 ```ruby
