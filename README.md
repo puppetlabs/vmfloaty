@@ -1,7 +1,7 @@
 vmfloaty
 ========
 
-[![Gem Version](https://badge.fury.io/rb/vmfloaty.svg)](https://badge.fury.io/rb/vmfloaty)
+[![Gem Version](https://badge.fury.io/rb/vmfloaty.svg)](https://badge.fury.io/rb/vmfloaty) [![Build Status](https://travis-ci.org/briancain/vmfloaty.svg?branch=master)](https://travis-ci.org/briancain/vmfloaty)
 
 A CLI helper tool for [Puppet Labs vmpooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.
 
