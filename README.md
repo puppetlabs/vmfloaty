@@ -47,7 +47,7 @@ gem install vmfloaty
 Grabbing a token for authenticated pooler requests:
 
 ```
-floaty token get --user me --url https://vmpooler.mycompany.net/api/v1
+floaty token get --user username --url https://vmpooler.mycompany.net/api/v1
 ```
 
 This command will then ask you to log in. If successful, it will return a token that you can save either in a dotfile or use with other cli commands.
@@ -76,14 +76,13 @@ Now vmfloaty will use those config files if no flag was specified.
 Here are the keys that vmfloaty currently supports:
 
 - verbose
-  + true
-  + false
+  + Boolean
 - token
-  + :token-string
+  + String
 - user
-  + :username
+  + String
 - url
-  + :pooler-url
+  + String
 
 ## vmpooler API
 
