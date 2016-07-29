@@ -1,5 +1,3 @@
-require 'vmfloaty/version'
-
 Gem::Specification.new do |s|
   s.name = 'vmfloaty'
   s.version = '0.5.0'
