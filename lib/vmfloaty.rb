@@ -45,7 +45,7 @@ class Vmfloaty
         unless os_types.empty?
           if no_token
             response = Pooler.retrieve(verbose, os_types, nil, url)
-            puts response
+            puts Utils.format_hosts(response)
             exit 0
           else
             unless token
