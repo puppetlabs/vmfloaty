@@ -12,7 +12,10 @@ A CLI helper tool for [Puppet Labs vmpooler](https://github.com/puppetlabs/vmpoo
 Grab the latest from ruby gems...
 
 ```
-gem install vmfloaty
+$ gem install vmfloaty
+...
+...
+$ floaty --help
 ```
 
 ## Usage
@@ -26,6 +29,7 @@ gem install vmfloaty
     query    Get information about a given vm
     revert   Reverts a vm to a specified snapshot
     snapshot Takes a snapshot of a given vm
+    ssh      Grabs a single vm and sshs into it
     status   Prints the status of vmpooler
     summary  Prints the summary of vmpooler
     token    Retrieves or deletes a token
@@ -64,7 +68,7 @@ If you do not wish to continuely specify various config options with the cli, yo
 
 ```yaml
 #file at /Users/me/.vmfloaty.yml
-url: 'http://vmpooler.mycompany.net/api/v1'
+url: 'https://vmpooler.mycompany.net/api/v1'
 user: 'brian'
 token: 'tokenstring'
 ```

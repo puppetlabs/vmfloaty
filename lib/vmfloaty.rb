@@ -8,6 +8,7 @@ require 'vmfloaty/pooler'
 require 'vmfloaty/version'
 require 'vmfloaty/conf'
 require 'vmfloaty/utils'
+require 'vmfloaty/ssh'
 
 class Vmfloaty
   include Commander::Methods
@@ -50,6 +51,9 @@ class Vmfloaty
           else
             unless token
               puts "No token found. Retrieving a token..."
+              if !user
+                raise "You did not provide a user to authenticate to vmpooler with"
+              end
               pass = password "Enter your password please:", '*'
               token = Auth.get_token(verbose, url, user, pass)
               puts "\nToken retrieved!"
@@ -342,6 +346,46 @@ class Vmfloaty
         else
           STDERR.puts "Unknown action: #{action}"
         end
+      end
+    end
+
+    command :ssh do |c|
+      c.syntax = 'floaty ssh os_type'
+      c.summary = 'Grabs a single vm and sshs into it'
+      c.description = ''
+      c.example 'SSHs into a centos vm', 'floaty ssh centos7 --url https://vmpooler.example.com'
+      c.option '--verbose', 'Enables verbose output'
+      c.option '--url STRING', String, 'URL of vmpooler'
+      c.option '--user STRING', String, 'User to authenticate with'
+      c.option '--token STRING', String, 'Token for vmpooler'
+      c.option '--notoken', 'Makes a request without a token'
+      c.action do |args, options|
+        verbose = options.verbose || config['verbose']
+        url = options.url ||= config['url']
+        token = options.token ||= config['token']
+        user = options.user ||= config['user']
+        no_token = options.notoken
+
+        if args.empty?
+          STDERR.puts "No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs."
+          exit 1
+        end
+
+        host_os = args.first
+
+        if !no_token && !token
+          puts "No token found. Retrieving a token..."
+          if !user
+            raise "You did not provide a user to authenticate to vmpooler with"
+          end
+          pass = password "Enter your password please:", '*'
+          token = Auth.get_token(verbose, url, user, pass)
+          puts "\nToken retrieved!"
+          puts token
+        end
+
+        Ssh.ssh(verbose, host_os, token, url)
+        exit 0
       end
     end
 
