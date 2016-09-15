@@ -12,16 +12,15 @@ class Auth
     if res_body["ok"]
       return res_body["token"]
     else
-      STDERR.puts "There was a problem with your request:"
-      puts res_body
-      exit 1
+      STDERR.puts "There was a problem with your request:\n#{res_body}"
+      return nil
     end
   end
 
   def self.delete_token(verbose, url, user, password, token)
     if token.nil?
       STDERR.puts 'You did not provide a token'
-      exit 1
+      return nil
     end
 
     conn = Http.get_conn_with_auth(verbose, url, user, password)
@@ -31,16 +30,15 @@ class Auth
     if res_body["ok"]
       return res_body
     else
-      STDERR.puts "There was a problem with your request:"
-      puts res_body
-      exit 1
+      STDERR.puts "There was a problem with your request:\n#{res_body}"
+      return nil
     end
   end
 
   def self.token_status(verbose, url, token)
     if token.nil?
       STDERR.puts 'You did not provide a token'
-      exit 1
+      return nil
     end
 
     conn = Http.get_conn(verbose, url)
@@ -51,9 +49,8 @@ class Auth
     if res_body["ok"]
       return res_body
     else
-      STDERR.puts "There was a problem with your request:"
-      puts res_body
-      exit 1
+      STDERR.puts "There was a problem with your request:\n#{res_body}"
+      return nil
     end
   end
 end

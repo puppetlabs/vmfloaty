@@ -56,8 +56,10 @@ class Vmfloaty
               end
               pass = password "Enter your password please:", '*'
               token = Auth.get_token(verbose, url, user, pass)
-              puts "\nToken retrieved!"
-              puts token
+              unless token.nil?
+                puts "\nToken retrieved!"
+                puts token
+              end
             end
 
             response = Pooler.retrieve(verbose, os_types, token, url)
@@ -90,11 +92,15 @@ class Vmfloaty
         if active
           # list active vms
           status = Auth.token_status(verbose, url, token)
-          # print vms
-          vms = status[token]['vms']
-          if vms.nil?
-            STDERR.puts "You have no running vms"
-            exit 0
+          unless status.nil?
+            # print vms
+            vms = status[token]['vms']
+            if vms.nil?
+              STDERR.puts "You have no running vms"
+              exit 0
+            end
+          else
+            STDERR.puts "Could not retrieve active vms"
           end
 
           running_vms = vms['running']
@@ -194,6 +200,12 @@ class Vmfloaty
         if delete_all
           # get vms with token
           status = Auth.token_status(verbose, url, token)
+
+          if status.nil?
+            STDERR.puts "Could not retrieve status with token"
+            exit 1
+          end
+
           # print vms
           vms = status[token]['vms']
           if vms.nil?
@@ -333,14 +345,26 @@ class Vmfloaty
         when "get"
           pass = password "Enter your password please:", '*'
           token = Auth.get_token(verbose, url, user, pass)
-          puts token
+          unless token.nil?
+            puts token
+          else
+            STDERR.puts 'Could not make a request for a token'
+          end
         when "delete"
           pass = password "Enter your password please:", '*'
           result = Auth.delete_token(verbose, url, user, pass, token)
-          puts result
+          unless result.nil?
+            puts result
+          else
+            STDERR.puts 'Could not make a request to delete a token'
+          end
         when "status"
           status = Auth.token_status(verbose, url, token)
-          puts status
+          unless status.nil?
+            puts status
+          else
+            STDERR.puts 'Could not make a request to get token status'
+          end
         when nil
           STDERR.puts "No action provided"
         else
@@ -380,8 +404,12 @@ class Vmfloaty
           end
           pass = password "Enter your password please:", '*'
           token = Auth.get_token(verbose, url, user, pass)
-          puts "\nToken retrieved!"
-          puts token
+          unless token.nil?
+            puts "\nToken retrieved!"
+            puts token
+          else
+            STDERR.puts 'Could not get token...requesting vm without a token anyway...'
+          end
         end
 
         Ssh.ssh(verbose, host_os, token, url)
