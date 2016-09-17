@@ -74,7 +74,7 @@ class Vmfloaty
     end
 
     command :list do |c|
-      c.syntax = 'floaty list [hostname]'
+      c.syntax = 'floaty list [options]'
       c.summary = 'Shows a list of available vms from the pooler'
       c.description = ''
       c.example 'Filter the list on centos', 'floaty list centos --url http://vmpooler.example.com'
@@ -117,7 +117,7 @@ class Vmfloaty
     end
 
     command :query do |c|
-      c.syntax = 'floaty query [options]'
+      c.syntax = 'floaty query [hostname] [options]'
       c.summary = 'Get information about a given vm'
       c.description = ''
       c.example 'Get information about a sample host', 'floaty query hostname --url http://vmpooler.example.com'
@@ -134,7 +134,7 @@ class Vmfloaty
     end
 
     command :modify do |c|
-      c.syntax = 'floaty modify [hostname]'
+      c.syntax = 'floaty modify [hostname] [options]'
       c.summary = 'Modify a vms tags, TTL, and disk space'
       c.description = ''
       c.example 'Modifies myhost1 to have a TTL of 12 hours and adds a custom tag', 'floaty modify myhost1 --lifetime 12 --url https://myurl --token mytokenstring --tags \'{"tag":"myvalue"}\''
@@ -254,7 +254,7 @@ class Vmfloaty
     end
 
     command :snapshot do |c|
-      c.syntax = 'floaty snapshot [options]'
+      c.syntax = 'floaty snapshot [hostname] [options]'
       c.summary = 'Takes a snapshot of a given vm'
       c.description = ''
       c.example 'Takes a snapshot for a given host', 'floaty snapshot myvm.example.com --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
@@ -273,10 +273,10 @@ class Vmfloaty
     end
 
     command :revert do |c|
-      c.syntax = 'floaty revert [options]'
+      c.syntax = 'floaty revert [hostname] [snapshot] [options]'
       c.summary = 'Reverts a vm to a specified snapshot'
       c.description = ''
-      c.example 'Reverts to a snapshot for a given host', 'floaty revert myvm.example.com --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl --snapshot n4eb4kdtp7rwv4x158366vd9jhac8btq'
+      c.example 'Reverts to a snapshot for a given host', 'floaty revert myvm.example.com n4eb4kdtp7rwv4x158366vd9jhac8btq --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'
@@ -286,7 +286,11 @@ class Vmfloaty
         url = options.url ||= config['url']
         hostname = args[0]
         token = options.token || config['token']
-        snapshot_sha = options.snapshot
+        snapshot_sha = args[1] || options.snapshot
+
+        if args[1] && options.snapshot
+          STDERR.puts "Two snapshot arguments were given....using snapshot #{snapshot_sha}"
+        end
 
         revert_req = Pooler.revert(verbose, url, hostname, token, snapshot_sha)
         pp revert_req
@@ -326,10 +330,10 @@ class Vmfloaty
     end
 
     command :token do |c|
-      c.syntax = 'floaty token [get | delete | status]'
+      c.syntax = 'floaty token [get | delete | status] [token]'
       c.summary = 'Retrieves or deletes a token'
       c.description = ''
-      c.example '', ''
+      c.example 'Gets a token from the pooler', 'floaty token get'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--user STRING', String, 'User to authenticate with'
@@ -338,7 +342,7 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         action = args.first
         url = options.url ||= config['url']
-        token = options.token ||= config['token']
+        token = args[1] ||= options.token ||= config['token']
         user = options.user ||= config['user']
 
         case action

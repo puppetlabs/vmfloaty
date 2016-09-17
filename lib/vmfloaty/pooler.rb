@@ -134,6 +134,10 @@ class Pooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
+    if snapshot_sha.nil?
+      raise "Snapshot SHA provided was nil, could not revert #{hostname}"
+    end
+
     response = conn.post "vm/#{hostname}/snapshot/#{snapshot_sha}"
     res_body = JSON.parse(response.body)
     res_body

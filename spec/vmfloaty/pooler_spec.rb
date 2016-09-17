@@ -174,5 +174,9 @@ describe Pooler do
       revert_req = Pooler.revert(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', 'dAfewKNfaweLKNve')
       expect(revert_req["ok"]).to be true
     end
+
+    it "doesn't make a request to revert a vm if snapshot is not provided" do
+      expect{ Pooler.revert(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', nil) }.to raise_error(RuntimeError, "Snapshot SHA provided was nil, could not revert fq6qlpjlsskycq6")
+    end
   end
 end
