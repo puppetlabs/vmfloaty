@@ -44,6 +44,16 @@ describe Pooler do
       @retrieve_response_body_double = "{\"ok\":true,\"debian-7-i386\":{\"hostname\":[\"sc0o4xqtodlul5w\",\"4m4dkhqiufnjmxy\"]},\"centos-7-x86_64\":{\"hostname\":\"zb91y9qbrbf6d3q\"}}"
     end
 
+    it "raises an AuthError if the token is invalid" do
+      stub_request(:post, "#{@vmpooler_url}/vm/debian-7-i386").
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
+        to_return(:status => 401, :body => "{\"ok\":false}", :headers => {})
+
+      vm_hash = {}
+      vm_hash['debian-7-i386'] = 1
+      expect{ Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url) }.to raise_error(AuthError)
+    end
+
     it "retrieves a single vm with a token" do
       stub_request(:post, "#{@vmpooler_url}/vm/debian-7-i386").
         with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).

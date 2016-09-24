@@ -1,6 +1,7 @@
 require 'faraday'
 require 'vmfloaty/http'
 require 'json'
+require 'vmfloaty/errors'
 
 class Pooler
   def self.list(verbose, url, os_filter=nil)
@@ -40,10 +41,13 @@ class Pooler
     response = conn.post "vm/#{os_string}"
 
     res_body = JSON.parse(response.body)
+
     if res_body["ok"]
       res_body
+    elsif response.status == 401
+      raise AuthError, "HTTP #{response.status}: The token provided could not authenticate to the pooler.\n#{res_body}"
     else
-      raise "Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. #{res_body}"
+      raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. #{res_body}"
     end
   end
 
