@@ -66,7 +66,7 @@ class Vmfloaty
               pass = password "Enter your password please:", '*'
               begin
                 token = Auth.get_token(verbose, url, user, pass)
-              rescue AuthError => e
+              rescue TokenError => e
                 STDERR.puts e
                 exit 1
               end
@@ -114,7 +114,7 @@ class Vmfloaty
           # list active vms
           begin
             status = Auth.token_status(verbose, url, token)
-          rescue AuthError => e
+          rescue TokenError => e
             STDERR.puts e
             exit 1
           end
@@ -224,7 +224,7 @@ class Vmfloaty
           # get vms with token
           begin
             status = Auth.token_status(verbose, url, token)
-          rescue AuthError => e
+          rescue TokenError => e
             STDERR.puts e
             exit 1
           end
@@ -373,7 +373,7 @@ class Vmfloaty
           pass = password "Enter your password please:", '*'
           begin
             token = Auth.get_token(verbose, url, user, pass)
-          rescue AuthError => e
+          rescue TokenError => e
             STDERR.puts e
             exit 1
           end
@@ -383,7 +383,7 @@ class Vmfloaty
           pass = password "Enter your password please:", '*'
           begin
             result = Auth.delete_token(verbose, url, user, pass, token)
-          rescue AuthError => e
+          rescue TokenError => e
             STDERR.puts e
             exit 1
           end
@@ -392,7 +392,7 @@ class Vmfloaty
         when "status"
           begin
             status = Auth.token_status(verbose, url, token)
-          rescue AuthError => e
+          rescue TokenError => e
             STDERR.puts e
             exit 1
           end
@@ -439,7 +439,7 @@ class Vmfloaty
           pass = password "Enter your password please:", '*'
           begin
             token = Auth.get_token(verbose, url, user, pass)
-          rescue AuthError => e
+          rescue TokenError => e
             STDERR.puts e
             STDERR.puts 'Could not get token...requesting vm without a token anyway...'
           else
