@@ -371,7 +371,7 @@ class Vmfloaty
             exit 1
           end
           puts result
-          exit 1
+          exit 0
         when "status"
           begin
             status = Auth.token_status(verbose, url, token)
