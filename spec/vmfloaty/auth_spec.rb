@@ -51,6 +51,10 @@ describe Pooler do
 
       expect{ Auth.delete_token(false, @vmpooler_url, "first.last", "password", @token) }.to raise_error(TokenError)
     end
+
+    it "raises a token error if no token provided" do
+      expect{ Auth.delete_token(false, @vmpooler_url, "first.last", "password", nil) }.to raise_error(TokenError)
+    end
   end
 
   describe "#token_status" do
@@ -73,6 +77,10 @@ describe Pooler do
         to_return(:status => 500, :body => "{\"ok\":false}", :headers => {})
 
       expect{ Auth.token_status(false, @vmpooler_url, @token) }.to raise_error(TokenError)
+    end
+
+    it "raises a token error if no token provided" do
+      expect{ Auth.token_status(false, @vmpooler_url, nil) }.to raise_error(TokenError)
     end
   end
 end

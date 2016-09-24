@@ -19,7 +19,7 @@ class Auth
 
   def self.delete_token(verbose, url, user, password, token)
     if token.nil?
-      STDERR.puts 'You did not provide a token'
+      raise TokenError, 'You did not provide a token'
     end
 
     conn = Http.get_conn_with_auth(verbose, url, user, password)
@@ -35,7 +35,7 @@ class Auth
 
   def self.token_status(verbose, url, token)
     if token.nil?
-      STDERR.puts 'You did not provide a token'
+      raise TokenError, 'You did not provide a token'
     end
 
     conn = Http.get_conn(verbose, url)
