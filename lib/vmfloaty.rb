@@ -55,11 +55,15 @@ class Vmfloaty
                 raise "You did not provide a user to authenticate to vmpooler with"
               end
               pass = password "Enter your password please:", '*'
-              token = Auth.get_token(verbose, url, user, pass)
-              unless token.nil?
-                puts "\nToken retrieved!"
-                puts token
+              begin
+                token = Auth.get_token(verbose, url, user, pass)
+              rescue => e
+                STDERR.puts e
+                exit 1
               end
+
+              puts "\nToken retrieved!"
+              puts token
             end
 
             response = Pooler.retrieve(verbose, os_types, token, url)
@@ -91,16 +95,18 @@ class Vmfloaty
 
         if active
           # list active vms
-          status = Auth.token_status(verbose, url, token)
-          unless status.nil?
-            # print vms
-            vms = status[token]['vms']
-            if vms.nil?
-              STDERR.puts "You have no running vms"
-              exit 0
-            end
-          else
-            STDERR.puts "Could not retrieve active vms"
+          begin
+            status = Auth.token_status(verbose, url, token)
+          rescue => e
+            STDERR.puts e
+            exit 1
+          end
+
+          # print vms
+          vms = status[token]['vms']
+          if vms.nil?
+            STDERR.puts "You have no running vms"
+            exit 0
           end
 
           running_vms = vms['running']
@@ -199,10 +205,10 @@ class Vmfloaty
 
         if delete_all
           # get vms with token
-          status = Auth.token_status(verbose, url, token)
-
-          if status.nil?
-            STDERR.puts "Could not retrieve status with token"
+          begin
+            status = Auth.token_status(verbose, url, token)
+          rescue => e
+            STDERR.puts e
             exit 1
           end
 
@@ -348,27 +354,33 @@ class Vmfloaty
         case action
         when "get"
           pass = password "Enter your password please:", '*'
-          token = Auth.get_token(verbose, url, user, pass)
-          unless token.nil?
-            puts token
-          else
-            STDERR.puts 'Could not make a request for a token'
+          begin
+            token = Auth.get_token(verbose, url, user, pass)
+          rescue => e
+            STDERR.puts e
+            exit 1
           end
+          puts token
+          exit 0
         when "delete"
           pass = password "Enter your password please:", '*'
-          result = Auth.delete_token(verbose, url, user, pass, token)
-          unless result.nil?
-            puts result
-          else
-            STDERR.puts 'Could not make a request to delete a token'
+          begin
+            result = Auth.delete_token(verbose, url, user, pass, token)
+          rescue => e
+            STDERR.puts e
+            exit 1
           end
+          puts result
+          exit 1
         when "status"
-          status = Auth.token_status(verbose, url, token)
-          unless status.nil?
-            puts status
-          else
-            STDERR.puts 'Could not make a request to get token status'
+          begin
+            status = Auth.token_status(verbose, url, token)
+          rescue => e
+            STDERR.puts e
+            exit 1
           end
+          puts status
+          exit 0
         when nil
           STDERR.puts "No action provided"
         else
@@ -407,12 +419,14 @@ class Vmfloaty
             raise "You did not provide a user to authenticate to vmpooler with"
           end
           pass = password "Enter your password please:", '*'
-          token = Auth.get_token(verbose, url, user, pass)
-          unless token.nil?
+          begin
+            token = Auth.get_token(verbose, url, user, pass)
+          rescue => e
+            STDERR.puts e
+            STDERR.puts 'Could not get token...requesting vm without a token anyway...'
+          else
             puts "\nToken retrieved!"
             puts token
-          else
-            STDERR.puts 'Could not get token...requesting vm without a token anyway...'
           end
         end
 

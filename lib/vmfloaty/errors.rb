@@ -3,3 +3,9 @@ class AuthError < StandardError
     super
   end
 end
+
+class TokenError < StandardError
+  def initialize(msg="Could not do operation with token provided")
+    super
+  end
+end

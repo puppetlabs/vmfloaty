@@ -1,6 +1,7 @@
 require 'faraday'
 require 'json'
 require 'vmfloaty/http'
+require 'vmfloaty/errors'
 
 class Auth
   def self.get_token(verbose, url, user, password)
@@ -12,15 +13,13 @@ class Auth
     if res_body["ok"]
       return res_body["token"]
     else
-      STDERR.puts "There was a problem with your request:\n#{res_body}"
-      return nil
+      raise TokenError, "HTTP #{resp.status}: There was a problem requesting a token:\n#{res_body}"
     end
   end
 
   def self.delete_token(verbose, url, user, password, token)
     if token.nil?
       STDERR.puts 'You did not provide a token'
-      return nil
     end
 
     conn = Http.get_conn_with_auth(verbose, url, user, password)
@@ -30,15 +29,13 @@ class Auth
     if res_body["ok"]
       return res_body
     else
-      STDERR.puts "There was a problem with your request:\n#{res_body}"
-      return nil
+      raise TokenError, "HTTP #{response.status}: There was a problem deleting a token:\n#{res_body}"
     end
   end
 
   def self.token_status(verbose, url, token)
     if token.nil?
       STDERR.puts 'You did not provide a token'
-      return nil
     end
 
     conn = Http.get_conn(verbose, url)
@@ -49,8 +46,7 @@ class Auth
     if res_body["ok"]
       return res_body
     else
-      STDERR.puts "There was a problem with your request:\n#{res_body}"
-      return nil
+      raise TokenError, "HTTP #{response.status}: There was a problem getting the status of a token:\n#{res_body}"
     end
   end
 end
