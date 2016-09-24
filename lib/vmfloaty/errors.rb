@@ -9,3 +9,9 @@ class TokenError < StandardError
     super
   end
 end
+
+class MissingParamError < StandardError
+  def initialize(msg="Argument provided to function is missing")
+    super
+  end
+end

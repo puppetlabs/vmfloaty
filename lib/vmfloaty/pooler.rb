@@ -20,6 +20,9 @@ class Pooler
   end
 
   def self.retrieve(verbose, os_type, token, url)
+    # NOTE:
+    #   Developers can use `Utils.generate_os_hash` to
+    #   generate the os_type param.
     conn = Http.get_conn(verbose, url)
     if token
       conn.headers['X-AUTH-TOKEN'] = token
@@ -35,7 +38,7 @@ class Pooler
     os_string = os_string.chomp("+")
 
     if os_string.size == 0
-      raise "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
+      raise MissingParamError, "No operating systems provided to obtain."
     end
 
     response = conn.post "vm/#{os_string}"

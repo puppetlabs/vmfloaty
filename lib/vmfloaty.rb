@@ -45,7 +45,15 @@ class Vmfloaty
 
         unless os_types.empty?
           if no_token
-            response = Pooler.retrieve(verbose, os_types, nil, url)
+            begin
+              response = Pooler.retrieve(verbose, os_types, nil, url)
+            rescue MissingParamError
+              STDERR.puts e
+              STDERR.puts "See `floaty get --help` for more information on how to get VMs."
+            rescue AuthError => e
+              STDERR.puts e
+              exit 1
+            end
             puts Utils.format_hosts(response)
             exit 0
           else
@@ -58,7 +66,7 @@ class Vmfloaty
               pass = password "Enter your password please:", '*'
               begin
                 token = Auth.get_token(verbose, url, user, pass)
-              rescue => e
+              rescue AuthError => e
                 STDERR.puts e
                 exit 1
               end
@@ -67,7 +75,15 @@ class Vmfloaty
               puts token
             end
 
-            response = Pooler.retrieve(verbose, os_types, token, url)
+            begin
+              response = Pooler.retrieve(verbose, os_types, token, url)
+            rescue MissingParamError
+              STDERR.puts e
+              STDERR.puts "See `floaty get --help` for more information on how to get VMs."
+            rescue AuthError => e
+              STDERR.puts e
+              exit 1
+            end
             puts Utils.format_hosts(response)
             exit 0
           end
@@ -98,7 +114,7 @@ class Vmfloaty
           # list active vms
           begin
             status = Auth.token_status(verbose, url, token)
-          rescue => e
+          rescue AuthError => e
             STDERR.puts e
             exit 1
           end
@@ -208,7 +224,7 @@ class Vmfloaty
           # get vms with token
           begin
             status = Auth.token_status(verbose, url, token)
-          rescue => e
+          rescue AuthError => e
             STDERR.puts e
             exit 1
           end
@@ -357,7 +373,7 @@ class Vmfloaty
           pass = password "Enter your password please:", '*'
           begin
             token = Auth.get_token(verbose, url, user, pass)
-          rescue => e
+          rescue AuthError => e
             STDERR.puts e
             exit 1
           end
@@ -367,7 +383,7 @@ class Vmfloaty
           pass = password "Enter your password please:", '*'
           begin
             result = Auth.delete_token(verbose, url, user, pass, token)
-          rescue => e
+          rescue AuthError => e
             STDERR.puts e
             exit 1
           end
@@ -376,7 +392,7 @@ class Vmfloaty
         when "status"
           begin
             status = Auth.token_status(verbose, url, token)
-          rescue => e
+          rescue AuthError => e
             STDERR.puts e
             exit 1
           end
@@ -423,7 +439,7 @@ class Vmfloaty
           pass = password "Enter your password please:", '*'
           begin
             token = Auth.get_token(verbose, url, user, pass)
-          rescue => e
+          rescue AuthError => e
             STDERR.puts e
             STDERR.puts 'Could not get token...requesting vm without a token anyway...'
           else
