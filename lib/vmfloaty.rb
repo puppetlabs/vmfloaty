@@ -52,7 +52,8 @@ class Vmfloaty
             unless token
               puts "No token found. Retrieving a token..."
               if !user
-                raise "You did not provide a user to authenticate to vmpooler with"
+                STDERR.puts "You did not provide a user to authenticate to vmpooler with"
+                exit 1
               end
               pass = password "Enter your password please:", '*'
               begin
@@ -416,7 +417,8 @@ class Vmfloaty
         if !no_token && !token
           puts "No token found. Retrieving a token..."
           if !user
-            raise "You did not provide a user to authenticate to vmpooler with"
+            STDERR.puts "You did not provide a user to authenticate to vmpooler with"
+            exit 1
           end
           pass = password "Enter your password please:", '*'
           begin
