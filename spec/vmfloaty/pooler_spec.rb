@@ -90,6 +90,10 @@ describe Pooler do
       @modify_response_body_fail = "{\"ok\":false}"
     end
 
+    it "raises a TokenError if token provided is nil" do
+      expect{ Pooler.modify(false, @vmpooler_url, 'myfakehost', nil, 12, nil) }.to raise_error(TokenError)
+    end
+
     it "modifies the TTL of a vm" do
       stub_request(:put, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6").
         with(:body => {"{\"lifetime\":12}"=>true},
@@ -116,7 +120,7 @@ describe Pooler do
     end
   end
 
-  describe "#staus" do
+  describe "#status" do
     before :each do
       #smaller version
       @status_response_body = "{\"capacity\":{\"current\":716,\"total\":717,\"percent\": 99.9},\"status\":{\"ok\":true,\"message\":\"Battle station fully armed and operational.\"}}"
@@ -187,6 +191,29 @@ describe Pooler do
 
     it "doesn't make a request to revert a vm if snapshot is not provided" do
       expect{ Pooler.revert(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', nil) }.to raise_error(RuntimeError, "Snapshot SHA provided was nil, could not revert fq6qlpjlsskycq6")
+    end
+
+    it "raises a TokenError if no token was provided" do
+      expect{ Pooler.revert(false, @vmpooler_url, 'myfakehost', nil, 'shaaaaaaa') }.to raise_error(TokenError)
+    end
+  end
+
+  describe "#disk" do
+    before :each do
+      @disk_response_body_success = "{\"ok\":true}"
+      @disk_response_body_fail = "{\"ok\":false}"
+    end
+
+    it "makes a request to extend disk space of a vm" do
+      stub_request(:post, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6/disk/12").
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'0', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).  to_return(:status => 200, :body => @disk_response_body_success, :headers => {})
+
+      disk_req = Pooler.disk(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', 12)
+      expect(disk_req["ok"]).to be true
+    end
+
+    it "raises a TokenError if no token was provided" do
+      expect{ Pooler.disk(false, @vmpooler_url, 'myfakehost', nil, 12) }.to raise_error(TokenError)
     end
   end
 end

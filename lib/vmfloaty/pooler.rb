@@ -55,6 +55,10 @@ class Pooler
   end
 
   def self.modify(verbose, url, hostname, token, lifetime, tags)
+    if token.nil?
+      raise TokenError, "Token provided was nil. Request cannot be made to modify vm"
+    end
+
     modify_body = {}
     if lifetime
       modify_body['lifetime'] = lifetime
@@ -76,6 +80,10 @@ class Pooler
   end
 
   def self.disk(verbose, url, hostname, token, disk)
+    if token.nil?
+      raise TokenError, "Token provided was nil. Request cannot be made to modify vm"
+    end
+
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
@@ -129,6 +137,10 @@ class Pooler
   end
 
   def self.snapshot(verbose, url, hostname, token)
+    if token.nil?
+      raise TokenError, "Token provided was nil. Request cannot be made to snapshot vm"
+    end
+
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
@@ -138,6 +150,10 @@ class Pooler
   end
 
   def self.revert(verbose, url, hostname, token, snapshot_sha)
+    if token.nil?
+      raise TokenError, "Token provided was nil. Request cannot be made to revert vm"
+    end
+
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 

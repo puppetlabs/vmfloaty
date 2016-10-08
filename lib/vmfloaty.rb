@@ -177,7 +177,12 @@ class Vmfloaty
         token = options.token || config['token']
 
         if lifetime || tags
-          modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
+          begin
+            modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
+          rescue TokenError => e
+            STDERR.puts e
+            exit 1
+          end
 
           if modify_req["ok"]
             puts "Successfully modified vm #{hostname}."
@@ -189,7 +194,13 @@ class Vmfloaty
         end
 
         if disk
-          disk_req = Pooler.disk(verbose, url, hostname, token, disk)
+          begin
+            disk_req = Pooler.disk(verbose, url, hostname, token, disk)
+          rescue TokenError => e
+            STDERR.puts e
+            exit 1
+          end
+
           if disk_req["ok"]
             puts "Successfully updated disk space of vm #{hostname}."
           else
@@ -290,7 +301,13 @@ class Vmfloaty
         hostname = args[0]
         token = options.token ||= config['token']
 
-        snapshot_req = Pooler.snapshot(verbose, url, hostname, token)
+        begin
+          snapshot_req = Pooler.snapshot(verbose, url, hostname, token)
+        rescue TokenError => e
+          STDERR.puts e
+          exit 1
+        end
+
         pp snapshot_req
       end
     end
@@ -315,7 +332,13 @@ class Vmfloaty
           STDERR.puts "Two snapshot arguments were given....using snapshot #{snapshot_sha}"
         end
 
-        revert_req = Pooler.revert(verbose, url, hostname, token, snapshot_sha)
+        begin
+          revert_req = Pooler.revert(verbose, url, hostname, token, snapshot_sha)
+        rescue TokenError => e
+          STDERR.puts e
+          exit 1
+        end
+
         pp revert_req
       end
     end
