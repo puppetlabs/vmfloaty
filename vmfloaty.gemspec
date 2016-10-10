@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'vmfloaty'
-  s.version = '0.7.0'
+  s.version = '0.7.1'
   s.authors = ['Brian Cain']
   s.email = ['brian.cain@puppetlabs.com']
   s.license = 'Apache'
