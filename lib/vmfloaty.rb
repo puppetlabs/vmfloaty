@@ -172,10 +172,43 @@ class Vmfloaty
         token = options.token || config['token']
         modify_all = options.all
 
-        if lifetime || tags
-          # All Vs
-          if modify_all
+        running_vms = nil
 
+        if modify_all
+          begin
+            running_vms = Utils.get_all_token_vms(verbose, url, token)
+          rescue Exception => e
+            STDERR.puts e
+          end
+        elsif hostname.include? ","
+          running_vms = hostname.split(",")
+        end
+
+        if lifetime || tags
+          # all vms
+          if !running_vms.nil?
+            begin
+              modify_hash = {}
+              modify_flag = true
+
+              running_vms.each do |vm|
+                modify_hash[vm] = Pooler.modify(verbose, url, vm, token, lifetime, tags)
+              end
+
+              modify_hash.each do |hostname,status|
+                if status == false
+                  STDERR.puts "Could not modify #{hostname}."
+                  modify_flag = false
+                end
+              end
+
+              if modify_flag
+                puts "Successfully modified all vms. Use `floaty list --active` to see the results."
+              end
+            rescue Exception => e
+              STDERR.puts e
+              exit 1
+            end
           else
             # Single Vm
             begin
@@ -196,21 +229,47 @@ class Vmfloaty
         end
 
         if disk
-          begin
-            disk_req = Pooler.disk(verbose, url, hostname, token, disk)
-          rescue TokenError => e
-            STDERR.puts e
-            exit 1
-          end
+          # all vms
+          if !running_vms.nil?
+            begin
+              modify_hash = {}
+              modify_flag = true
 
-          if disk_req["ok"]
-            puts "Successfully updated disk space of vm #{hostname}."
+              running_vms.each do |vm|
+                modify_hash[vm] = Pooler.disk(verbose, url, vm, token, disk)
+              end
+
+              modify_hash.each do |hostname,status|
+                if status == false
+                  STDERR.puts "Could not update disk space on #{hostname}."
+                  modify_flag = false
+                end
+              end
+
+              if modify_flag
+                puts "Successfully made request to update disk space on all vms."
+              end
+            rescue Exception => e
+              STDERR.puts e
+              exit 1
+            end
           else
-            STDERR.puts "Could not modify given host #{hostname} at #{url}."
-            puts disk_req
-            exit 1
+            # single vm
+            begin
+              disk_req = Pooler.disk(verbose, url, hostname, token, disk)
+            rescue TokenError => e
+              STDERR.puts e
+              exit 1
+            end
+
+            if disk_req["ok"]
+              puts "Successfully made request to update disk space of vm #{hostname}."
+            else
+              STDERR.puts "Could not modify given host #{hostname} at #{url}."
+              puts disk_req
+              exit 1
+            end
           end
-        else
         end
       end
     end
