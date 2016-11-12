@@ -113,20 +113,14 @@ class Vmfloaty
         if active
           # list active vms
           begin
-            status = Auth.token_status(verbose, url, token)
+            running_vms = Utils.get_all_token_vms(verbose, url, token)
           rescue TokenError => e
             STDERR.puts e
             exit 1
+          rescue Exception => e
+            STDERR.puts e
+            exit 1
           end
-
-          # print vms
-          vms = status[token]['vms']
-          if vms.nil?
-            STDERR.puts "You have no running vms"
-            exit 0
-          end
-
-          running_vms = vms['running']
 
           if ! running_vms.nil?
             Utils.prettyprint_hosts(running_vms, verbose, url)
@@ -167,6 +161,7 @@ class Vmfloaty
       c.option '--lifetime INT', Integer, 'VM TTL (Integer, in hours)'
       c.option '--disk INT', Integer, 'Increases VM disk space (Integer, in gb)'
       c.option '--tags STRING', String, 'free-form VM tagging (json)'
+      c.option '--all', 'Modifies all vms acquired by a token'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
@@ -175,21 +170,28 @@ class Vmfloaty
         disk = options.disk
         tags = JSON.parse(options.tags) if options.tags
         token = options.token || config['token']
+        modify_all = options.all
 
         if lifetime || tags
-          begin
-            modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
-          rescue TokenError => e
-            STDERR.puts e
-            exit 1
-          end
+          # All Vs
+          if modify_all
 
-          if modify_req["ok"]
-            puts "Successfully modified vm #{hostname}."
           else
-            STDERR.puts "Could not modify given host #{hostname} at #{url}."
-            puts modify_req
-            exit 1
+            # Single Vm
+            begin
+              modify_req = Pooler.modify(verbose, url, hostname, token, lifetime, tags)
+            rescue TokenError => e
+              STDERR.puts e
+              exit 1
+            end
+
+            if modify_req["ok"]
+              puts "Successfully modified vm #{hostname}."
+            else
+              STDERR.puts "Could not modify given host #{hostname} at #{url}."
+              puts modify_req
+              exit 1
+            end
           end
         end
 
@@ -234,20 +236,14 @@ class Vmfloaty
         if delete_all
           # get vms with token
           begin
-            status = Auth.token_status(verbose, url, token)
+            running_vms = Utils.get_all_token_vms(verbose, url, token)
           rescue TokenError => e
             STDERR.puts e
             exit 1
+          rescue Exception => e
+            STDERR.puts e
+            exit 1
           end
-
-          # print vms
-          vms = status[token]['vms']
-          if vms.nil?
-            STDERR.puts "You have no running vms"
-            exit 0
-          end
-
-          running_vms = vms['running']
 
           if ! running_vms.nil?
             Utils.prettyprint_hosts(running_vms, verbose, url)

@@ -79,4 +79,17 @@ class Utils
       puts "- #{vm}.#{domain} (#{metadata.join(", ")})"
     end
   end
+
+  def self.get_all_token_vms(verbose, url, token)
+    # get vms with token
+    status = Auth.token_status(verbose, url, token)
+
+    vms = status[token]['vms']
+    if vms.nil?
+      raise "You have no running vms"
+    end
+
+    running_vms = vms['running']
+    running_vms
+  end
 end
