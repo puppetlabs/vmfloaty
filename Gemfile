@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'commander'
-gem 'faraday'
+gem 'faraday', '0.9.2'
 
 gem 'rspec'
 gem 'webmock', '1.21.0'
