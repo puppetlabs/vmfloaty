@@ -118,6 +118,10 @@ describe Pooler do
 
       expect(Pooler.delete(false, @vmpooler_url, ['fq6qlpjlsskycq6'], 'mytokenfile')).to eq @delete_response
     end
+
+    it "raises a token error if no token provided" do
+      expect{ Pooler.delete(false, @vmpooler_url, ['myfakehost'], nil) }.to raise_error(TokenError)
+    end
   end
 
   describe "#status" do

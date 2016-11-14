@@ -336,7 +336,14 @@ class Vmfloaty
           exit 1
         else
           hosts = hostnames.split(',')
-          Pooler.delete(verbose, url, hosts, token)
+          begin
+            Pooler.delete(verbose, url, hosts, token)
+          rescue TokenError => e
+            STDERR.puts e
+            exit 1
+          end
+
+          puts "Schedulered vmpooler to delete vms #{hosts}."
           exit 0
         end
       end
