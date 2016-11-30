@@ -2,6 +2,8 @@
 
 require 'rubygems'
 require 'commander'
+require 'colorize'
+require 'json'
 require 'pp'
 require 'vmfloaty/auth'
 require 'vmfloaty/pooler'
@@ -413,12 +415,39 @@ class Vmfloaty
       c.example 'Gets the current vmpooler status', 'floaty status --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
+      c.option '--json', 'Prints status in JSON format'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         url = options.url ||= config['url']
 
         status = Pooler.status(verbose, url)
-        pp status
+        message = status['status']['message']
+        pools = status['pools']
+
+        if options.json
+          pp status
+        else
+          pools.select! {|name,pool| pool['ready'] < pool['max']} if ! verbose
+
+          width = pools.keys.map(&:length).max
+          pools.each do |name,pool|
+            begin
+              max = pool['max']
+              ready = pool['ready']
+              pending = pool['pending']
+              missing = max - ready - pending
+              char = 'o'
+              puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
+            rescue => e
+              puts "#{name.ljust(width)} #{e.red}"
+            end
+          end
+
+          puts
+          puts message.colorize(status['status']['ok'] ? :default : :red)
+        end
+
+        exit status['status']['ok']
       end
     end
 
