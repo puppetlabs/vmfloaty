@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'vmfloaty'
-  s.version = '0.7.3'
+  s.version = '0.7.4'
   s.authors = ['Brian Cain']
   s.email = ['brian.cain@puppetlabs.com']
   s.license = 'Apache'
@@ -13,4 +13,5 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'commander', '~> 4.3'
   s.add_dependency 'faraday', '~> 0.9'
+  s.add_dependency 'colorize', '0.8.1'
 end
