@@ -92,4 +92,25 @@ class Utils
     running_vms = vms['running']
     running_vms
   end
+
+  def self.prettyprint_status(status, message, pools, verbose)
+    pools.select! {|name,pool| pool['ready'] < pool['max']} if ! verbose
+
+    width = pools.keys.map(&:length).max
+    pools.each do |name,pool|
+      begin
+        max = pool['max']
+        ready = pool['ready']
+        pending = pool['pending']
+        missing = max - ready - pending
+        char = 'o'
+        puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
+      rescue => e
+        puts "#{name.ljust(width)} #{e.red}"
+      end
+    end
+
+    puts
+    puts message.colorize(status['status']['ok'] ? :default : :red)
+  end
 end

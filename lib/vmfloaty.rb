@@ -427,24 +427,7 @@ class Vmfloaty
         if options.json
           pp status
         else
-          pools.select! {|name,pool| pool['ready'] < pool['max']} if ! verbose
-
-          width = pools.keys.map(&:length).max
-          pools.each do |name,pool|
-            begin
-              max = pool['max']
-              ready = pool['ready']
-              pending = pool['pending']
-              missing = max - ready - pending
-              char = 'o'
-              puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
-            rescue => e
-              puts "#{name.ljust(width)} #{e.red}"
-            end
-          end
-
-          puts
-          puts message.colorize(status['status']['ok'] ? :default : :red)
+          Utils.prettyprint_status(status, message, pools, verbose)
         end
 
         exit status['status']['ok']
@@ -464,6 +447,7 @@ class Vmfloaty
 
         summary = Pooler.summary(verbose, url)
         pp summary
+        exit 0
       end
     end
 
