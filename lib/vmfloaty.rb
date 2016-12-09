@@ -22,9 +22,9 @@ class Vmfloaty
     config = Conf.read_config
 
     command :get do |c|
-      c.syntax = 'floaty get os_type1=x ox_type2=y ...'
-      c.summary = 'Gets a vm or vms based on the os flag'
-      c.description = ''
+      c.syntax = 'floaty get os_type0 os_type1=x ox_type2=y [options]'
+      c.summary = 'Gets a vm or vms based on the os argument'
+      c.description = 'A command to retrieve vms from vmpooler. Can either be a single vm, or multiple with the `=` syntax.'
       c.example 'Gets a few vms', 'floaty get centos=3 debian --user brian --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--user STRING', String, 'User to authenticate with'
@@ -98,8 +98,8 @@ class Vmfloaty
 
     command :list do |c|
       c.syntax = 'floaty list [options]'
-      c.summary = 'Shows a list of available vms from the pooler'
-      c.description = ''
+      c.summary = 'Shows a list of available vms from the pooler or vms obtained with a token'
+      c.description = 'List will either show all vm templates available in vmpooler, or with the --active flag it will list vms obtained with a vmpooler token.'
       c.example 'Filter the list on centos', 'floaty list centos --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--active', 'Prints information about active vms for a given token'
@@ -136,9 +136,9 @@ class Vmfloaty
     end
 
     command :query do |c|
-      c.syntax = 'floaty query [hostname] [options]'
+      c.syntax = 'floaty query hostname [options]'
       c.summary = 'Get information about a given vm'
-      c.description = ''
+      c.description = 'Given a hostname from vmpooler, vmfloaty with query vmpooler to get various details about the vm.'
       c.example 'Get information about a sample host', 'floaty query hostname --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -153,9 +153,9 @@ class Vmfloaty
     end
 
     command :modify do |c|
-      c.syntax = 'floaty modify [hostname] [options]'
-      c.summary = 'Modify a vms tags, TTL, and disk space'
-      c.description = ''
+      c.syntax = 'floaty modify hostname [options]'
+      c.summary = 'Modify a vms tags, time to live, and disk space'
+      c.description = 'This command makes modifications to the virtual machines state in vmpooler. You can either append tags to the vm, increase how long it stays active for, or increase the amount of disk space.'
       c.example 'Modifies myhost1 to have a TTL of 12 hours and adds a custom tag', 'floaty modify myhost1 --lifetime 12 --url https://myurl --token mytokenstring --tags \'{"tag":"myvalue"}\''
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -277,9 +277,9 @@ class Vmfloaty
     end
 
     command :delete do |c|
-      c.syntax = 'floaty delete [hostname,...]'
+      c.syntax = 'floaty delete hostname,hostname2 [options]'
       c.summary = 'Schedules the deletion of a host or hosts'
-      c.description = ''
+      c.description = 'Given a comma separated list of hostnames, or --all for all vms, vmfloaty makes a request to vmpooler to schedule the deletion of those vms.'
       c.example 'Schedules the deletion of a host or hosts', 'floaty delete myhost1,myhost2 --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--all', 'Deletes all vms acquired by a token'
@@ -352,9 +352,9 @@ class Vmfloaty
     end
 
     command :snapshot do |c|
-      c.syntax = 'floaty snapshot [hostname] [options]'
+      c.syntax = 'floaty snapshot hostname [options]'
       c.summary = 'Takes a snapshot of a given vm'
-      c.description = ''
+      c.description = 'Will request a snapshot be taken of the given hostname in vmpooler. This command is known to take a while depending on how much load is on vmpooler.'
       c.example 'Takes a snapshot for a given host', 'floaty snapshot myvm.example.com --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -378,9 +378,9 @@ class Vmfloaty
     end
 
     command :revert do |c|
-      c.syntax = 'floaty revert [hostname] [snapshot] [options]'
+      c.syntax = 'floaty revert hostname snapshot [options]'
       c.summary = 'Reverts a vm to a specified snapshot'
-      c.description = ''
+      c.description = 'Given a snapshot SHA, vmfloaty will request a revert to vmpooler to go back to a previous snapshot.'
       c.example 'Reverts to a snapshot for a given host', 'floaty revert myvm.example.com n4eb4kdtp7rwv4x158366vd9jhac8btq --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -410,8 +410,8 @@ class Vmfloaty
 
     command :status do |c|
       c.syntax = 'floaty status [options]'
-      c.summary = 'Prints the status of vmpooler'
-      c.description = ''
+      c.summary = 'Prints the status of pools in vmpooler'
+      c.description = 'Makes a request to vmpooler to request the information about vm pools and how many are ready to be used, what pools are empty, etc.'
       c.example 'Gets the current vmpooler status', 'floaty status --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -436,8 +436,8 @@ class Vmfloaty
 
     command :summary do |c|
       c.syntax = 'floaty summary [options]'
-      c.summary = 'Prints the summary of vmpooler'
-      c.description = ''
+      c.summary = 'Prints a summary of vmpooler'
+      c.description = 'Gives a very detailed summary of information related to vmpooler.'
       c.example 'Gets the current day summary of vmpooler', 'floaty summary --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -452,9 +452,9 @@ class Vmfloaty
     end
 
     command :token do |c|
-      c.syntax = 'floaty token [get | delete | status] [token]'
-      c.summary = 'Retrieves or deletes a token'
-      c.description = ''
+      c.syntax = 'floaty token <get delete status> [options]'
+      c.summary = 'Retrieves or deletes a token or checks token status'
+      c.description = 'This command is used to manage your vmpooler token. Through the various options, you are able to get a new token, delete an existing token, and request a tokens status.'
       c.example 'Gets a token from the pooler', 'floaty token get'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
@@ -506,9 +506,9 @@ class Vmfloaty
     end
 
     command :ssh do |c|
-      c.syntax = 'floaty ssh os_type'
+      c.syntax = 'floaty ssh os_type [options]'
       c.summary = 'Grabs a single vm and sshs into it'
-      c.description = ''
+      c.description = 'This command simply will grab a vm template that was requested, and then ssh the user into the machine all at once.'
       c.example 'SSHs into a centos vm', 'floaty ssh centos7 --url https://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--url STRING', String, 'URL of vmpooler'
