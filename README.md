@@ -22,17 +22,17 @@ $ floaty --help
 
 ```
     delete   Schedules the deletion of a host or hosts
-    get      Gets a vm or vms based on the os flag
+    get      Gets a vm or vms based on the os argument
     help     Display global or [command] help documentation
-    list     Shows a list of available vms from the pooler
-    modify   Modify a vms tags and TTL
+    list     Shows a list of available vms from the pooler or vms obtained with a token
+    modify   Modify a vms tags, time to live, and disk space
     query    Get information about a given vm
     revert   Reverts a vm to a specified snapshot
     snapshot Takes a snapshot of a given vm
     ssh      Grabs a single vm and sshs into it
-    status   Prints the status of vmpooler
-    summary  Prints the summary of vmpooler
-    token    Retrieves or deletes a token
+    status   Prints the status of pools in vmpooler
+    summary  Prints a summary of vmpooler
+    token    Retrieves or deletes a token or checks token status
 
   GLOBAL OPTIONS:
 
@@ -59,7 +59,7 @@ This command will then ask you to log in. If successful, it will return a token 
 Grabbing vms:
 
 ```
-floaty get centos-7-x86_64=2 debian-7-x86_64=1 windows-10=3 --token mytokenstring --url https://vmpooler.mycompany.net/api/v1
+floaty get centos-7-x86_64=2 debian-7-x86_64 windows-10=3 --token mytokenstring --url https://vmpooler.mycompany.net/api/v1
 ```
 
 ### vmfloaty dotfile
