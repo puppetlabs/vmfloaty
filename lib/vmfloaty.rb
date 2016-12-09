@@ -31,12 +31,14 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of vmpooler'
       c.option '--token STRING', String, 'Token for vmpooler'
       c.option '--notoken', 'Makes a request without a token'
+      c.option '--force', 'Forces vmfloaty to get requested vms'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         token = options.token || config['token']
         user = options.user ||= config['user']
         url = options.url ||= config['url']
         no_token = options.notoken
+        force = options.force
 
         if args.empty?
           STDERR.puts "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
@@ -44,6 +46,14 @@ class Vmfloaty
         end
 
         os_types = Utils.generate_os_hash(args)
+
+        max_pool_request = 5
+        large_pool_requests = os_types.select{|k,v| v > max_pool_request}
+        if ! large_pool_requests.nil? and ! force
+          STDERR.puts "Requesting vms over #{max_pool_request} requires a --force flag."
+          STDERR.puts "Try again with `floaty get --force`"
+          exit 1
+        end
 
         unless os_types.empty?
           if no_token
