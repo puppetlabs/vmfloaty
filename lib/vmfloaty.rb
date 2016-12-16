@@ -382,7 +382,7 @@ class Vmfloaty
           exit 1
         end
 
-        puts "Snapshot pending. Use `floaty query host` to determine when snapshot is valid."
+        puts "Snapshot pending. Use `floaty query #{hostname}` to determine when snapshot is valid."
         pp snapshot_req
       end
     end
