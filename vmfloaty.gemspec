@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version = '0.7.8'
   s.authors = ['Brian Cain']
   s.email = ['brian.cain@puppetlabs.com']
-  s.license = 'Apache'
+  s.license = 'Apache-2.0'
   s.homepage = 'https://github.com/briancain/vmfloaty'
   s.description = 'A helper tool for vmpooler to help you stay afloat'
   s.summary = 'CLI application to interface with vmpooler'
