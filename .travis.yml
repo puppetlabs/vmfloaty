@@ -1,5 +1,5 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.0.0-p247
+  - 2.1
 script: rspec spec
