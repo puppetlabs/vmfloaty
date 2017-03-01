@@ -1,8 +1,3 @@
-
-class Version
-  @version = '0.7.8'
-
-  def self.get
-    @version
-  end
+class Vmfloaty
+  VERSION = '0.7.8'.freeze
 end

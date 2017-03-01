@@ -1,6 +1,9 @@
+$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+require 'vmfloaty/version'
+
 Gem::Specification.new do |s|
   s.name = 'vmfloaty'
-  s.version = '0.7.8'
+  s.version = Vmfloaty::VERSION
   s.authors = ['Brian Cain']
   s.email = ['brian.cain@puppetlabs.com']
   s.license = 'Apache-2.0'
