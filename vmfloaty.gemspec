@@ -7,11 +7,13 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/briancain/vmfloaty'
   s.description = 'A helper tool for vmpooler to help you stay afloat'
   s.summary = 'CLI application to interface with vmpooler'
+
   s.executables = ['floaty']
   s.files = Dir['LICENSE', 'README.md', 'lib/**/*']
   s.test_files = Dir['spec/**/*']
   s.require_path = 'lib'
-  s.add_dependency 'commander', '~> 4.3'
-  s.add_dependency 'faraday', '~> 0.9'
-  s.add_dependency 'colorize', '0.8.1'
+
+  s.add_dependency 'commander', '~> 4.3.0'
+  s.add_dependency 'faraday', '~> 0.9.0'
+  s.add_dependency 'colorize', '~> 0.8.1'
 end
