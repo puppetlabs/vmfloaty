@@ -30,7 +30,12 @@ class Ssh
       end
 
       hostname = "#{response[host_os]["hostname"]}.#{response["domain"]}"
-      cmd = "#{ssh_path} #{user}@#{hostname}"
+      ssh_options= ["-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null"]
+      if ENV['VMFLOATY_SSH_KEY']
+        ssh_options << "-i #{ENV['VMFLOATY_SSH_KEY']}"
+      end
+
+      cmd = "#{ssh_path} #{ssh_options.join(' ')} #{user}@#{hostname}"
 
       # TODO: Should this respect more ssh settings? Can it be configured
       #       by users ssh config and does this respect those settings?
