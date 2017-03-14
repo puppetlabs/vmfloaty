@@ -75,7 +75,7 @@ class Vmfloaty
                 STDERR.puts "You did not provide a user to authenticate to vmpooler with"
                 exit 1
               end
-              pass = password "Enter your password please:", '*'
+              pass = password "Enter your vmpooler password please:", '*'
               begin
                 token = Auth.get_token(verbose, url, user, pass)
               rescue TokenError => e
@@ -479,7 +479,7 @@ class Vmfloaty
 
         case action
         when "get"
-          pass = password "Enter your password please:", '*'
+          pass = password "Enter your vmpooler password please:", '*'
           begin
             token = Auth.get_token(verbose, url, user, pass)
           rescue TokenError => e
@@ -489,7 +489,7 @@ class Vmfloaty
           puts token
           exit 0
         when "delete"
-          pass = password "Enter your password please:", '*'
+          pass = password "Enter your vmpooler password please:", '*'
           begin
             result = Auth.delete_token(verbose, url, user, pass, token)
           rescue TokenError => e
@@ -545,7 +545,7 @@ class Vmfloaty
             STDERR.puts "You did not provide a user to authenticate to vmpooler with"
             exit 1
           end
-          pass = password "Enter your password please:", '*'
+          pass = password "Enter your vmpooler password please:", '*'
           begin
             token = Auth.get_token(verbose, url, user, pass)
           rescue TokenError => e
