@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.summary = 'CLI application to interface with vmpooler'
 
   s.executables = ['floaty']
-  s.files = Dir['LICENSE', 'README.md', 'lib/**/*']
+  s.files = Dir['LICENSE', 'README.md', 'lib/**/*', 'extras/**/*']
   s.test_files = Dir['spec/**/*']
   s.require_path = 'lib'
 

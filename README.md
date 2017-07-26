@@ -88,6 +88,22 @@ Here are the keys that vmfloaty currently supports:
 - url
   + String
 
+### Tab Completion
+
+There is a basic completion script for Bash (and possibly other shells) included with the gem in the [extras/completions](https://github.com/briancain/vmfloaty/blob/master/extras/completions) folder. To activate, that file simply needs to be sourced somehow in your shell profile.
+
+For convenience, the path to the completion script for the currently active version of the gem can be found with the `floaty completion` subcommand. This makes it easy to add the completion script to your profile like so:
+
+```bash
+source $(floaty completion --shell bash)
+```
+
+If you are running on macOS and use Homebrew's `bash-completion` formula, you can symlink the script to `/usr/local/etc/bash_completion.d/floaty` and it will be sourced automatically:
+
+```bash
+ln -s $(floaty completion --shell bash) /usr/local/etc/bash_completion.d/floaty
+```
+
 ## vmpooler API
 
 This cli tool uses the [vmpooler API](https://github.com/puppetlabs/vmpooler/blob/master/API.md).
