@@ -113,4 +113,12 @@ class Utils
     puts
     puts message.colorize(status['status']['ok'] ? :default : :red)
   end
+
+  # Adapted from ActiveSupport
+  def self.strip_heredoc(str)
+    min_indent = str.scan(/^[ \t]*(?=\S)/).min
+    min_indent_size = min_indent.nil? ? 0 : min_indent.size
+
+    str.gsub(/^[ \t]{#{min_indent_size}}/, '')
+  end
 end
