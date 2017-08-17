@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.name = 'vmfloaty'
   s.version = Vmfloaty::VERSION
   s.authors = ['Brian Cain']
-  s.email = ['brian.cain@puppetlabs.com']
+  s.email = ['brianccain@gmail.com']
   s.license = 'Apache-2.0'
   s.homepage = 'https://github.com/briancain/vmfloaty'
   s.description = 'A helper tool for vmpooler to help you stay afloat'
