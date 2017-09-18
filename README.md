@@ -66,14 +66,50 @@ floaty get centos-7-x86_64=2 debian-7-x86_64 windows-10=3 --token mytokenstring 
 
 If you do not wish to continuely specify various config options with the cli, you can have a dotfile in your home directory for some defaults. For example:
 
+#### Basic configuration
+
 ```yaml
-#file at /Users/me/.vmfloaty.yml
+# file at /Users/me/.vmfloaty.yml
 url: 'https://vmpooler.mycompany.net/api/v1'
 user: 'brian'
 token: 'tokenstring'
 ```
 
 Now vmfloaty will use those config files if no flag was specified.
+
+#### Configuring multiple services
+
+Most commands allow you to specify a `--service <servicename>` option to allow the use of multiple vmpooler instances. This can be useful when you'd rather not specify a `--url` or `--token` by hand for alternate services.
+
+To configure multiple services, you can set up your `~/.vmfloaty.yml` config file like this:
+
+```yaml
+# file at /Users/me/.vmfloaty.yml
+user: 'brian'
+services:
+  main:
+    url: 'https://vmpooler.mycompany.net/api/v1'
+    token: 'tokenstring'
+  alternate:
+    url: 'https://vmpooler.alternate.net/api/v1'
+    token: 'alternate-tokenstring'
+```
+
+vmfloaty will now use the top-level keys (just "user" above) as default values, and you will be able to specify a service name with `--service` when you run floaty. If you don't specify a service name, vmfloaty will first try to use the default, top-level values. If there is no default URL or token specified in the config file, vmfloaty will then use the first configured service as the default.
+
+Examples using the above configuration:
+
+List available vm types from our main vmpooler instance:
+```sh
+floaty list --service main --active
+# or, since the first configured service is the default:
+floaty list --active
+```
+
+List available vm types from our alternate vmpooler instance:
+```sh
+floaty list --service alternate --active
+```
 
 #### Valid config keys
 
@@ -87,6 +123,8 @@ Here are the keys that vmfloaty currently supports:
   + String
 - url
   + String
+- services
+  + Map
 
 ### Tab Completion
 

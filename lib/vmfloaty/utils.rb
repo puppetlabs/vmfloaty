@@ -121,4 +121,35 @@ class Utils
 
     str.gsub(/^[ \t]{#{min_indent_size}}/, '')
   end
+
+  def self.get_service_from_config(config, service_name = '')
+    # The top-level url, user, and token values are treated as defaults
+    service = {
+        'url' => config['url'],
+        'user' => config['user'],
+        'token' => config['token']
+    }
+
+    # If no named services have been configured, use the default values
+    return service unless config['services'] and config['services'].length
+
+    if not service_name.empty?
+      if config['services'][service_name]
+        # If the user specified a configured service name, use that service
+        # If values are missing, use the top-level defaults
+        service.merge!(config['services'][service_name]) { |key, default, value| value }
+      else
+        STDERR.puts "WARNING: Could not find a configured service matching the name #{service_name} at #{Dir.home}/.vmfloaty.yml"
+        return {}
+      end
+    else
+      # Otherwise, use the first service configured under the 'services' key
+      # If values are missing, use the top-level defaults
+      name, config_hash = config['services'].first
+      service.merge!(config_hash) { |key, default, value| value }
+    end
+
+    service
+  end
+
 end

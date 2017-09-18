@@ -16,6 +16,57 @@ describe Utils do
     end
   end
 
+  describe "#get_service_from_config" do
+    before :each do
+      @default_config = {
+          "url" => "http://default.url",
+          "user" => "first.last.default",
+          "token" => "default-token",
+      }
+      @services_config = {
+          "services" => {
+              "vm" => {
+                  "url" => "http://vmpooler.url",
+                  "user" => "first.last.vmpooler",
+                  "token" => "vmpooler-token"
+              },
+              "ns" => {
+                  "url" => "http://nspooler.url",
+                  "user" => "first.last.nspooler",
+                  "token" => "nspooler-token"
+              }
+          }
+      }
+    end
+
+    it "returns the first service configured under 'services' as the default if available" do
+      config = @default_config.merge @services_config
+      expect(Utils.get_service_from_config(config)).to include @services_config['services']['vm']
+    end
+
+    it "uses top-level service config values as defaults when service values are missing" do
+      config = {"services" => { "vm" => {}}}
+      config.merge! @default_config
+      expect(Utils.get_service_from_config(config, 'vm')).to include @default_config
+    end
+
+    it "allows selection by configured service key" do
+      config = @default_config.merge @services_config
+      expect(Utils.get_service_from_config(config, 'ns')).to include @services_config['services']['ns']
+    end
+
+    it "fills in missing values in configured services with the defaults" do
+      config = @default_config.merge @services_config
+      config["services"]['vm'].delete 'url'
+      expect(Utils.get_service_from_config(config, 'vm')['url']).to eq 'http://default.url'
+    end
+
+    it "returns an empty hash if passed a service name that hasn't been configured" do
+      config = @default_config.merge @services_config
+      expect(Utils.get_service_from_config(config, 'nil')).to eq({})
+    end
+  end
+
   describe "#generate_os_hash" do
     before :each do
       @host_hash = {"centos"=>1, "debian"=>5, "windows"=>1}
