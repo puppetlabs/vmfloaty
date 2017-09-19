@@ -15,3 +15,9 @@ class MissingParamError < StandardError
     super
   end
 end
+
+class ModifyError < StandardError
+  def initialize(msg="Could not modify VM")
+    super
+  end
+end

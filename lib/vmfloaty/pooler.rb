@@ -19,6 +19,15 @@ class Pooler
     hosts
   end
 
+  def self.list_active(verbose, url, token)
+    status = Auth.token_status(verbose, url, token)
+    vms = []
+    if status[token] && status[token]['vms']
+      vms = status[token]['vms']['running']
+    end
+    vms
+  end
+
   def self.retrieve(verbose, os_type, token, url)
     # NOTE:
     #   Developers can use `Utils.generate_os_hash` to
@@ -54,25 +63,28 @@ class Pooler
     end
   end
 
-  def self.modify(verbose, url, hostname, token, lifetime, tags)
+  def self.modify(verbose, url, hostname, token, modify_hash)
     if token.nil?
       raise TokenError, "Token provided was nil. Request cannot be made to modify vm"
     end
 
-    modify_body = {}
-    if lifetime
-      modify_body['lifetime'] = lifetime
-    end
-    if tags
-      modify_body['tags'] = tags
+    modify_hash.keys.each do |key|
+      unless [:tags, :lifetime, :disk].include? key
+        raise ModifyError, "Configured service type does not support modification of #{key}."
+      end
     end
 
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
+    if modify_hash['disk']
+      disk(verbose, url, hostname, token, modify_hash['disk'])
+      modify_hash.delete 'disk'
+    end
+
     response = conn.put do |req|
       req.url "vm/#{hostname}"
-      req.body = modify_body.to_json
+      req.body = modify_hash.to_json
     end
 
     res_body = JSON.parse(response.body)

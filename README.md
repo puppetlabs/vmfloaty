@@ -95,20 +95,46 @@ services:
     token: 'alternate-tokenstring'
 ```
 
-vmfloaty will now use the top-level keys (just "user" above) as default values, and you will be able to specify a service name with `--service` when you run floaty. If you don't specify a service name, vmfloaty will first try to use the default, top-level values. If there is no default URL or token specified in the config file, vmfloaty will then use the first configured service as the default.
+- If you run `floaty` without a `--service <name>` option, vmfloaty will use the first configured service by default.
+  With the config file above, the default would be to use the 'main' vmpooler instance.
+- If keys are missing for a configured service, vmfloaty will attempt to fall back to the top-level values.
+  With the config file above, 'brian' will be used as the username for both configured services, since neither specifies a username.
 
 Examples using the above configuration:
 
 List available vm types from our main vmpooler instance:
 ```sh
-floaty list --service main --active
-# or, since the first configured service is the default:
-floaty list --active
+floaty list --service main
+# or, since the first configured service is used by default:
+floaty list
 ```
 
 List available vm types from our alternate vmpooler instance:
 ```sh
-floaty list --service alternate --active
+floaty list --service alternate
+```
+
+#### Using a Nonstandard Pooler service
+
+vmfloaty is capable of working with Puppet's [nonstandard pooler](https://github.com/puppetlabs/nspooler) in addition to the default vmpooler API. To add a nonstandard pooler service, specify an API `type` value in your service configuration, like this:
+
+```yaml
+# file at /Users/me/.vmfloaty.yml
+user: 'brian'
+services:
+  vm:
+    url: 'https://vmpooler.mycompany.net/api/v1'
+    token: 'tokenstring'
+  ns:
+    url: 'https://nspooler.mycompany.net/api/v1'
+    token: 'nspooler-tokenstring'
+    type: 'nonstandard'  # <-- 'type' is necessary for any non-vmpooler service
+```
+
+With this configuration, you could list available OS types from nspooler like this:
+
+```sh
+floaty list --service ns
 ```
 
 #### Valid config keys

@@ -1,27 +1,62 @@
-
 require 'vmfloaty/pooler'
+require 'vmfloaty/nonstandard_pooler'
 
 class Utils
   # TODO: Takes the json response body from an HTTP GET
   # request and "pretty prints" it
-  def self.format_hosts(hostname_hash)
-    host_hash = {}
+  def self.format_hosts(response_body)
+    # vmpooler response body example when `floaty get` arguments are `ubuntu-1610-x86_64=2 centos-7-x86_64`:
+    # {
+    #   "ok": true,
+    #   "domain": "delivery.mycompany.net",
+    #   "ubuntu-1610-x86_64": {
+    #     "hostname": ["gdoy8q3nckuob0i", "ctnktsd0u11p9tm"]
+    #   },
+    #   "centos-7-x86_64": {
+    #     "hostname": "dlgietfmgeegry2"
+    #   }
+    # }
 
-    hostname_hash.delete("ok")
-    domain = hostname_hash["domain"]
-    hostname_hash.each do |type, hosts|
-      if type != "domain"
-        if hosts["hostname"].kind_of?(Array)
-          hosts["hostname"].map!{|host| host + "." + domain }
+    # nonstandard pooler response body example when `floaty get` arguments are `solaris-11-sparc=2 ubuntu-16.04-power8`:
+    # {
+    #   "ok": true,
+    #   "solaris-10-sparc": {
+    #     "hostname": ["sol10-10.delivery.mycompany.net", "sol10-11.delivery.mycompany.net"]
+    #   },
+    #   "ubuntu-16.04-power8": {
+    #     "hostname": "power8-ubuntu1604-6.delivery.mycompany.net"
+    #   }
+    # }
+
+    unless response_body.delete('ok')
+      raise ArgumentError, "Bad GET response passed to format_hosts: #{response_body.to_json}"
+    end
+
+    hostnames = []
+
+    # vmpooler reports the domain separately from the hostname
+    domain = response_body.delete('domain')
+
+    if domain
+      # vmpooler output
+      response_body.each do |os, hosts|
+        if hosts['hostname'].kind_of?(Array)
+          hosts['hostname'].map!{ |host| hostnames << host + "." + domain + " (#{os})"}
         else
-          hosts["hostname"] = hosts["hostname"] + "." + domain
+          hostnames << hosts["hostname"] + ".#{domain} (#{os})"
         end
-
-        host_hash[type] = hosts["hostname"]
+      end
+    else
+      response_body.each do |os, hosts|
+        if hosts['hostname'].kind_of?(Array)
+          hosts['hostname'].map!{ |host| hostnames << host + " (#{os})" }
+        else
+          hostnames << hosts['hostname'] + " (#{os})"
+        end
       end
     end
 
-    host_hash.to_json
+    hostnames.map { |hostname| puts "- #{hostname}" }
   end
 
   def self.generate_os_hash(os_args)
@@ -46,72 +81,84 @@ class Utils
     os_types
   end
 
-  def self.get_vm_info(hosts, verbose, url)
-    vms = {}
-    hosts.each do |host|
-      vm_info = Pooler.query(verbose, url, host)
-      if vm_info['ok']
-        vms[host] = {}
-        vms[host]['domain'] = vm_info[host]['domain']
-        vms[host]['template'] = vm_info[host]['template']
-        vms[host]['lifetime'] = vm_info[host]['lifetime']
-        vms[host]['running'] = vm_info[host]['running']
-        vms[host]['tags'] = vm_info[host]['tags']
-      end
-    end
-    vms
-  end
-
-  def self.prettyprint_hosts(hosts, verbose, url)
-    puts "Running VMs:"
-    vm_info = get_vm_info(hosts, verbose, url)
-    vm_info.each do |vm,info|
-      domain = info['domain']
-      template = info['template']
-      lifetime = info['lifetime']
-      running = info['running']
-      tags = info['tags'] || {}
-
-      tag_pairs = tags.map {|key,value| "#{key}: #{value}" }
-      duration = "#{running}/#{lifetime} hours"
-      metadata = [template, duration, *tag_pairs]
-
-      puts "- #{vm}.#{domain} (#{metadata.join(", ")})"
-    end
-  end
-
-  def self.get_all_token_vms(verbose, url, token)
-    # get vms with token
-    status = Auth.token_status(verbose, url, token)
-
-    vms = status[token]['vms']
-    if vms.nil?
-      raise "You have no running vms"
-    end
-
-    running_vms = vms['running']
-    running_vms
-  end
-
-  def self.prettyprint_status(status, message, pools, verbose)
-    pools.select! {|name,pool| pool['ready'] < pool['max']} if ! verbose
-
-    width = pools.keys.map(&:length).max
-    pools.each do |name,pool|
+  def self.pretty_print_hosts(verbose, service, hostnames = [])
+    hostnames = [hostnames] unless hostnames.is_a? Array
+    hostnames.each do |hostname|
       begin
-        max = pool['max']
-        ready = pool['ready']
-        pending = pool['pending']
-        missing = max - ready - pending
-        char = 'o'
-        puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
+        response = service.query(verbose, hostname)
+        host_data = response[hostname]
+
+        case service.type
+          when 'Pooler'
+            tag_pairs = []
+            unless host_data['tags'].nil?
+              tag_pairs = host_data['tags'].map {|key, value| "#{key}: #{value}"}
+            end
+            duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
+            metadata = [host_data['template'], duration, *tag_pairs]
+            puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(", ")})"
+          when 'NonstandardPooler'
+            line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
+            line += ", #{host_data['hours_left_on_reservation']}h remaining"
+            unless host_data['reserved_for_reason'].empty?
+              line += ", reason: #{host_data['reserved_for_reason']}"
+            end
+            line += ')'
+            puts line
+          else
+            raise "Invalid service type #{service.type}"
+        end
       rescue => e
-        puts "#{name.ljust(width)} #{e.red}"
+        STDERR.puts("Something went wrong while trying to gather information on #{hostname}:")
+        STDERR.puts(e)
       end
     end
+  end
 
-    puts
-    puts message.colorize(status['status']['ok'] ? :default : :red)
+  def self.pretty_print_status(verbose, service)
+    status_response = service.status(verbose)
+
+    case service.type
+      when 'Pooler'
+        message = status_response['status']['message']
+        pools = status_response['pools']
+        pools.select! {|_, pool| pool['ready'] < pool['max']} unless verbose
+
+        width = pools.keys.map(&:length).max
+        pools.each do |name, pool|
+          begin
+            max = pool['max']
+            ready = pool['ready']
+            pending = pool['pending']
+            missing = max - ready - pending
+            char = 'o'
+            puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
+          rescue => e
+            puts "#{name.ljust(width)} #{e.red}"
+          end
+        end
+        puts message.colorize(status_response['status']['ok'] ? :default : :red)
+      when 'NonstandardPooler'
+        pools = status_response
+        pools.delete 'ok'
+        pools.select! {|_, pool| pool['available_hosts'] < pool['total_hosts']} unless verbose
+
+        width = pools.keys.map(&:length).max
+        pools.each do |name, pool|
+          begin
+            max = pool['total_hosts']
+            ready = pool['available_hosts']
+            pending = pool['pending'] || 0 # not available for nspooler
+            missing = max - ready - pending
+            char = 'o'
+            puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
+          rescue => e
+            puts "#{name.ljust(width)} #{e.red}"
+          end
+        end
+      else
+        raise "Invalid service type #{service.type}"
+    end
   end
 
   # Adapted from ActiveSupport
@@ -122,34 +169,46 @@ class Utils
     str.gsub(/^[ \t]{#{min_indent_size}}/, '')
   end
 
-  def self.get_service_from_config(config, service_name = '')
-    # The top-level url, user, and token values are treated as defaults
-    service = {
-        'url' => config['url'],
-        'user' => config['user'],
-        'token' => config['token']
-    }
-
-    # If no named services have been configured, use the default values
-    return service unless config['services'] and config['services'].length
-
-    if not service_name.empty?
-      if config['services'][service_name]
-        # If the user specified a configured service name, use that service
-        # If values are missing, use the top-level defaults
-        service.merge!(config['services'][service_name]) { |key, default, value| value }
-      else
-        STDERR.puts "WARNING: Could not find a configured service matching the name #{service_name} at #{Dir.home}/.vmfloaty.yml"
-        return {}
-      end
+  def self.get_service_object(type = '')
+    nspooler_strings = ['ns', 'nspooler', 'nonstandard', 'nonstandard_pooler']
+    if nspooler_strings.include? type.downcase
+      NonstandardPooler
     else
-      # Otherwise, use the first service configured under the 'services' key
-      # If values are missing, use the top-level defaults
-      name, config_hash = config['services'].first
-      service.merge!(config_hash) { |key, default, value| value }
+      Pooler
     end
-
-    service
   end
 
+  def self.get_service_config(config, options)
+    # The top-level url, user, and token values in the config file are treated as defaults
+    service_config = {
+        'url' => config['url'],
+        'user' => config['user'],
+        'token' => config['token'],
+        'type' => config['type'] || 'vmpooler'
+    }
+
+    if config['services']
+      if options.service.nil?
+        # If the user did not specify a service name at the command line, but configured services do exist,
+        # use the first configured service in the list by default.
+        _, values = config['services'].first
+        service_config.merge! values
+      else
+        # If the user provided a service name at the command line, use that service if posible, or fail
+        if config['services'][options.service]
+          # If the service is configured but some values are missing, use the top-level defaults to fill them in
+          service_config.merge! config['services'][options.service]
+        else
+          raise ArgumentError, "Could not find a configured service named '#{options.service}' in ~/.vmfloaty.yml"
+        end
+      end
+    end
+
+    # Prioritize an explicitly specified url, user, or token if the user provided one
+    service_config['url'] = options.url unless options.url.nil?
+    service_config['token'] = options.token unless options.token.nil?
+    service_config['user'] = options.user unless options.user.nil?
+
+    service_config
+  end
 end
