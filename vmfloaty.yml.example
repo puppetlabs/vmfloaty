@@ -1,3 +1,8 @@
-url: 'http://vmpooler.example.com/api/v1'
 user: 'brian'
-token: 'token here'
+services:
+  main:
+    url: 'https://vmpooler.mycompany.net/api/v1'
+    token: 'tokenstring'
+  alternate:
+    url: 'https://vmpooler.alternate.net/api/v1'
+    token: 'alternate-tokenstring'
