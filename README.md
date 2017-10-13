@@ -68,14 +68,76 @@ floaty get centos-7-x86_64=2 debian-7-x86_64 windows-10=3 --token mytokenstring 
 
 If you do not wish to continuely specify various config options with the cli, you can have a dotfile in your home directory for some defaults. For example:
 
+#### Basic configuration
+
 ```yaml
-#file at /Users/me/.vmfloaty.yml
+# file at /Users/me/.vmfloaty.yml
 url: 'https://vmpooler.mycompany.net/api/v1'
 user: 'brian'
 token: 'tokenstring'
 ```
 
 Now vmfloaty will use those config files if no flag was specified.
+
+#### Configuring multiple services
+
+Most commands allow you to specify a `--service <servicename>` option to allow the use of multiple vmpooler instances. This can be useful when you'd rather not specify a `--url` or `--token` by hand for alternate services.
+
+To configure multiple services, you can set up your `~/.vmfloaty.yml` config file like this:
+
+```yaml
+# file at /Users/me/.vmfloaty.yml
+user: 'brian'
+services:
+  main:
+    url: 'https://vmpooler.mycompany.net/api/v1'
+    token: 'tokenstring'
+  alternate:
+    url: 'https://vmpooler.alternate.net/api/v1'
+    token: 'alternate-tokenstring'
+```
+
+- If you run `floaty` without a `--service <name>` option, vmfloaty will use the first configured service by default.
+  With the config file above, the default would be to use the 'main' vmpooler instance.
+- If keys are missing for a configured service, vmfloaty will attempt to fall back to the top-level values.
+  With the config file above, 'brian' will be used as the username for both configured services, since neither specifies a username.
+
+Examples using the above configuration:
+
+List available vm types from our main vmpooler instance:
+```sh
+floaty list --service main
+# or, since the first configured service is used by default:
+floaty list
+```
+
+List available vm types from our alternate vmpooler instance:
+```sh
+floaty list --service alternate
+```
+
+#### Using a Nonstandard Pooler service
+
+vmfloaty is capable of working with Puppet's [nonstandard pooler](https://github.com/puppetlabs/nspooler) in addition to the default vmpooler API. To add a nonstandard pooler service, specify an API `type` value in your service configuration, like this:
+
+```yaml
+# file at /Users/me/.vmfloaty.yml
+user: 'brian'
+services:
+  vm:
+    url: 'https://vmpooler.mycompany.net/api/v1'
+    token: 'tokenstring'
+  ns:
+    url: 'https://nspooler.mycompany.net/api/v1'
+    token: 'nspooler-tokenstring'
+    type: 'nonstandard'  # <-- 'type' is necessary for any non-vmpooler service
+```
+
+With this configuration, you could list available OS types from nspooler like this:
+
+```sh
+floaty list --service ns
+```
 
 #### Valid config keys
 
@@ -89,6 +151,8 @@ Here are the keys that vmfloaty currently supports:
   + String
 - url
   + String
+- services
+  + Map
 
 ### Tab Completion
 

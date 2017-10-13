@@ -1,18 +1,115 @@
 require 'spec_helper'
 require 'json'
+require 'commander/command'
 require_relative '../../lib/vmfloaty/utils'
 
 describe Utils do
 
-  describe "#get_hosts" do
+  describe "#format_hosts" do
     before :each do
-      @hostname_hash = "{\"ok\":true,\"debian-7-i386\":{\"hostname\":[\"sc0o4xqtodlul5w\",\"4m4dkhqiufnjmxy\"]},\"debian-7-x86_64\":{\"hostname\":\"zb91y9qbrbf6d3q\"},\"domain\":\"company.com\"}"
-      @format_hash = "{\"debian-7-i386\":[\"sc0o4xqtodlul5w.company.com\",\"4m4dkhqiufnjmxy.company.com\"],\"debian-7-x86_64\":\"zb91y9qbrbf6d3q.company.com\"}"
+      @vmpooler_response_body ='{
+         "ok": true,
+         "domain": "delivery.mycompany.net",
+         "ubuntu-1610-x86_64": {
+           "hostname": ["gdoy8q3nckuob0i", "ctnktsd0u11p9tm"]
+         },
+         "centos-7-x86_64": {
+           "hostname": "dlgietfmgeegry2"
+         }
+       }'
+      @nonstandard_response_body = '{
+         "ok": true,
+         "solaris-10-sparc": {
+           "hostname": ["sol10-10.delivery.mycompany.net", "sol10-11.delivery.mycompany.net"]
+         },
+         "ubuntu-16.04-power8": {
+           "hostname": "power8-ubuntu16.04-6.delivery.mycompany.net"
+         }
+       }'
+      @vmpooler_output = <<-OUT
+- gdoy8q3nckuob0i.delivery.mycompany.net (ubuntu-1610-x86_64)
+- ctnktsd0u11p9tm.delivery.mycompany.net (ubuntu-1610-x86_64)
+- dlgietfmgeegry2.delivery.mycompany.net (centos-7-x86_64)
+      OUT
+      @nonstandard_output = <<-OUT
+- sol10-10.delivery.mycompany.net (solaris-10-sparc)
+- sol10-11.delivery.mycompany.net (solaris-10-sparc)
+- power8-ubuntu16.04-6.delivery.mycompany.net (ubuntu-16.04-power8)
+      OUT
     end
 
-    it "formats a hostname hash into os, hostnames, and domain name" do
+    it "formats a hostname hash from vmpooler into a list that includes the os" do
+      expect { Utils.format_hosts(JSON.parse(@vmpooler_response_body)) }.to output( @vmpooler_output).to_stdout_from_any_process
+    end
 
-      expect(Utils.format_hosts(JSON.parse(@hostname_hash))).to eq @format_hash
+    it "formats a hostname hash from the nonstandard pooler into a list that includes the os" do
+      expect { Utils.format_hosts(JSON.parse(@nonstandard_response_body)) }.to output(@nonstandard_output).to_stdout_from_any_process
+    end
+  end
+
+  describe "#get_service_object" do
+    it "assumes vmpooler by default" do
+      expect(Utils.get_service_object).to be Pooler
+    end
+
+    it "uses nspooler when told explicitly" do
+      expect(Utils.get_service_object "nspooler").to be NonstandardPooler
+    end
+  end
+
+  describe "#get_service_config" do
+    before :each do
+      @default_config = {
+          "url" => "http://default.url",
+          "user" => "first.last.default",
+          "token" => "default-token",
+      }
+      @services_config = {
+          "services" => {
+              "vm" => {
+                  "url" => "http://vmpooler.url",
+                  "user" => "first.last.vmpooler",
+                  "token" => "vmpooler-token"
+              },
+              "ns" => {
+                  "url" => "http://nspooler.url",
+                  "user" => "first.last.nspooler",
+                  "token" => "nspooler-token"
+              }
+          }
+      }
+    end
+
+    it "returns the first service configured under 'services' as the default if available" do
+      config = @default_config.merge @services_config
+      options = MockOptions.new({})
+      expect(Utils.get_service_config(config, options)).to include @services_config['services']['vm']
+    end
+
+    it "allows selection by configured service key" do
+      config = @default_config.merge @services_config
+      options = MockOptions.new({:service => "ns"})
+      expect(Utils.get_service_config(config, options)).to include @services_config['services']['ns']
+    end
+
+    it "uses top-level service config values as defaults when configured service values are missing" do
+      config = @default_config.merge @services_config
+      config["services"]['vm'].delete 'url'
+      options = MockOptions.new({:service => "vm"})
+      expect(Utils.get_service_config(config, options)['url']).to eq 'http://default.url'
+    end
+
+    it "raises an error if passed a service name that hasn't been configured" do
+      config = @default_config.merge @services_config
+      options = MockOptions.new({:service => "none"})
+      expect { Utils.get_service_config(config, options) }.to raise_error ArgumentError
+    end
+
+    it "prioritizes values passed as command line options over configuration options" do
+      config = @default_config
+      options = MockOptions.new({:url => "http://alternate.url", :token => "alternate-token"})
+      expected = config.merge({"url" => "http://alternate.url", "token" => "alternate-token"})
+      expect(Utils.get_service_config(config, options)).to include expected
     end
   end
 
@@ -32,60 +129,97 @@ describe Utils do
     end
   end
 
-  describe '#prettyprint_hosts' do
-    let(:host_without_tags) { 'mcpy42eqjxli9g2' }
-    let(:host_with_tags)    { 'aiydvzpg23r415q' }
+  describe '#pretty_print_hosts' do
     let(:url)               { 'http://pooler.example.com' }
 
-    let(:host_info_with_tags) do
-      {
-        host_with_tags => {
-          "template" => "redhat-7-x86_64",
-          "lifetime" => 48,
-          "running"  => 7.67,
-          "tags"     => {
-            "user" => "bob",
-            "role" => "agent"
+    it 'prints a vmpooler output with host fqdn, template and duration info' do
+      hostname = 'mcpy42eqjxli9g2'
+      response_body = { hostname => {
+          'template' => 'ubuntu-1604-x86_64',
+          'lifetime' => 12,
+          'running'  => 9.66,
+          'state' => 'running',
+          'ip' => '127.0.0.1',
+          'domain'   => 'delivery.mycompany.net'
+      }}
+      output = "- mcpy42eqjxli9g2.delivery.mycompany.net (ubuntu-1604-x86_64, 9.66/12 hours)"
+
+      expect(Utils).to receive(:puts).with(output)
+
+      service = Service.new(MockOptions.new, {'url' => url})
+      allow(service).to receive(:query)
+                            .with(nil, hostname)
+                            .and_return(response_body)
+
+      Utils.pretty_print_hosts(nil, service, hostname)
+    end
+
+    it 'prints a vmpooler output with host fqdn, template, duration info, and tags when supplied' do
+      hostname = 'aiydvzpg23r415q'
+      response_body = { hostname => {
+          'template' => 'redhat-7-x86_64',
+          'lifetime' => 48,
+          'running'  => 7.67,
+          'state' => 'running',
+          'tags'     => {
+              'user' => 'bob',
+              'role' => 'agent'
           },
-          "domain" => "delivery.puppetlabs.net"
-        }
-      }
+          'ip' => '127.0.0.1',
+          'domain' => 'delivery.mycompany.net'
+      }}
+      output = "- aiydvzpg23r415q.delivery.mycompany.net (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)"
+
+      expect(Utils).to receive(:puts).with(output)
+
+      service = Service.new(MockOptions.new, {'url' => url})
+      allow(service).to receive(:query)
+                            .with(nil, hostname)
+                            .and_return(response_body)
+
+      Utils.pretty_print_hosts(nil, service, hostname)
     end
 
-    let(:host_info_without_tags) do
-      {
-        host_without_tags => {
-          "template" => "ubuntu-1604-x86_64",
-          "lifetime" => 12,
-          "running"  => 9.66,
-          "domain"   => "delivery.puppetlabs.net"
-        }
-      }
+    it 'prints a nonstandard pooler output with host, template, and time remaining' do
+      hostname = "sol11-9.delivery.mycompany.net"
+      response_body = { hostname => {
+          'fqdn' => hostname,
+          'os_triple' => 'solaris-11-sparc',
+          'reserved_by_user' => 'first.last',
+          'reserved_for_reason' => '',
+          'hours_left_on_reservation' => 35.89
+      }}
+      output = "- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining)"
+
+      expect(Utils).to receive(:puts).with(output)
+
+      service = Service.new(MockOptions.new, {'url' => url, 'type' => 'ns'})
+      allow(service).to receive(:query)
+                            .with(nil, hostname)
+                            .and_return(response_body)
+
+      Utils.pretty_print_hosts(nil, service, hostname)
     end
 
-    let(:output_with_tags)    { "- #{host_with_tags}.delivery.puppetlabs.net (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)" }
-    let(:output_without_tags) { "- #{host_without_tags}.delivery.puppetlabs.net (ubuntu-1604-x86_64, 9.66/12 hours)" }
+    it 'prints a nonstandard pooler output with host, template, time remaining, and reason' do
+      hostname = 'sol11-9.delivery.mycompany.net'
+      response_body = { hostname => {
+          'fqdn' => hostname,
+          'os_triple' => 'solaris-11-sparc',
+          'reserved_by_user' => 'first.last',
+          'reserved_for_reason' => 'testing',
+          'hours_left_on_reservation' => 35.89
+      }}
+      output = "- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining, reason: testing)"
 
-    it 'prints an output with host fqdn, template and duration info' do
-      allow(Utils).to receive(:get_vm_info).
-        with(host_without_tags, false, url).
-        and_return(host_info_without_tags)
+      expect(Utils).to receive(:puts).with(output)
 
-      expect(Utils).to receive(:puts).with("Running VMs:")
-      expect(Utils).to receive(:puts).with(output_without_tags)
+      service = Service.new(MockOptions.new, {'url' => url, 'type' => 'ns'})
+      allow(service).to receive(:query)
+                            .with(nil, hostname)
+                            .and_return(response_body)
 
-      Utils.prettyprint_hosts(host_without_tags, false, url)
-    end
-
-    it 'prints an output with host fqdn, template, duration info, and tags when supplied' do
-      allow(Utils).to receive(:get_vm_info).
-        with(host_with_tags, false, url).
-        and_return(host_info_with_tags)
-
-      expect(Utils).to receive(:puts).with("Running VMs:")
-      expect(Utils).to receive(:puts).with(output_with_tags)
-
-      Utils.prettyprint_hosts(host_with_tags, false, url)
+      Utils.pretty_print_hosts(nil, service, hostname)
     end
   end
 end

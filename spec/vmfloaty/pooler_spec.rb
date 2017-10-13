@@ -91,16 +91,17 @@ describe Pooler do
     end
 
     it "raises a TokenError if token provided is nil" do
-      expect{ Pooler.modify(false, @vmpooler_url, 'myfakehost', nil, 12, nil) }.to raise_error(TokenError)
+      expect{ Pooler.modify(false, @vmpooler_url, 'myfakehost', nil, {}) }.to raise_error(TokenError)
     end
 
     it "modifies the TTL of a vm" do
+      modify_hash = { :lifetime => 12 }
       stub_request(:put, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6").
-        with(:body => {"{\"lifetime\":12}"=>true},
+        with(:body => {'{"lifetime":12}'=>true},
              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Faraday v0.9.2', 'X-Auth-Token'=>'mytokenfile'}).
         to_return(:status => 200, :body => @modify_response_body_success, :headers => {})
 
-      modify_req = Pooler.modify(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', 12, nil)
+      modify_req = Pooler.modify(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', modify_hash)
       expect(modify_req["ok"]).to be true
     end
   end
