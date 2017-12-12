@@ -35,6 +35,7 @@ class Vmfloaty
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--notoken', 'Makes a request without a token'
       c.option '--force', 'Forces vmfloaty to get requested vms'
+      c.option '--json', 'Prints retrieved vms in JSON format'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
@@ -62,7 +63,12 @@ class Vmfloaty
         end
 
         response = service.retrieve(verbose, os_types, use_token)
-        puts Utils.format_hosts(response)
+        hosts = Utils.standardize_hostnames(response)
+        if options.json
+          puts JSON.pretty_generate(hosts)
+        else
+          puts Utils.format_host_output(hosts)
+        end
       end
     end
 

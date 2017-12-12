@@ -5,7 +5,7 @@ require_relative '../../lib/vmfloaty/utils'
 
 describe Utils do
 
-  describe "#format_hosts" do
+  describe "#standardize_hostnames" do
     before :each do
       @vmpooler_response_body ='{
          "ok": true,
@@ -26,24 +26,48 @@ describe Utils do
            "hostname": "power8-ubuntu16.04-6.delivery.mycompany.net"
          }
        }'
-      @vmpooler_output = <<-OUT
+    end
+
+    it "formats a result from vmpooler into a hash of os to hostnames" do
+      result = Utils.standardize_hostnames(JSON.parse(@vmpooler_response_body))
+      expect(result).to eq('centos-7-x86_64' => ["dlgietfmgeegry2.delivery.mycompany.net"],
+                           'ubuntu-1610-x86_64' => ["gdoy8q3nckuob0i.delivery.mycompany.net", "ctnktsd0u11p9tm.delivery.mycompany.net"])
+    end
+
+    it "formats a result from the nonstandard pooler into a hash of os to hostnames" do
+      result = Utils.standardize_hostnames(JSON.parse(@nonstandard_response_body))
+      expect(result).to eq('solaris-10-sparc' => ['sol10-10.delivery.mycompany.net', 'sol10-11.delivery.mycompany.net'],
+                           'ubuntu-16.04-power8' => ['power8-ubuntu16.04-6.delivery.mycompany.net'])
+    end
+  end
+
+  describe "#format_host_output" do
+    before :each do
+      @vmpooler_results = {
+        'centos-7-x86_64' => ["dlgietfmgeegry2.delivery.mycompany.net"],
+        'ubuntu-1610-x86_64' => ["gdoy8q3nckuob0i.delivery.mycompany.net", "ctnktsd0u11p9tm.delivery.mycompany.net"]
+      }
+      @nonstandard_results = {
+        'solaris-10-sparc' => ['sol10-10.delivery.mycompany.net', 'sol10-11.delivery.mycompany.net'],
+        'ubuntu-16.04-power8' => ['power8-ubuntu16.04-6.delivery.mycompany.net']
+      }
+      @vmpooler_output = <<-OUT.chomp
+- dlgietfmgeegry2.delivery.mycompany.net (centos-7-x86_64)
 - gdoy8q3nckuob0i.delivery.mycompany.net (ubuntu-1610-x86_64)
 - ctnktsd0u11p9tm.delivery.mycompany.net (ubuntu-1610-x86_64)
-- dlgietfmgeegry2.delivery.mycompany.net (centos-7-x86_64)
       OUT
-      @nonstandard_output = <<-OUT
+      @nonstandard_output = <<-OUT.chomp
 - sol10-10.delivery.mycompany.net (solaris-10-sparc)
 - sol10-11.delivery.mycompany.net (solaris-10-sparc)
 - power8-ubuntu16.04-6.delivery.mycompany.net (ubuntu-16.04-power8)
       OUT
     end
-
     it "formats a hostname hash from vmpooler into a list that includes the os" do
-      expect { Utils.format_hosts(JSON.parse(@vmpooler_response_body)) }.to output( @vmpooler_output).to_stdout_from_any_process
+      expect(Utils.format_host_output(@vmpooler_results)).to eq(@vmpooler_output)
     end
 
     it "formats a hostname hash from the nonstandard pooler into a list that includes the os" do
-      expect { Utils.format_hosts(JSON.parse(@nonstandard_response_body)) }.to output(@nonstandard_output).to_stdout_from_any_process
+      expect(Utils.format_host_output(@nonstandard_results)).to eq(@nonstandard_output)
     end
   end
 
