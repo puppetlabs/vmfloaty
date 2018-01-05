@@ -4,7 +4,7 @@ require 'vmfloaty/nonstandard_pooler'
 class Utils
   # TODO: Takes the json response body from an HTTP GET
   # request and "pretty prints" it
-  def self.format_hosts(response_body)
+  def self.standardize_hostnames(response_body)
     # vmpooler response body example when `floaty get` arguments are `ubuntu-1610-x86_64=2 centos-7-x86_64`:
     # {
     #   "ok": true,
@@ -32,31 +32,26 @@ class Utils
       raise ArgumentError, "Bad GET response passed to format_hosts: #{response_body.to_json}"
     end
 
-    hostnames = []
-
     # vmpooler reports the domain separately from the hostname
     domain = response_body.delete('domain')
 
-    if domain
-      # vmpooler output
-      response_body.each do |os, hosts|
-        if hosts['hostname'].kind_of?(Array)
-          hosts['hostname'].map!{ |host| hostnames << host + "." + domain + " (#{os})"}
-        else
-          hostnames << hosts["hostname"] + ".#{domain} (#{os})"
-        end
+    result = {}
+
+    response_body.each do |os, value|
+      hostnames = Array(value['hostname'])
+      if domain
+        hostnames.map! {|host| "#{host}.#{domain}"}
       end
-    else
-      response_body.each do |os, hosts|
-        if hosts['hostname'].kind_of?(Array)
-          hosts['hostname'].map!{ |host| hostnames << host + " (#{os})" }
-        else
-          hostnames << hosts['hostname'] + " (#{os})"
-        end
-      end
+      result[os] = hostnames
     end
 
-    hostnames.map { |hostname| puts "- #{hostname}" }
+    result
+  end
+
+  def self.format_host_output(hosts)
+    hosts.flat_map do |os, names|
+      names.map { |name| "- #{name} (#{os})" }
+    end.join("\n")
   end
 
   def self.generate_os_hash(os_args)
