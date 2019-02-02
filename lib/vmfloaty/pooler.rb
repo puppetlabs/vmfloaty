@@ -46,7 +46,7 @@ class Pooler
 
     os_string = os_string.chomp('+')
 
-    if os_string.size == 0
+    if os_string.empty?
       raise MissingParamError, 'No operating systems provided to obtain.'
     end
 
