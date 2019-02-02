@@ -15,7 +15,7 @@ class Http
       return true
     end
 
-    return false
+    false
   end
 
   def self.get_conn(verbose, url)
@@ -33,7 +33,7 @@ class Http
       faraday.adapter Faraday.default_adapter
     end
 
-    return conn
+    conn
   end
 
   def self.get_conn_with_auth(verbose, url, user, password)
@@ -56,7 +56,7 @@ class Http
       faraday.adapter Faraday.default_adapter
     end
 
-    return conn
+    conn
   end
 
 end

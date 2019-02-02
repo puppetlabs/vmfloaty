@@ -12,7 +12,7 @@ class Ssh
         return exe if File.executable?(exe) && !File.directory?(exe)
       }
     end
-    return nil
+    nil
   end
 
   def self.ssh(verbose, host_os, token, url)
@@ -40,6 +40,6 @@ class Ssh
     else
       raise "Could not get vm from vmpooler:\n #{response}"
     end
-    return
+    nil
   end
 end
