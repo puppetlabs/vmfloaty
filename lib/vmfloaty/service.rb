@@ -47,13 +47,13 @@ class Service
 
   def get_new_token(verbose)
     username = user
-    pass = Commander::UI::password 'Enter your pooler service password:', '*'
+    pass = Commander::UI.password 'Enter your pooler service password:', '*'
     Auth.get_token(verbose, url, username, pass)
   end
 
   def delete_token(verbose, token_value = @config['token'])
     username = user
-    pass = Commander::UI::password 'Enter your pooler service password:', '*'
+    pass = Commander::UI.password 'Enter your pooler service password:', '*'
     Auth.delete_token(verbose, url, username, pass, token_value)
   end
 
