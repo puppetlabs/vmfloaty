@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'vmfloaty/pooler'
 require 'vmfloaty/nonstandard_pooler'
 

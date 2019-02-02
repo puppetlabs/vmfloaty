@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'vmfloaty/utils'
 require 'vmfloaty/errors'

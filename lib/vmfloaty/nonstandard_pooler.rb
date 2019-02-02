@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'vmfloaty/errors'
 require 'vmfloaty/http'
 require 'faraday'
@@ -24,15 +26,7 @@ class NonstandardPooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    os_string = ''
-    os_type.each do |os, num|
-      num.times do |_i|
-        os_string << os + '+'
-      end
-    end
-
-    os_string = os_string.chomp('+')
-
+    os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
     if os_string.empty?
       raise MissingParamError, 'No operating systems provided to obtain.'
     end

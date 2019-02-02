@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'commander/user_interaction'
 require 'commander/command'
 require 'vmfloaty/utils'

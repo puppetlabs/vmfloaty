@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AuthError < StandardError
   def initialize(msg='Could not authenticate to pooler')
     super
