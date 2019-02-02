@@ -37,24 +37,24 @@ class Pooler
       conn.headers['X-AUTH-TOKEN'] = token
     end
 
-    os_string = ""
+    os_string = ''
     os_type.each do |os,num|
       num.times do |i|
-        os_string << os+"+"
+        os_string << os+'+'
       end
     end
 
-    os_string = os_string.chomp("+")
+    os_string = os_string.chomp('+')
 
     if os_string.size == 0
-      raise MissingParamError, "No operating systems provided to obtain."
+      raise MissingParamError, 'No operating systems provided to obtain.'
     end
 
     response = conn.post "vm/#{os_string}"
 
     res_body = JSON.parse(response.body)
 
-    if res_body["ok"]
+    if res_body['ok']
       res_body
     elsif response.status == 401
       raise AuthError, "HTTP #{response.status}: The token provided could not authenticate to the pooler.\n#{res_body}"
@@ -65,7 +65,7 @@ class Pooler
 
   def self.modify(verbose, url, hostname, token, modify_hash)
     if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to modify vm"
+      raise TokenError, 'Token provided was nil. Request cannot be made to modify vm'
     end
 
     modify_hash.keys.each do |key|
@@ -93,7 +93,7 @@ class Pooler
 
   def self.disk(verbose, url, hostname, token, disk)
     if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to modify vm"
+      raise TokenError, 'Token provided was nil. Request cannot be made to modify vm'
     end
 
     conn = Http.get_conn(verbose, url)
@@ -107,7 +107,7 @@ class Pooler
 
   def self.delete(verbose, url, hosts, token)
     if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to delete vm"
+      raise TokenError, 'Token provided was nil. Request cannot be made to delete vm'
     end
 
     conn = Http.get_conn(verbose, url)
@@ -154,7 +154,7 @@ class Pooler
 
   def self.snapshot(verbose, url, hostname, token)
     if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to snapshot vm"
+      raise TokenError, 'Token provided was nil. Request cannot be made to snapshot vm'
     end
 
     conn = Http.get_conn(verbose, url)
@@ -167,7 +167,7 @@ class Pooler
 
   def self.revert(verbose, url, hostname, token, snapshot_sha)
     if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to revert vm"
+      raise TokenError, 'Token provided was nil. Request cannot be made to revert vm'
     end
 
     conn = Http.get_conn(verbose, url)

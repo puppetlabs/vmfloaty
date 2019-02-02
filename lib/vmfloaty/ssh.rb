@@ -14,19 +14,19 @@ class Ssh
   end
 
   def self.ssh(verbose, host_os, token, url)
-    ssh_path = which("ssh")
+    ssh_path = which('ssh')
     if !ssh_path
-      raise "Could not determine path to ssh"
+      raise 'Could not determine path to ssh'
     end
     os_types = {}
     os_types[host_os] = 1
 
     response = Pooler.retrieve(verbose, os_types, token, url)
-    if response["ok"] == true
+    if response['ok'] == true
       if host_os =~ /win/
-        user = "Administrator"
+        user = 'Administrator'
       else
-        user = "root"
+        user = 'root'
       end
 
       hostname = "#{response[host_os]["hostname"]}.#{response["domain"]}"

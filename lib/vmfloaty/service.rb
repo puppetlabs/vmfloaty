@@ -31,7 +31,7 @@ class Service
 
   def user
     unless @config['user']
-      puts "Enter your pooler service username:"
+      puts 'Enter your pooler service username:'
       @config['user'] = STDIN.gets.chomp
     end
     @config['user']
@@ -39,7 +39,7 @@ class Service
 
   def token
     unless @config['token']
-      puts "No token found. Retrieving a token..."
+      puts 'No token found. Retrieving a token...'
       @config['token'] = get_new_token(nil)
     end
     @config['token']
@@ -47,13 +47,13 @@ class Service
 
   def get_new_token(verbose)
     username = user
-    pass = Commander::UI::password "Enter your pooler service password:", '*'
+    pass = Commander::UI::password 'Enter your pooler service password:', '*'
     Auth.get_token(verbose, url, username, pass)
   end
 
   def delete_token(verbose, token_value = @config['token'])
     username = user
-    pass = Commander::UI::password "Enter your pooler service password:", '*'
+    pass = Commander::UI::password 'Enter your pooler service password:', '*'
     Auth.delete_token(verbose, url, username, pass, token_value)
   end
 
@@ -91,9 +91,9 @@ class Service
 
   def pretty_print_running(verbose, hostnames = [])
     if hostnames.empty?
-      puts "You have no running VMs."
+      puts 'You have no running VMs.'
     else
-      puts "Running VMs:"
+      puts 'Running VMs:'
       @service_object.pretty_print_hosts(verbose, hostnames, url)
     end
   end

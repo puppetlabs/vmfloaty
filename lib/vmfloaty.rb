@@ -43,7 +43,7 @@ class Vmfloaty
         force = options.force
 
         if args.empty?
-          STDERR.puts "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
+          STDERR.puts 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
@@ -53,12 +53,12 @@ class Vmfloaty
         large_pool_requests = os_types.select{|_,v| v > max_pool_request}
         if ! large_pool_requests.empty? and ! force
           STDERR.puts "Requesting vms over #{max_pool_request} requires a --force flag."
-          STDERR.puts "Try again with `floaty get --force`"
+          STDERR.puts 'Try again with `floaty get --force`'
           exit 1
         end
 
         if os_types.empty?
-          STDERR.puts "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
+          STDERR.puts 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
@@ -144,10 +144,10 @@ class Vmfloaty
         modify_all = options.all
 
         if hostname.nil? and !modify_all
-          STDERR.puts "ERROR: Provide a hostname or specify --all."
+          STDERR.puts 'ERROR: Provide a hostname or specify --all.'
           exit 1
         end
-        running_vms = modify_all ? service.list_active(verbose) : hostname.split(",")
+        running_vms = modify_all ? service.list_active(verbose) : hostname.split(',')
 
         tags = options.tags ? JSON.parse(options.tags) : nil
         modify_hash = {
@@ -171,11 +171,11 @@ class Vmfloaty
           end
           if ok
             if modify_all
-              puts "Successfully modified all VMs."
+              puts 'Successfully modified all VMs.'
             else
               puts "Successfully modified VM #{hostname}."
             end
-            puts "Use `floaty list --active` to see the results."
+            puts 'Use `floaty list --active` to see the results.'
           end
         end
       end
@@ -205,7 +205,7 @@ class Vmfloaty
         if delete_all
           running_vms = service.list_active(verbose)
           if running_vms.empty?
-            STDERR.puts "You have no running VMs."
+            STDERR.puts 'You have no running VMs.'
           else
             Utils.pretty_print_hosts(verbose, service, running_vms)
             # Confirm deletion
@@ -236,7 +236,7 @@ class Vmfloaty
             end
           end
         else
-          STDERR.puts "You did not provide any hosts to delete"
+          STDERR.puts 'You did not provide any hosts to delete'
           exit 1
         end
 
@@ -417,7 +417,7 @@ class Vmfloaty
         use_token = !options.notoken
 
         if args.empty?
-          STDERR.puts "No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs."
+          STDERR.puts 'No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs.'
           exit 1
         end
 

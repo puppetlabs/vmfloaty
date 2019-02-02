@@ -65,7 +65,7 @@ class Utils
     #   ...]
     os_types = {}
     os_args.each do |arg|
-      os_arr = arg.split("=")
+      os_arr = arg.split('=')
       if os_arr.size == 1
         # assume they didn't specify an = sign if split returns 1 size
         os_types[os_arr[0]] = 1
