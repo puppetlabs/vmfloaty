@@ -52,7 +52,7 @@ class Vmfloaty
 
         max_pool_request = 5
         large_pool_requests = os_types.select{|_,v| v > max_pool_request}
-        if ! large_pool_requests.empty? and ! force
+        if ! large_pool_requests.empty? && ! force
           STDERR.puts "Requesting vms over #{max_pool_request} requires a --force flag."
           STDERR.puts 'Try again with `floaty get --force`'
           exit 1
@@ -144,7 +144,7 @@ class Vmfloaty
         hostname = args[0]
         modify_all = options.all
 
-        if hostname.nil? and !modify_all
+        if hostname.nil? && !modify_all
           STDERR.puts 'ERROR: Provide a hostname or specify --all.'
           exit 1
         end
