@@ -179,7 +179,7 @@ class Utils
         'url' => config['url'],
         'user' => config['user'],
         'token' => config['token'],
-        'type' => config['type'] || 'vmpooler'
+        'type' => config['type'] || 'vmpooler',
     }
 
     if config['services']

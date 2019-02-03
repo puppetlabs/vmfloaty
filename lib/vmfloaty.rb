@@ -155,7 +155,7 @@ class Vmfloaty
             :lifetime => options.lifetime,
             :disk => options.disk,
             :tags => tags,
-            :reason => options.reason
+            :reason => options.reason,
         }
         modify_hash.delete_if { |_, value| value.nil? }
 

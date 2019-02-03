@@ -60,7 +60,7 @@ describe Service do
     it 'reports the status of a token' do
       config = {
           'user' => 'first.last',
-          'url' => 'http://default.url'
+          'url' => 'http://default.url',
       }
       options = MockOptions.new('token' => 'token-value')
       service = Service.new(options, config)
@@ -69,7 +69,7 @@ describe Service do
           'user' => config['user'],
           'created' => '2017-09-22 02:04:18 +0000',
           'last_accessed' => '2017-09-22 02:04:28 +0000',
-          'reserved_hosts' => []
+          'reserved_hosts' => [],
       }
       allow(Auth).to(receive(:token_status)
                          .with(nil, config['url'], 'token-value')
