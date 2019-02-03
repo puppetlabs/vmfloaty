@@ -127,7 +127,7 @@ class Utils
             pending = pool['pending']
             missing = max - ready - pending
             char = 'o'
-            puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
+            puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
           rescue StandardError => e
             puts "#{name.ljust(width)} #{e.red}"
           end
@@ -146,7 +146,7 @@ class Utils
             pending = pool['pending'] || 0 # not available for nspooler
             missing = max - ready - pending
             char = 'o'
-            puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
+            puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
           rescue StandardError => e
             puts "#{name.ljust(width)} #{e.red}"
           end

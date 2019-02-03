@@ -9,7 +9,7 @@ describe Utils do
 
   describe '#standardize_hostnames' do
     before :each do
-      @vmpooler_response_body ='{
+      @vmpooler_response_body = '{
          "ok": true,
          "domain": "delivery.mycompany.net",
          "ubuntu-1610-x86_64": {
@@ -141,7 +141,7 @@ describe Utils do
 
   describe '#generate_os_hash' do
     before :each do
-      @host_hash = {'centos'=>1, 'debian'=>5, 'windows'=>1}
+      @host_hash = {'centos' => 1, 'debian' => 5, 'windows' => 1}
     end
 
     it 'takes an array of os arguments and returns a formatted hash' do
