@@ -44,7 +44,7 @@ describe Service do
 
   describe '#delete_token' do
     it 'deletes a token' do
-      service = Service.new(MockOptions.new,'user' => 'first.last', 'url' => 'http://default.url')
+      service = Service.new(MockOptions.new, 'user' => 'first.last', 'url' => 'http://default.url')
       allow(Commander::UI).to(receive(:password)
                                   .with('Enter your pooler service password:', '*')
                                   .and_return('hunter2'))

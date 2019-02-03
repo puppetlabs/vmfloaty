@@ -153,7 +153,7 @@ BODY
     end
 
     it 'retrieves a multiple vms with a token' do
-      stub_request(:post,"#{@nspooler_url}/host/aix-7.1-power+solaris-10-sparc+solaris-10-sparc")
+      stub_request(:post, "#{@nspooler_url}/host/aix-7.1-power+solaris-10-sparc+solaris-10-sparc")
         .with(:headers => @post_request_headers)
         .to_return(:status => 200, :body => @retrieve_response_body_many, :headers => {})
 

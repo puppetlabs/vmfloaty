@@ -51,7 +51,7 @@ class Vmfloaty
         os_types = Utils.generate_os_hash(args)
 
         max_pool_request = 5
-        large_pool_requests = os_types.select { |_,v| v > max_pool_request }
+        large_pool_requests = os_types.select { |_, v| v > max_pool_request }
         if !large_pool_requests.empty? && !force
           STDERR.puts "Requesting vms over #{max_pool_request} requires a --force flag."
           STDERR.puts 'Try again with `floaty get --force`'
