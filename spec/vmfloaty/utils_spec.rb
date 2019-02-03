@@ -155,7 +155,7 @@ describe Utils do
   end
 
   describe '#pretty_print_hosts' do
-    let(:url)               { 'http://pooler.example.com' }
+    let(:url) { 'http://pooler.example.com' }
 
     it 'prints a vmpooler output with host fqdn, template and duration info' do
       hostname = 'mcpy42eqjxli9g2'

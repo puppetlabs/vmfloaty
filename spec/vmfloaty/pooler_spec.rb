@@ -213,7 +213,7 @@ describe Pooler do
 
     it 'makes a request to extend disk space of a vm' do
       stub_request(:post, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6/disk/12")
-        .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length' => '0', 'User-Agent' => 'Faraday v0.9.2', 'X-Auth-Token' => 'mytokenfile' }).  to_return(:status => 200, :body => @disk_response_body_success, :headers => {})
+        .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length' => '0', 'User-Agent' => 'Faraday v0.9.2', 'X-Auth-Token' => 'mytokenfile' }). to_return(:status => 200, :body => @disk_response_body_success, :headers => {})
 
       disk_req = Pooler.disk(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', 12)
       expect(disk_req['ok']).to be true
