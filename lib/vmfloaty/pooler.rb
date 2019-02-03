@@ -6,7 +6,7 @@ require 'json'
 require 'vmfloaty/errors'
 
 class Pooler
-  def self.list(verbose, url, os_filter=nil)
+  def self.list(verbose, url, os_filter = nil)
     conn = Http.get_conn(verbose, url)
 
     response = conn.get 'vm'
