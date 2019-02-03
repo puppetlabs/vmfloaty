@@ -71,15 +71,15 @@ class NonstandardPooler
     response.body.empty? ? {} : JSON.parse(response.body)
   end
 
-  def self.disk(verbose, url, hostname, token, disk)
+  def self.disk(_verbose, _url, _hostname, _token, _disk)
     raise ModifyError, 'Configured service type does not support modification of disk space'
   end
 
-  def self.snapshot(verbose, url, hostname, token)
+  def self.snapshot(_verbose, _url, _hostname, _token)
     raise ModifyError, 'Configured service type does not support snapshots'
   end
 
-  def self.revert(verbose, url, hostname, token, snapshot_sha)
+  def self.revert(_verbose, _url, _hostname, _token, _snapshot_sha)
     raise ModifyError, 'Configured service type does not support snapshots'
   end
 
