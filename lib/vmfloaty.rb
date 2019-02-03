@@ -431,13 +431,13 @@ class Vmfloaty
     command :completion do |c|
       c.syntax = 'floaty completion [options]'
       c.summary = 'Outputs path to completion script'
-      c.description = Utils.strip_heredoc(<<-EOF)
+      c.description = Utils.strip_heredoc(<<-DESCRIPTION)
         Outputs path to a completion script for the specified shell (or 'bash' if not specified). This makes it easy to add the completion script to your profile:
 
           source $(floaty completion --shell bash)
 
         This subcommand will exit non-zero with an error message if no completion script is available for the requested shell.
-      EOF
+      DESCRIPTION
       c.example 'Gets path to bash tab completion script', 'floaty completion --shell bash'
       c.option '--shell STRING', String, 'Shell to request completion script for'
       c.action do |_, options|
