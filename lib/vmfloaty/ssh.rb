@@ -17,11 +17,13 @@ class Ssh
   def self.ssh(verbose, host_os, token, url)
     ssh_path = which('ssh')
     raise 'Could not determine path to ssh' unless ssh_path
+
     os_types = {}
     os_types[host_os] = 1
 
     response = Pooler.retrieve(verbose, os_types, token, url)
     raise "Could not get vm from vmpooler:\n #{response}" unless response['ok']
+
     user = host_os =~ /win/ ? 'Administrator' : 'root'
 
     hostname = "#{response[host_os]['hostname']}.#{response['domain']}"

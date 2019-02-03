@@ -13,6 +13,7 @@ class Auth
 
     res_body = JSON.parse(resp.body)
     return res_body['token'] if res_body['ok']
+
     raise TokenError, "HTTP #{resp.status}: There was a problem requesting a token:\n#{res_body}"
   end
 
@@ -24,6 +25,7 @@ class Auth
     response = conn.delete "token/#{token}"
     res_body = JSON.parse(response.body)
     return res_body if res_body['ok']
+
     raise TokenError, "HTTP #{response.status}: There was a problem deleting a token:\n#{res_body}"
   end
 
@@ -36,6 +38,7 @@ class Auth
     res_body = JSON.parse(response.body)
 
     return res_body if res_body['ok']
+
     raise TokenError, "HTTP #{response.status}: There was a problem getting the status of a token:\n#{res_body}"
   end
 end
