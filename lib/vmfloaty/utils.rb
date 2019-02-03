@@ -103,7 +103,7 @@ class Utils
           else
             raise "Invalid service type #{service.type}"
         end
-      rescue => e
+      rescue StandardError => e
         STDERR.puts("Something went wrong while trying to gather information on #{hostname}:")
         STDERR.puts(e)
       end
@@ -128,7 +128,7 @@ class Utils
             missing = max - ready - pending
             char = 'o'
             puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
-          rescue => e
+          rescue StandardError => e
             puts "#{name.ljust(width)} #{e.red}"
           end
         end
@@ -147,7 +147,7 @@ class Utils
             missing = max - ready - pending
             char = 'o'
             puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
-          rescue => e
+          rescue StandardError => e
             puts "#{name.ljust(width)} #{e.red}"
           end
         end
