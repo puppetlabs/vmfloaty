@@ -165,7 +165,7 @@ class Utils
   end
 
   def self.get_service_object(type = '')
-    nspooler_strings = ['ns', 'nspooler', 'nonstandard', 'nonstandard_pooler']
+    nspooler_strings = %w[ns nspooler nonstandard nonstandard_pooler]
     if nspooler_strings.include? type.downcase
       NonstandardPooler
     else

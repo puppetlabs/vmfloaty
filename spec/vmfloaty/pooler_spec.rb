@@ -81,7 +81,7 @@ describe Pooler do
       expect(vm_req).to be_an_instance_of Hash
       expect(vm_req['ok']).to equal true
       expect(vm_req['debian-7-i386']['hostname']).to be_an_instance_of Array
-      expect(vm_req['debian-7-i386']['hostname']).to eq ['sc0o4xqtodlul5w', '4m4dkhqiufnjmxy']
+      expect(vm_req['debian-7-i386']['hostname']).to eq %w[sc0o4xqtodlul5w 4m4dkhqiufnjmxy]
       expect(vm_req['centos-7-x86_64']['hostname']).to eq 'zb91y9qbrbf6d3q'
     end
   end
