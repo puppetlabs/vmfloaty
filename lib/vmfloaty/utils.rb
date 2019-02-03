@@ -176,10 +176,10 @@ class Utils
   def self.get_service_config(config, options)
     # The top-level url, user, and token values in the config file are treated as defaults
     service_config = {
-        'url' => config['url'],
-        'user' => config['user'],
-        'token' => config['token'],
-        'type' => config['type'] || 'vmpooler',
+      'url'   => config['url'],
+      'user'  => config['user'],
+      'token' => config['token'],
+      'type'  => config['type'] || 'vmpooler',
     }
 
     if config['services']

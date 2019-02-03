@@ -152,10 +152,10 @@ class Vmfloaty
 
         tags = options.tags ? JSON.parse(options.tags) : nil
         modify_hash = {
-            :lifetime => options.lifetime,
-            :disk => options.disk,
-            :tags => tags,
-            :reason => options.reason,
+          :lifetime => options.lifetime,
+          :disk     => options.disk,
+          :tags     => tags,
+          :reason   => options.reason,
         }
         modify_hash.delete_if { |_, value| value.nil? }
 

@@ -12,3 +12,7 @@ Style/TrailingCommaInArrayLiteral:
     EnforcedStyleForMultiline: comma
 Style/TrailingCommaInArguments:
     EnforcedStyleForMultiline: comma
+Layout/AlignHash:
+    EnforcedHashRocketStyle: table
+Layout/IndentHash:
+    EnforcedStyle: consistent
