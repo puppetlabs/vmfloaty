@@ -1,4 +1,5 @@
----
+inherit_from: .rubocop_todo.yml
+
 AllCops:
     TargetRubyVersion: 2.4
 
@@ -12,6 +13,7 @@ Style/TrailingCommaInArrayLiteral:
     EnforcedStyleForMultiline: comma
 Style/TrailingCommaInArguments:
     EnforcedStyleForMultiline: comma
+
 Layout/AlignHash:
     EnforcedHashRocketStyle: table
 Layout/IndentHash:
