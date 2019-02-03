@@ -174,8 +174,8 @@ describe Utils do
 
       service = Service.new(MockOptions.new, 'url' => url)
       allow(service).to receive(:query)
-                            .with(nil, hostname)
-                            .and_return(response_body)
+        .with(nil, hostname)
+        .and_return(response_body)
 
       Utils.pretty_print_hosts(nil, service, hostname)
     end
@@ -200,8 +200,8 @@ describe Utils do
 
       service = Service.new(MockOptions.new, 'url' => url)
       allow(service).to receive(:query)
-                            .with(nil, hostname)
-                            .and_return(response_body)
+        .with(nil, hostname)
+        .and_return(response_body)
 
       Utils.pretty_print_hosts(nil, service, hostname)
     end
@@ -221,8 +221,8 @@ describe Utils do
 
       service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
       allow(service).to receive(:query)
-                            .with(nil, hostname)
-                            .and_return(response_body)
+        .with(nil, hostname)
+        .and_return(response_body)
 
       Utils.pretty_print_hosts(nil, service, hostname)
     end
@@ -242,8 +242,8 @@ describe Utils do
 
       service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
       allow(service).to receive(:query)
-                            .with(nil, hostname)
-                            .and_return(response_body)
+        .with(nil, hostname)
+        .and_return(response_body)
 
       Utils.pretty_print_hosts(nil, service, hostname)
     end

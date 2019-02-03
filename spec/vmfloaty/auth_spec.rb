@@ -16,8 +16,8 @@ describe Pooler do
 
     it 'returns a token from vmpooler' do
       stub_request(:post, 'https://first.last:password@vmpooler.example.com/token')
-                 .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length' => '0', 'User-Agent' => 'Faraday v0.9.2' })
-                 .to_return(:status => 200, :body => @get_token_response, :headers => {})
+        .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length' => '0', 'User-Agent' => 'Faraday v0.9.2' })
+        .to_return(:status => 200, :body => @get_token_response, :headers => {})
 
       token = Auth.get_token(false, @vmpooler_url, 'first.last', 'password')
       expect(token).to eq @token
@@ -25,8 +25,8 @@ describe Pooler do
 
     it 'raises a token error if something goes wrong' do
       stub_request(:post, 'https://first.last:password@vmpooler.example.com/token')
-                 .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length' => '0', 'User-Agent' => 'Faraday v0.9.2' })
-                 .to_return(:status => 500, :body => '{"ok":false}', :headers => {})
+        .with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length' => '0', 'User-Agent' => 'Faraday v0.9.2' })
+        .to_return(:status => 500, :body => '{"ok":false}', :headers => {})
 
       expect { Auth.get_token(false, @vmpooler_url, 'first.last', 'password') }.to raise_error(TokenError)
     end

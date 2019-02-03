@@ -175,12 +175,12 @@ BODY
 
     it 'raises an error if the user tries to modify an unsupported attribute' do
       stub_request(:put, 'https://nspooler.example.com/host/myfakehost')
-          .with(:body => { '{}' => true },
+        .with(:body => { '{}' => true },
                :headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type' => 'application/x-www-form-urlencoded', 'User-Agent' => 'Faraday v0.9.2', 'X-Auth-Token' => 'token-value' })
-          .to_return(:status => 200, :body => '', :headers => {})
+        .to_return(:status => 200, :body => '', :headers => {})
       details = { :lifetime => 12 }
       expect { NonstandardPooler.modify(false, @nspooler_url, 'myfakehost', 'token-value', details) }
-          .to raise_error(ModifyError)
+        .to raise_error(ModifyError)
     end
 
     it 'modifies the reason of a vm' do
