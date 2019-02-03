@@ -12,11 +12,8 @@ class Auth
     resp = conn.post 'token'
 
     res_body = JSON.parse(resp.body)
-    if res_body['ok']
-      return res_body['token']
-    else
-      raise TokenError, "HTTP #{resp.status}: There was a problem requesting a token:\n#{res_body}"
-    end
+    return res_body['token'] if res_body['ok']
+    raise TokenError, "HTTP #{resp.status}: There was a problem requesting a token:\n#{res_body}"
   end
 
   def self.delete_token(verbose, url, user, password, token)
@@ -26,11 +23,8 @@ class Auth
 
     response = conn.delete "token/#{token}"
     res_body = JSON.parse(response.body)
-    if res_body['ok']
-      return res_body
-    else
-      raise TokenError, "HTTP #{response.status}: There was a problem deleting a token:\n#{res_body}"
-    end
+    return res_body if res_body['ok']
+    raise TokenError, "HTTP #{response.status}: There was a problem deleting a token:\n#{res_body}"
   end
 
   def self.token_status(verbose, url, token)
@@ -41,10 +35,7 @@ class Auth
     response = conn.get "token/#{token}"
     res_body = JSON.parse(response.body)
 
-    if res_body['ok']
-      return res_body
-    else
-      raise TokenError, "HTTP #{response.status}: There was a problem getting the status of a token:\n#{res_body}"
-    end
+    return res_body if res_body['ok']
+    raise TokenError, "HTTP #{response.status}: There was a problem getting the status of a token:\n#{res_body}"
   end
 end

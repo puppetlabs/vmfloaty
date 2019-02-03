@@ -22,18 +22,15 @@ class Ssh
     os_types[host_os] = 1
 
     response = Pooler.retrieve(verbose, os_types, token, url)
-    if response['ok'] == true
-      user = host_os =~ /win/ ? 'Administrator' : 'root'
+    raise "Could not get vm from vmpooler:\n #{response}" unless response['ok']
+    user = host_os =~ /win/ ? 'Administrator' : 'root'
 
-      hostname = "#{response[host_os]['hostname']}.#{response['domain']}"
-      cmd = "#{ssh_path} #{user}@#{hostname}"
+    hostname = "#{response[host_os]['hostname']}.#{response['domain']}"
+    cmd = "#{ssh_path} #{user}@#{hostname}"
 
-      # TODO: Should this respect more ssh settings? Can it be configured
-      #       by users ssh config and does this respect those settings?
-      Kernel.exec(cmd)
-    else
-      raise "Could not get vm from vmpooler:\n #{response}"
-    end
+    # TODO: Should this respect more ssh settings? Can it be configured
+    #       by users ssh config and does this respect those settings?
+    Kernel.exec(cmd)
     nil
   end
 end
