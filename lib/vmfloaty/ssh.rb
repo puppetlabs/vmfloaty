@@ -17,7 +17,7 @@ class Ssh
 
   def self.ssh(verbose, host_os, token, url)
     ssh_path = which('ssh')
-    raise 'Could not determine path to ssh' if !ssh_path
+    raise 'Could not determine path to ssh' unless ssh_path
     os_types = {}
     os_types[host_os] = 1
 
