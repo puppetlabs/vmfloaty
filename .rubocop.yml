@@ -4,3 +4,5 @@ AllCops:
 
 Style/Documentation:
     Enabled: False
+Style/HashSyntax:
+    EnforcedStyle: hash_rockets
