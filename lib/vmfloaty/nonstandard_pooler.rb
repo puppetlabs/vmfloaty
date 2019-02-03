@@ -49,7 +49,7 @@ class NonstandardPooler
       raise TokenError, 'Token provided was nil; Request cannot be made to modify VM'
     end
 
-    modify_hash.each do |key, value|
+    modify_hash.each do |key, _value|
       unless %i[reason reserved_for_reason].include? key
         raise ModifyError, "Configured service type does not support modification of #{key}"
       end
