@@ -45,14 +45,14 @@ describe Service do
 
   describe '#delete_token' do
     it 'deletes a token' do
-      service = Service.new(MockOptions.new,{'user' => 'first.last', 'url' => 'http://default.url'})
+      service = Service.new(MockOptions.new,'user' => 'first.last', 'url' => 'http://default.url')
       allow(Commander::UI).to(receive(:password)
                                   .with('Enter your pooler service password:', '*')
                                   .and_return('hunter2'))
       allow(Auth).to(receive(:delete_token)
                          .with(nil, 'http://default.url', 'first.last', 'hunter2', 'token-value')
                          .and_return('ok' => true))
-      expect(service.delete_token(nil, 'token-value')).to eql({'ok' => true})
+      expect(service.delete_token(nil, 'token-value')).to eql('ok' => true)
     end
   end
 

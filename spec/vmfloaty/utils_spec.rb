@@ -114,27 +114,27 @@ describe Utils do
 
     it 'allows selection by configured service key' do
       config = @default_config.merge @services_config
-      options = MockOptions.new({:service => 'ns'})
+      options = MockOptions.new(:service => 'ns')
       expect(Utils.get_service_config(config, options)).to include @services_config['services']['ns']
     end
 
     it 'uses top-level service config values as defaults when configured service values are missing' do
       config = @default_config.merge @services_config
       config['services']['vm'].delete 'url'
-      options = MockOptions.new({:service => 'vm'})
+      options = MockOptions.new(:service => 'vm')
       expect(Utils.get_service_config(config, options)['url']).to eq 'http://default.url'
     end
 
     it "raises an error if passed a service name that hasn't been configured" do
       config = @default_config.merge @services_config
-      options = MockOptions.new({:service => 'none'})
+      options = MockOptions.new(:service => 'none')
       expect { Utils.get_service_config(config, options) }.to raise_error ArgumentError
     end
 
     it 'prioritizes values passed as command line options over configuration options' do
       config = @default_config
-      options = MockOptions.new({:url => 'http://alternate.url', :token => 'alternate-token'})
-      expected = config.merge({'url' => 'http://alternate.url', 'token' => 'alternate-token'})
+      options = MockOptions.new(:url => 'http://alternate.url', :token => 'alternate-token')
+      expected = config.merge('url' => 'http://alternate.url', 'token' => 'alternate-token')
       expect(Utils.get_service_config(config, options)).to include expected
     end
   end
@@ -172,7 +172,7 @@ describe Utils do
 
       expect(Utils).to receive(:puts).with(output)
 
-      service = Service.new(MockOptions.new, {'url' => url})
+      service = Service.new(MockOptions.new, 'url' => url)
       allow(service).to receive(:query)
                             .with(nil, hostname)
                             .and_return(response_body)
@@ -198,7 +198,7 @@ describe Utils do
 
       expect(Utils).to receive(:puts).with(output)
 
-      service = Service.new(MockOptions.new, {'url' => url})
+      service = Service.new(MockOptions.new, 'url' => url)
       allow(service).to receive(:query)
                             .with(nil, hostname)
                             .and_return(response_body)
@@ -219,7 +219,7 @@ describe Utils do
 
       expect(Utils).to receive(:puts).with(output)
 
-      service = Service.new(MockOptions.new, {'url' => url, 'type' => 'ns'})
+      service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
       allow(service).to receive(:query)
                             .with(nil, hostname)
                             .and_return(response_body)
@@ -240,7 +240,7 @@ describe Utils do
 
       expect(Utils).to receive(:puts).with(output)
 
-      service = Service.new(MockOptions.new, {'url' => url, 'type' => 'ns'})
+      service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
       allow(service).to receive(:query)
                             .with(nil, hostname)
                             .and_return(response_body)
