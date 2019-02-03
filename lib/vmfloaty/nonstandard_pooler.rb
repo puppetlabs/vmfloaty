@@ -50,7 +50,7 @@ class NonstandardPooler
     end
 
     modify_hash.each do |key, value|
-      unless [:reason, :reserved_for_reason].include? key
+      unless %i[reason reserved_for_reason].include? key
         raise ModifyError, "Configured service type does not support modification of #{key}"
       end
     end

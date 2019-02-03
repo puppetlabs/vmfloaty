@@ -61,7 +61,7 @@ class Pooler
     end
 
     modify_hash.keys.each do |key|
-      unless [:tags, :lifetime, :disk].include? key
+      unless %i[tags lifetime disk].include? key
         raise ModifyError, "Configured service type does not support modification of #{key}."
       end
     end
