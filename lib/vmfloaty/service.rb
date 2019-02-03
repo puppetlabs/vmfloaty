@@ -23,6 +23,10 @@ class Service
     end
   end
 
+  def respond_to_missing?(m, *)
+    @service_object.respond_to?(m) || super
+  end
+
   def url
     @config['url']
   end
