@@ -4,7 +4,7 @@ require 'faraday'
 require 'uri'
 
 class Http
-  def self.is_url(url)
+  def self.url?(url)
     # This method exists because it seems like Farady
     # has no handling around if a user gives us a URI
     # with no protocol on the beginning of the URL
@@ -19,7 +19,7 @@ class Http
   def self.get_conn(verbose, url)
     raise 'Did not provide a url to connect to' if url.nil?
 
-    url = "https://#{url}" unless is_url(url)
+    url = "https://#{url}" unless url?(url)
 
     conn = Faraday.new(:url => url, :ssl => { :verify => false }) do |faraday|
       faraday.request :url_encoded
@@ -35,7 +35,7 @@ class Http
 
     raise 'You did not provide a user to authenticate with' if user.nil?
 
-    url = "https://#{url}" unless is_url(url)
+    url = "https://#{url}" unless url?(url)
 
     conn = Faraday.new(:url => url, :ssl => { :verify => false }) do |faraday|
       faraday.request :url_encoded
