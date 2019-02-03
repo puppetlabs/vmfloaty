@@ -84,24 +84,24 @@ class Utils
         host_data = response[hostname]
 
         case service.type
-          when 'Pooler'
-            tag_pairs = []
-            unless host_data['tags'].nil?
-              tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" }
-            end
-            duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
-            metadata = [host_data['template'], duration, *tag_pairs]
-            puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
-          when 'NonstandardPooler'
-            line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
-            line += ", #{host_data['hours_left_on_reservation']}h remaining"
-            unless host_data['reserved_for_reason'].empty?
-              line += ", reason: #{host_data['reserved_for_reason']}"
-            end
-            line += ')'
-            puts line
-          else
-            raise "Invalid service type #{service.type}"
+        when 'Pooler'
+          tag_pairs = []
+          unless host_data['tags'].nil?
+            tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" }
+          end
+          duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
+          metadata = [host_data['template'], duration, *tag_pairs]
+          puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
+        when 'NonstandardPooler'
+          line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
+          line += ", #{host_data['hours_left_on_reservation']}h remaining"
+          unless host_data['reserved_for_reason'].empty?
+            line += ", reason: #{host_data['reserved_for_reason']}"
+          end
+          line += ')'
+          puts line
+        else
+          raise "Invalid service type #{service.type}"
         end
       rescue StandardError => e
         STDERR.puts("Something went wrong while trying to gather information on #{hostname}:")
@@ -114,45 +114,45 @@ class Utils
     status_response = service.status(verbose)
 
     case service.type
-      when 'Pooler'
-        message = status_response['status']['message']
-        pools = status_response['pools']
-        pools.select! { |_, pool| pool['ready'] < pool['max'] } unless verbose
+    when 'Pooler'
+      message = status_response['status']['message']
+      pools = status_response['pools']
+      pools.select! { |_, pool| pool['ready'] < pool['max'] } unless verbose
 
-        width = pools.keys.map(&:length).max
-        pools.each do |name, pool|
-          begin
-            max = pool['max']
-            ready = pool['ready']
-            pending = pool['pending']
-            missing = max - ready - pending
-            char = 'o'
-            puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
-          rescue StandardError => e
-            puts "#{name.ljust(width)} #{e.red}"
-          end
+      width = pools.keys.map(&:length).max
+      pools.each do |name, pool|
+        begin
+          max = pool['max']
+          ready = pool['ready']
+          pending = pool['pending']
+          missing = max - ready - pending
+          char = 'o'
+          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+        rescue StandardError => e
+          puts "#{name.ljust(width)} #{e.red}"
         end
-        puts message.colorize(status_response['status']['ok'] ? :default : :red)
-      when 'NonstandardPooler'
-        pools = status_response
-        pools.delete 'ok'
-        pools.select! { |_, pool| pool['available_hosts'] < pool['total_hosts'] } unless verbose
+      end
+      puts message.colorize(status_response['status']['ok'] ? :default : :red)
+    when 'NonstandardPooler'
+      pools = status_response
+      pools.delete 'ok'
+      pools.select! { |_, pool| pool['available_hosts'] < pool['total_hosts'] } unless verbose
 
-        width = pools.keys.map(&:length).max
-        pools.each do |name, pool|
-          begin
-            max = pool['total_hosts']
-            ready = pool['available_hosts']
-            pending = pool['pending'] || 0 # not available for nspooler
-            missing = max - ready - pending
-            char = 'o'
-            puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
-          rescue StandardError => e
-            puts "#{name.ljust(width)} #{e.red}"
-          end
+      width = pools.keys.map(&:length).max
+      pools.each do |name, pool|
+        begin
+          max = pool['total_hosts']
+          ready = pool['available_hosts']
+          pending = pool['pending'] || 0 # not available for nspooler
+          missing = max - ready - pending
+          char = 'o'
+          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+        rescue StandardError => e
+          puts "#{name.ljust(width)} #{e.red}"
         end
-      else
-        raise "Invalid service type #{service.type}"
+      end
+    else
+      raise "Invalid service type #{service.type}"
     end
   end
 

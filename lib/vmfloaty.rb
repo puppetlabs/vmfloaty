@@ -371,23 +371,23 @@ class Vmfloaty
 
         begin
           case action
-            when 'get'
-              token = service.get_new_token(verbose)
-              puts token
-            when 'delete'
-              result = service.delete_token(verbose, options.token)
-              puts result
-            when 'status'
-              token_value = options.token
-              token_value = args[1] if token_value.nil?
-              status = service.token_status(verbose, token_value)
-              puts status
-            when nil
-              STDERR.puts 'No action provided'
-              exit 1
-            else
-              STDERR.puts "Unknown action: #{action}"
-              exit 1
+          when 'get'
+            token = service.get_new_token(verbose)
+            puts token
+          when 'delete'
+            result = service.delete_token(verbose, options.token)
+            puts result
+          when 'status'
+            token_value = options.token
+            token_value = args[1] if token_value.nil?
+            status = service.token_status(verbose, token_value)
+            puts status
+          when nil
+            STDERR.puts 'No action provided'
+            exit 1
+          else
+            STDERR.puts "Unknown action: #{action}"
+            exit 1
           end
         rescue TokenError => e
           STDERR.puts e
