@@ -11,7 +11,7 @@ $stdout.sync = true
 $stderr.sync = true
 
 # Change to the directory of this file.
-Dir.chdir(File.expand_path('../', __FILE__))
+Dir.chdir(File.expand_path(__dir__))
 
 # This installs the tasks that help with gem creation and
 # publishing.
