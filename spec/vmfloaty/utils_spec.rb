@@ -52,15 +52,15 @@ describe Utils do
         'solaris-10-sparc'    => ['sol10-10.delivery.mycompany.net', 'sol10-11.delivery.mycompany.net'],
         'ubuntu-16.04-power8' => ['power8-ubuntu16.04-6.delivery.mycompany.net'],
       }
-      @vmpooler_output = <<-OUT.chomp
-- dlgietfmgeegry2.delivery.mycompany.net (centos-7-x86_64)
-- gdoy8q3nckuob0i.delivery.mycompany.net (ubuntu-1610-x86_64)
-- ctnktsd0u11p9tm.delivery.mycompany.net (ubuntu-1610-x86_64)
+      @vmpooler_output = <<~OUT.chomp
+        - dlgietfmgeegry2.delivery.mycompany.net (centos-7-x86_64)
+        - gdoy8q3nckuob0i.delivery.mycompany.net (ubuntu-1610-x86_64)
+        - ctnktsd0u11p9tm.delivery.mycompany.net (ubuntu-1610-x86_64)
       OUT
-      @nonstandard_output = <<-OUT.chomp
-- sol10-10.delivery.mycompany.net (solaris-10-sparc)
-- sol10-11.delivery.mycompany.net (solaris-10-sparc)
-- power8-ubuntu16.04-6.delivery.mycompany.net (ubuntu-16.04-power8)
+      @nonstandard_output = <<~OUT.chomp
+        - sol10-10.delivery.mycompany.net (solaris-10-sparc)
+        - sol10-11.delivery.mycompany.net (solaris-10-sparc)
+        - power8-ubuntu16.04-6.delivery.mycompany.net (ubuntu-16.04-power8)
       OUT
     end
     it 'formats a hostname hash from vmpooler into a list that includes the os' do

@@ -27,22 +27,22 @@ describe NonstandardPooler do
 
   describe '#list' do
     before :each do
-      @status_response_body = <<-BODY
-{
-    "ok": true,
-    "solaris-10-sparc": {
-        "total_hosts": 11,
-        "available_hosts": 11
-    },
-    "ubuntu-16.04-power8": {
-        "total_hosts": 10,
-        "available_hosts": 10
-    },
-    "aix-7.2-power": {
-        "total_hosts": 5,
-        "available_hosts": 4
-    }
-}
+      @status_response_body = <<~BODY
+        {
+            "ok": true,
+            "solaris-10-sparc": {
+                "total_hosts": 11,
+                "available_hosts": 11
+            },
+            "ubuntu-16.04-power8": {
+                "total_hosts": 10,
+                "available_hosts": 10
+            },
+            "aix-7.2-power": {
+                "total_hosts": 5,
+                "available_hosts": 4
+            }
+        }
       BODY
     end
 
@@ -75,24 +75,24 @@ describe NonstandardPooler do
 
   describe '#list_active' do
     before :each do
-      @token_status_body_active = <<-BODY
-{
-  "ok": true,
-  "user": "first.last",
-  "created": "2017-09-18 01:25:41 +0000",
-  "last_accessed": "2017-09-21 19:46:25 +0000",
-  "reserved_hosts": ["sol10-9", "sol10-11"]
-}
-BODY
-      @token_status_body_empty = <<-BODY
-{
-  "ok": true,
-  "user": "first.last",
-  "created": "2017-09-18 01:25:41 +0000",
-  "last_accessed": "2017-09-21 19:46:25 +0000",
-  "reserved_hosts": []
-}
-BODY
+      @token_status_body_active = <<~BODY
+        {
+          "ok": true,
+          "user": "first.last",
+          "created": "2017-09-18 01:25:41 +0000",
+          "last_accessed": "2017-09-21 19:46:25 +0000",
+          "reserved_hosts": ["sol10-9", "sol10-11"]
+        }
+      BODY
+      @token_status_body_empty = <<~BODY
+        {
+          "ok": true,
+          "user": "first.last",
+          "created": "2017-09-18 01:25:41 +0000",
+          "last_accessed": "2017-09-21 19:46:25 +0000",
+          "reserved_hosts": []
+        }
+      BODY
     end
 
     it 'prints an output of fqdn, template, and duration' do
@@ -107,28 +107,28 @@ BODY
 
   describe '#retrieve' do
     before :each do
-      @retrieve_response_body_single = <<-BODY
-{
-  "ok": true,
-  "solaris-11-sparc": {
-    "hostname": "sol11-4.delivery.puppetlabs.net"
-  }
-}
-BODY
-      @retrieve_response_body_many = <<-BODY
-{
-  "ok": true,
-  "solaris-10-sparc": {
-    "hostname": [
-      "sol10-9.delivery.puppetlabs.net",
-      "sol10-10.delivery.puppetlabs.net"
-    ]
-  },
-  "aix-7.1-power": {
-    "hostname": "pe-aix-71-ci-acceptance.delivery.puppetlabs.net"
-  }
-}
-BODY
+      @retrieve_response_body_single = <<~BODY
+        {
+          "ok": true,
+          "solaris-11-sparc": {
+            "hostname": "sol11-4.delivery.puppetlabs.net"
+          }
+        }
+      BODY
+      @retrieve_response_body_many = <<~BODY
+        {
+          "ok": true,
+          "solaris-10-sparc": {
+            "hostname": [
+              "sol10-9.delivery.puppetlabs.net",
+              "sol10-10.delivery.puppetlabs.net"
+            ]
+          },
+          "aix-7.1-power": {
+            "hostname": "pe-aix-71-ci-acceptance.delivery.puppetlabs.net"
+          }
+        }
+      BODY
     end
 
     it 'raises an AuthError if the token is invalid' do
@@ -199,23 +199,23 @@ BODY
     before :each do
       @status_response_body = '{"capacity":{"current":716,"total":717,"percent": 99.9},"status":{"ok":true,"message":"Battle station fully armed and operational."}}'
       # TODO: make this report stuff like 'broken'
-      @status_response_body = <<-BODY
-{
-  "ok": true,
-  "solaris-10-sparc": {
-    "total_hosts": 11,
-    "available_hosts": 10
-  },
-  "ubuntu-16.04-power8": {
-    "total_hosts": 10,
-    "available_hosts": 10
-  },
-  "aix-7.2-power": {
-    "total_hosts": 5,
-    "available_hosts": 4
-  }
-}
-BODY
+      @status_response_body = <<~BODY
+        {
+          "ok": true,
+          "solaris-10-sparc": {
+            "total_hosts": 11,
+            "available_hosts": 10
+          },
+          "ubuntu-16.04-power8": {
+            "total_hosts": 10,
+            "available_hosts": 10
+          },
+          "aix-7.2-power": {
+            "total_hosts": 5,
+            "available_hosts": 4
+          }
+        }
+      BODY
     end
 
     it 'prints the status' do
@@ -230,16 +230,16 @@ BODY
 
   describe '#summary' do
     before :each do
-      @status_response_body = <<-BODY
-{
-  "ok": true,
-  "total": 57,
-  "available": 39,
-  "in_use": 16,
-  "resetting": 2,
-  "broken": 0
-}
-BODY
+      @status_response_body = <<~BODY
+        {
+          "ok": true,
+          "total": 57,
+          "available": 39,
+          "in_use": 16,
+          "resetting": 2,
+          "broken": 0
+        }
+      BODY
     end
 
     it 'prints the summary' do
@@ -254,18 +254,18 @@ BODY
 
   describe '#query' do
     before :each do
-      @query_response_body = <<-BODY
-{
-  "ok": true,
-  "sol10-11": {
-    "fqdn": "sol10-11.delivery.puppetlabs.net",
-    "os_triple": "solaris-10-sparc",
-    "reserved_by_user": "first.last",
-    "reserved_for_reason": "testing",
-    "hours_left_on_reservation": 29.12
-  }
-}
-BODY
+      @query_response_body = <<~BODY
+        {
+          "ok": true,
+          "sol10-11": {
+            "fqdn": "sol10-11.delivery.puppetlabs.net",
+            "os_triple": "solaris-10-sparc",
+            "reserved_by_user": "first.last",
+            "reserved_for_reason": "testing",
+            "hours_left_on_reservation": 29.12
+          }
+        }
+      BODY
     end
 
     it 'makes a query about a vm' do
