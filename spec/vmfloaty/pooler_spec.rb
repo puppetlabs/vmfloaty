@@ -129,7 +129,7 @@ describe Pooler do
 
   describe '#status' do
     before :each do
-      #smaller version
+      # smaller version
       @status_response_body = '{"capacity":{"current":716,"total":717,"percent": 99.9},"status":{"ok":true,"message":"Battle station fully armed and operational."}}'
     end
 
