@@ -79,7 +79,7 @@ describe Utils do
     end
 
     it 'uses nspooler when told explicitly' do
-      expect(Utils.get_service_object 'nspooler').to be NonstandardPooler
+      expect(Utils.get_service_object('nspooler')).to be NonstandardPooler
     end
   end
 
