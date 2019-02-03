@@ -28,7 +28,7 @@ describe Pooler do
                  with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length' => '0', 'User-Agent' => 'Faraday v0.9.2' }).
                  to_return(:status => 500, :body => '{"ok":false}', :headers => {})
 
-      expect{ Auth.get_token(false, @vmpooler_url, 'first.last', 'password') }.to raise_error(TokenError)
+      expect { Auth.get_token(false, @vmpooler_url, 'first.last', 'password') }.to raise_error(TokenError)
     end
   end
 
@@ -51,11 +51,11 @@ describe Pooler do
         with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.9.2' }).
         to_return(:status => 500, :body => '{"ok":false}', :headers => {})
 
-      expect{ Auth.delete_token(false, @vmpooler_url, 'first.last', 'password', @token) }.to raise_error(TokenError)
+      expect { Auth.delete_token(false, @vmpooler_url, 'first.last', 'password', @token) }.to raise_error(TokenError)
     end
 
     it 'raises a token error if no token provided' do
-      expect{ Auth.delete_token(false, @vmpooler_url, 'first.last', 'password', nil) }.to raise_error(TokenError)
+      expect { Auth.delete_token(false, @vmpooler_url, 'first.last', 'password', nil) }.to raise_error(TokenError)
     end
   end
 
@@ -78,11 +78,11 @@ describe Pooler do
         with(:headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent' => 'Faraday v0.9.2' }).
         to_return(:status => 500, :body => '{"ok":false}', :headers => {})
 
-      expect{ Auth.token_status(false, @vmpooler_url, @token) }.to raise_error(TokenError)
+      expect { Auth.token_status(false, @vmpooler_url, @token) }.to raise_error(TokenError)
     end
 
     it 'raises a token error if no token provided' do
-      expect{ Auth.token_status(false, @vmpooler_url, nil) }.to raise_error(TokenError)
+      expect { Auth.token_status(false, @vmpooler_url, nil) }.to raise_error(TokenError)
     end
   end
 end

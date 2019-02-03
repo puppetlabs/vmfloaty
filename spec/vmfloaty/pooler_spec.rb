@@ -53,7 +53,7 @@ describe Pooler do
 
       vm_hash = {}
       vm_hash['debian-7-i386'] = 1
-      expect{ Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url) }.to raise_error(AuthError)
+      expect { Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url) }.to raise_error(AuthError)
     end
 
     it 'retrieves a single vm with a token' do
@@ -93,7 +93,7 @@ describe Pooler do
     end
 
     it 'raises a TokenError if token provided is nil' do
-      expect{ Pooler.modify(false, @vmpooler_url, 'myfakehost', nil, {}) }.to raise_error(TokenError)
+      expect { Pooler.modify(false, @vmpooler_url, 'myfakehost', nil, {}) }.to raise_error(TokenError)
     end
 
     it 'modifies the TTL of a vm' do
@@ -123,7 +123,7 @@ describe Pooler do
     end
 
     it 'raises a token error if no token provided' do
-      expect{ Pooler.delete(false, @vmpooler_url, ['myfakehost'], nil) }.to raise_error(TokenError)
+      expect { Pooler.delete(false, @vmpooler_url, ['myfakehost'], nil) }.to raise_error(TokenError)
     end
   end
 
@@ -197,11 +197,11 @@ describe Pooler do
     end
 
     it "doesn't make a request to revert a vm if snapshot is not provided" do
-      expect{ Pooler.revert(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', nil) }.to raise_error(RuntimeError, 'Snapshot SHA provided was nil, could not revert fq6qlpjlsskycq6')
+      expect { Pooler.revert(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', nil) }.to raise_error(RuntimeError, 'Snapshot SHA provided was nil, could not revert fq6qlpjlsskycq6')
     end
 
     it 'raises a TokenError if no token was provided' do
-      expect{ Pooler.revert(false, @vmpooler_url, 'myfakehost', nil, 'shaaaaaaa') }.to raise_error(TokenError)
+      expect { Pooler.revert(false, @vmpooler_url, 'myfakehost', nil, 'shaaaaaaa') }.to raise_error(TokenError)
     end
   end
 
@@ -220,7 +220,7 @@ describe Pooler do
     end
 
     it 'raises a TokenError if no token was provided' do
-      expect{ Pooler.disk(false, @vmpooler_url, 'myfakehost', nil, 12) }.to raise_error(TokenError)
+      expect { Pooler.disk(false, @vmpooler_url, 'myfakehost', nil, 12) }.to raise_error(TokenError)
     end
   end
 end
