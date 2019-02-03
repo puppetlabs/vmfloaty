@@ -24,7 +24,7 @@ class Ssh
     response = Pooler.retrieve(verbose, os_types, token, url)
     raise "Could not get vm from vmpooler:\n #{response}" unless response['ok']
 
-    user = host_os =~ /win/ ? 'Administrator' : 'root'
+    user = /win/.match?(host_os) ? 'Administrator' : 'root'
 
     hostname = "#{response[host_os]['hostname']}.#{response['domain']}"
     cmd = "#{ssh_path} #{user}@#{hostname}"
