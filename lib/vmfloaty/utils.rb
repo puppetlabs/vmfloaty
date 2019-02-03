@@ -41,7 +41,7 @@ class Utils
 
     response_body.each do |os, value|
       hostnames = Array(value['hostname'])
-      hostnames.map! {|host| "#{host}.#{domain}"} if domain
+      hostnames.map! { |host| "#{host}.#{domain}" } if domain
       result[os] = hostnames
     end
 
@@ -87,7 +87,7 @@ class Utils
           when 'Pooler'
             tag_pairs = []
             unless host_data['tags'].nil?
-              tag_pairs = host_data['tags'].map {|key, value| "#{key}: #{value}"}
+              tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" }
             end
             duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
             metadata = [host_data['template'], duration, *tag_pairs]
@@ -117,7 +117,7 @@ class Utils
       when 'Pooler'
         message = status_response['status']['message']
         pools = status_response['pools']
-        pools.select! {|_, pool| pool['ready'] < pool['max']} unless verbose
+        pools.select! { |_, pool| pool['ready'] < pool['max'] } unless verbose
 
         width = pools.keys.map(&:length).max
         pools.each do |name, pool|
@@ -136,7 +136,7 @@ class Utils
       when 'NonstandardPooler'
         pools = status_response
         pools.delete 'ok'
-        pools.select! {|_, pool| pool['available_hosts'] < pool['total_hosts']} unless verbose
+        pools.select! { |_, pool| pool['available_hosts'] < pool['total_hosts'] } unless verbose
 
         width = pools.keys.map(&:length).max
         pools.each do |name, pool|
