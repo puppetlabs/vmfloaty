@@ -12,11 +12,11 @@ class Pooler
     response = conn.get 'vm'
     response_body = JSON.parse(response.body)
 
-    if os_filter
-      hosts = response_body.select { |i| i[/#{os_filter}/] }
-    else
-      hosts = response_body
-    end
+    hosts = if os_filter
+              response_body.select { |i| i[/#{os_filter}/] }
+            else
+              response_body
+            end
 
     hosts
   end

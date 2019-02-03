@@ -23,11 +23,7 @@ class Ssh
 
     response = Pooler.retrieve(verbose, os_types, token, url)
     if response['ok'] == true
-      if host_os =~ /win/
-        user = 'Administrator'
-      else
-        user = 'root'
-      end
+      user = host_os =~ /win/ ? 'Administrator' : 'root'
 
       hostname = "#{response[host_os]['hostname']}.#{response['domain']}"
       cmd = "#{ssh_path} #{user}@#{hostname}"
