@@ -11,7 +11,7 @@ class Http
 
     uri = URI.parse(url)
 
-    if uri.kind_of?(URI::HTTP) or uri.kind_of?(URI::HTTPS)
+    if uri.is_a?(URI::HTTP) or uri.is_a?(URI::HTTPS)
       return true
     end
 
