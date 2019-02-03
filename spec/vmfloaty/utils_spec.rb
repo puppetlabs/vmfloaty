@@ -6,7 +6,6 @@ require 'commander/command'
 require_relative '../../lib/vmfloaty/utils'
 
 describe Utils do
-
   describe '#standardize_hostnames' do
     before :each do
       @vmpooler_response_body = '{

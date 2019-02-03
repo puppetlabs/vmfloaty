@@ -3,7 +3,6 @@
 require_relative '../../lib/vmfloaty/service'
 
 describe Service do
-
   describe '#initialize' do
     it 'store configuration options' do
       options = MockOptions.new({})
@@ -77,5 +76,4 @@ describe Service do
       expect(service.token_status(nil, 'token-value')).to eql(status)
     end
   end
-
 end

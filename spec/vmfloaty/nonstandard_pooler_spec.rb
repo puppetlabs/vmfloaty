@@ -23,7 +23,6 @@ describe NonstandardPooler do
     @get_request_headers_notoken = @get_request_headers.tap do |headers|
       headers.delete('X-Auth-Token')
     end
-
   end
 
   describe '#list' do
