@@ -21,7 +21,7 @@ class Http
 
     url = "https://#{url}" unless is_url(url)
 
-    conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
+    conn = Faraday.new(:url => url, :ssl => { :verify => false }) do |faraday|
       faraday.request :url_encoded
       faraday.response :logger if verbose
       faraday.adapter Faraday.default_adapter
@@ -37,7 +37,7 @@ class Http
 
     url = "https://#{url}" unless is_url(url)
 
-    conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
+    conn = Faraday.new(:url => url, :ssl => { :verify => false }) do |faraday|
       faraday.request :url_encoded
       faraday.request :basic_auth, user, password
       faraday.response :logger if verbose

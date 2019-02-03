@@ -7,7 +7,7 @@ describe Service do
   describe '#initialize' do
     it 'store configuration options' do
       options = MockOptions.new({})
-      config = {'url' => 'http://example.url'}
+      config = { 'url' => 'http://example.url' }
       service = Service.new(options, config)
       expect(service.config).to include config
     end

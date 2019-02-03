@@ -141,7 +141,7 @@ describe Utils do
 
   describe '#generate_os_hash' do
     before :each do
-      @host_hash = {'centos' => 1, 'debian' => 5, 'windows' => 1}
+      @host_hash = { 'centos' => 1, 'debian' => 5, 'windows' => 1 }
     end
 
     it 'takes an array of os arguments and returns a formatted hash' do
@@ -167,7 +167,7 @@ describe Utils do
           'state' => 'running',
           'ip' => '127.0.0.1',
           'domain'   => 'delivery.mycompany.net',
-      }}
+      } }
       output = '- mcpy42eqjxli9g2.delivery.mycompany.net (ubuntu-1604-x86_64, 9.66/12 hours)'
 
       expect(Utils).to receive(:puts).with(output)
@@ -193,7 +193,7 @@ describe Utils do
           },
           'ip' => '127.0.0.1',
           'domain' => 'delivery.mycompany.net',
-      }}
+      } }
       output = '- aiydvzpg23r415q.delivery.mycompany.net (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)'
 
       expect(Utils).to receive(:puts).with(output)
@@ -214,7 +214,7 @@ describe Utils do
           'reserved_by_user' => 'first.last',
           'reserved_for_reason' => '',
           'hours_left_on_reservation' => 35.89,
-      }}
+      } }
       output = '- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining)'
 
       expect(Utils).to receive(:puts).with(output)
@@ -235,7 +235,7 @@ describe Utils do
           'reserved_by_user' => 'first.last',
           'reserved_for_reason' => 'testing',
           'hours_left_on_reservation' => 35.89,
-      }}
+      } }
       output = '- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining, reason: testing)'
 
       expect(Utils).to receive(:puts).with(output)
