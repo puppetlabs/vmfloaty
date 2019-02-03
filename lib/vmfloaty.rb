@@ -300,9 +300,7 @@ class Vmfloaty
         hostname = args[0]
         snapshot_sha = args[1] || options.snapshot
 
-        if args[1] && options.snapshot
-          STDERR.puts "Two snapshot arguments were given....using snapshot #{snapshot_sha}"
-        end
+        STDERR.puts "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
 
         begin
           revert_req = service.revert(verbose, hostname, snapshot_sha)
@@ -419,9 +417,7 @@ class Vmfloaty
 
         host_os = args.first
 
-        if args.length > 1
-          STDERR.puts "Can't ssh to multiple hosts; Using #{host_os} only..."
-        end
+        STDERR.puts "Can't ssh to multiple hosts; Using #{host_os} only..." if args.length > 1
 
         service.ssh(verbose, host_os, use_token)
         exit 0

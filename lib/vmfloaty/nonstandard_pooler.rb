@@ -27,9 +27,7 @@ class NonstandardPooler
     conn.headers['X-AUTH-TOKEN'] = token if token
 
     os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
-    if os_string.empty?
-      raise MissingParamError, 'No operating systems provided to obtain.'
-    end
+    raise MissingParamError, 'No operating systems provided to obtain.' if os_string.empty?
 
     response = conn.post "host/#{os_string}"
 
@@ -45,14 +43,10 @@ class NonstandardPooler
   end
 
   def self.modify(verbose, url, hostname, token, modify_hash)
-    if token.nil?
-      raise TokenError, 'Token provided was nil; Request cannot be made to modify VM'
-    end
+    raise TokenError, 'Token provided was nil; Request cannot be made to modify VM' if token.nil?
 
     modify_hash.each do |key, _value|
-      unless %i[reason reserved_for_reason].include? key
-        raise ModifyError, "Configured service type does not support modification of #{key}"
-      end
+      raise ModifyError, "Configured service type does not support modification of #{key}" unless %i[reason reserved_for_reason].include? key
     end
 
     if modify_hash[:reason]
@@ -84,9 +78,7 @@ class NonstandardPooler
   end
 
   def self.delete(verbose, url, hosts, token)
-    if token.nil?
-      raise TokenError, 'Token provided was nil; Request cannot be made to delete VM'
-    end
+    raise TokenError, 'Token provided was nil; Request cannot be made to delete VM' if token.nil?
 
     conn = Http.get_conn(verbose, url)
 

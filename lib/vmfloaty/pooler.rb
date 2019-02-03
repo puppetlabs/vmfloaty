@@ -24,9 +24,7 @@ class Pooler
   def self.list_active(verbose, url, token)
     status = Auth.token_status(verbose, url, token)
     vms = []
-    if status[token] && status[token]['vms']
-      vms = status[token]['vms']['running']
-    end
+    vms = status[token]['vms']['running'] if status[token] && status[token]['vms']
     vms
   end
 
@@ -38,9 +36,7 @@ class Pooler
     conn.headers['X-AUTH-TOKEN'] = token if token
 
     os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
-    if os_string.empty?
-      raise MissingParamError, 'No operating systems provided to obtain.'
-    end
+    raise MissingParamError, 'No operating systems provided to obtain.' if os_string.empty?
 
     response = conn.post "vm/#{os_string}"
 
@@ -56,14 +52,10 @@ class Pooler
   end
 
   def self.modify(verbose, url, hostname, token, modify_hash)
-    if token.nil?
-      raise TokenError, 'Token provided was nil. Request cannot be made to modify vm'
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to modify vm' if token.nil?
 
     modify_hash.keys.each do |key|
-      unless %i[tags lifetime disk].include? key
-        raise ModifyError, "Configured service type does not support modification of #{key}."
-      end
+      raise ModifyError, "Configured service type does not support modification of #{key}." unless %i[tags lifetime disk].include? key
     end
 
     conn = Http.get_conn(verbose, url)
@@ -84,9 +76,7 @@ class Pooler
   end
 
   def self.disk(verbose, url, hostname, token, disk)
-    if token.nil?
-      raise TokenError, 'Token provided was nil. Request cannot be made to modify vm'
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to modify vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
@@ -98,9 +88,7 @@ class Pooler
   end
 
   def self.delete(verbose, url, hosts, token)
-    if token.nil?
-      raise TokenError, 'Token provided was nil. Request cannot be made to delete vm'
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to delete vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
 
@@ -143,9 +131,7 @@ class Pooler
   end
 
   def self.snapshot(verbose, url, hostname, token)
-    if token.nil?
-      raise TokenError, 'Token provided was nil. Request cannot be made to snapshot vm'
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to snapshot vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
@@ -156,16 +142,12 @@ class Pooler
   end
 
   def self.revert(verbose, url, hostname, token, snapshot_sha)
-    if token.nil?
-      raise TokenError, 'Token provided was nil. Request cannot be made to revert vm'
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to revert vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
-    if snapshot_sha.nil?
-      raise "Snapshot SHA provided was nil, could not revert #{hostname}"
-    end
+    raise "Snapshot SHA provided was nil, could not revert #{hostname}" if snapshot_sha.nil?
 
     response = conn.post "vm/#{hostname}/snapshot/#{snapshot_sha}"
     res_body = JSON.parse(response.body)
