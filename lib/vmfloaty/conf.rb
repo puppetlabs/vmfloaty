@@ -3,7 +3,6 @@
 require 'yaml'
 
 class Conf
-
   def self.read_config
     conf = {}
     begin

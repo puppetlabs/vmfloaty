@@ -46,5 +46,4 @@ class Http
 
     conn
   end
-
 end

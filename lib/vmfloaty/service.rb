@@ -6,7 +6,6 @@ require 'vmfloaty/utils'
 require 'vmfloaty/ssh'
 
 class Service
-
   attr_reader :config
 
   def initialize(options, config_hash = {})
@@ -135,5 +134,4 @@ class Service
   def disk(verbose, hostname, disk)
     @service_object.disk(verbose, url, hostname, token, disk)
   end
-
 end

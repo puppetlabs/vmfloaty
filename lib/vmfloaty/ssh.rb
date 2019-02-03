@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Ssh
-
   def self.which(cmd)
     # Gets path of executable for given command
 
