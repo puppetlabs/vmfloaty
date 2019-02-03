@@ -14,16 +14,16 @@ class Service
     @service_object = Utils.get_service_object @config['type']
   end
 
-  def method_missing(m, *args, &block)
-    if @service_object.respond_to? m
-      @service_object.send(m, *args, &block)
+  def method_missing(method_name, *args, &block)
+    if @service_object.respond_to?(method_name)
+      @service_object.send(method_name, *args, &block)
     else
       super
     end
   end
 
-  def respond_to_missing?(m, *)
-    @service_object.respond_to?(m) || super
+  def respond_to_missing?(method_name, *)
+    @service_object.respond_to?(method_name) || super
   end
 
   def url
