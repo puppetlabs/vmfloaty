@@ -41,9 +41,7 @@ class Utils
 
     response_body.each do |os, value|
       hostnames = Array(value['hostname'])
-      if domain
-        hostnames.map! {|host| "#{host}.#{domain}"}
-      end
+      hostnames.map! {|host| "#{host}.#{domain}"} if domain
       result[os] = hostnames
     end
 

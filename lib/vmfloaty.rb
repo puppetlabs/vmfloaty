@@ -212,9 +212,7 @@ class Vmfloaty
             # Confirm deletion
             puts
             confirmed = true
-            unless force
-              confirmed = agree('Delete all these VMs? [y/N]')
-            end
+            confirmed = agree('Delete all these VMs? [y/N]') unless force
             if confirmed
               response = service.delete(verbose, running_vms)
               response.each do |hostname, result|
@@ -381,9 +379,7 @@ class Vmfloaty
               puts result
             when 'status'
               token_value = options.token
-              if token_value.nil?
-                token_value = args[1]
-              end
+              token_value = args[1] if token_value.nil?
               status = service.token_status(verbose, token_value)
               puts status
             when nil

@@ -94,9 +94,7 @@ class NonstandardPooler
 
     response_body = {}
 
-    unless hosts.is_a? Array
-      hosts = hosts.split(',')
-    end
+    hosts = hosts.split(',') unless hosts.is_a? Array
     hosts.each do |host|
       response = conn.delete "host/#{host}"
       res_body = JSON.parse(response.body)

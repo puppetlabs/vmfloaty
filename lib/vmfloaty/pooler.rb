@@ -35,9 +35,7 @@ class Pooler
     #   Developers can use `Utils.generate_os_hash` to
     #   generate the os_type param.
     conn = Http.get_conn(verbose, url)
-    if token
-      conn.headers['X-AUTH-TOKEN'] = token
-    end
+    conn.headers['X-AUTH-TOKEN'] = token if token
 
     os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
     if os_string.empty?
@@ -106,9 +104,7 @@ class Pooler
 
     conn = Http.get_conn(verbose, url)
 
-    if token
-      conn.headers['X-AUTH-TOKEN'] = token
-    end
+    conn.headers['X-AUTH-TOKEN'] = token if token
 
     response_body = {}
 

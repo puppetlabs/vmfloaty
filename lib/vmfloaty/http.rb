@@ -11,21 +11,15 @@ class Http
 
     uri = URI.parse(url)
 
-    if uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
-      return true
-    end
+    return true if uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
 
     false
   end
 
   def self.get_conn(verbose, url)
-    if url.nil?
-      raise 'Did not provide a url to connect to'
-    end
+    raise 'Did not provide a url to connect to' if url.nil?
 
-    unless is_url(url)
-      url = "https://#{url}"
-    end
+    url = "https://#{url}" unless is_url(url)
 
     conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
       faraday.request :url_encoded
@@ -37,17 +31,11 @@ class Http
   end
 
   def self.get_conn_with_auth(verbose, url, user, password)
-    if url.nil?
-      raise 'Did not provide a url to connect to'
-    end
+    raise 'Did not provide a url to connect to' if url.nil?
 
-    if user.nil?
-      raise 'You did not provide a user to authenticate with'
-    end
+    raise 'You did not provide a user to authenticate with' if user.nil?
 
-    unless is_url(url)
-      url = "https://#{url}"
-    end
+    url = "https://#{url}" unless is_url(url)
 
     conn = Faraday.new(:url => url, :ssl => {:verify => false}) do |faraday|
       faraday.request :url_encoded
