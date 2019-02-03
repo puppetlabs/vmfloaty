@@ -29,7 +29,7 @@ class Ssh
         user = 'root'
       end
 
-      hostname = "#{response[host_os]["hostname"]}.#{response["domain"]}"
+      hostname = "#{response[host_os]['hostname']}.#{response['domain']}"
       cmd = "#{ssh_path} #{user}@#{hostname}"
 
       # TODO: Should this respect more ssh settings? Can it be configured

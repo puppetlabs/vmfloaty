@@ -91,7 +91,7 @@ class Utils
             end
             duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
             metadata = [host_data['template'], duration, *tag_pairs]
-            puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(", ")})"
+            puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
           when 'NonstandardPooler'
             line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
             line += ", #{host_data['hours_left_on_reservation']}h remaining"
