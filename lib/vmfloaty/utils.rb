@@ -190,12 +190,12 @@ class Utils
         service_config.merge! values
       else
         # If the user provided a service name at the command line, use that service if posible, or fail
-        if config['services'][options.service]
-          # If the service is configured but some values are missing, use the top-level defaults to fill them in
-          service_config.merge! config['services'][options.service]
-        else
+        unless config['services'][options.service]
           raise ArgumentError, "Could not find a configured service named '#{options.service}' in ~/.vmfloaty.yml"
         end
+
+        # If the service is configured but some values are missing, use the top-level defaults to fill them in
+        service_config.merge! config['services'][options.service]
       end
     end
 
