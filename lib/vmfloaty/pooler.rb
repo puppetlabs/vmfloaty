@@ -1,20 +1,22 @@
+# frozen_string_literal: true
+
 require 'faraday'
 require 'vmfloaty/http'
 require 'json'
 require 'vmfloaty/errors'
 
 class Pooler
-  def self.list(verbose, url, os_filter=nil)
+  def self.list(verbose, url, os_filter = nil)
     conn = Http.get_conn(verbose, url)
 
     response = conn.get 'vm'
     response_body = JSON.parse(response.body)
 
-    if os_filter
-      hosts = response_body.select { |i| i[/#{os_filter}/] }
-    else
-      hosts = response_body
-    end
+    hosts = if os_filter
+              response_body.select { |i| i[/#{os_filter}/] }
+            else
+              response_body
+            end
 
     hosts
   end
@@ -22,9 +24,7 @@ class Pooler
   def self.list_active(verbose, url, token)
     status = Auth.token_status(verbose, url, token)
     vms = []
-    if status[token] && status[token]['vms']
-      vms = status[token]['vms']['running']
-    end
+    vms = status[token]['vms']['running'] if status[token] && status[token]['vms']
     vms
   end
 
@@ -33,28 +33,16 @@ class Pooler
     #   Developers can use `Utils.generate_os_hash` to
     #   generate the os_type param.
     conn = Http.get_conn(verbose, url)
-    if token
-      conn.headers['X-AUTH-TOKEN'] = token
-    end
+    conn.headers['X-AUTH-TOKEN'] = token if token
 
-    os_string = ""
-    os_type.each do |os,num|
-      num.times do |i|
-        os_string << os+"+"
-      end
-    end
-
-    os_string = os_string.chomp("+")
-
-    if os_string.size == 0
-      raise MissingParamError, "No operating systems provided to obtain."
-    end
+    os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
+    raise MissingParamError, 'No operating systems provided to obtain.' if os_string.empty?
 
     response = conn.post "vm/#{os_string}"
 
     res_body = JSON.parse(response.body)
 
-    if res_body["ok"]
+    if res_body['ok']
       res_body
     elsif response.status == 401
       raise AuthError, "HTTP #{response.status}: The token provided could not authenticate to the pooler.\n#{res_body}"
@@ -64,14 +52,10 @@ class Pooler
   end
 
   def self.modify(verbose, url, hostname, token, modify_hash)
-    if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to modify vm"
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to modify vm' if token.nil?
 
     modify_hash.keys.each do |key|
-      unless [:tags, :lifetime, :disk].include? key
-        raise ModifyError, "Configured service type does not support modification of #{key}."
-      end
+      raise ModifyError, "Configured service type does not support modification of #{key}." unless %i[tags lifetime disk].include? key
     end
 
     conn = Http.get_conn(verbose, url)
@@ -92,9 +76,7 @@ class Pooler
   end
 
   def self.disk(verbose, url, hostname, token, disk)
-    if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to modify vm"
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to modify vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
@@ -106,15 +88,11 @@ class Pooler
   end
 
   def self.delete(verbose, url, hosts, token)
-    if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to delete vm"
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to delete vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
 
-    if token
-      conn.headers['X-AUTH-TOKEN'] = token
-    end
+    conn.headers['X-AUTH-TOKEN'] = token if token
 
     response_body = {}
 
@@ -153,9 +131,7 @@ class Pooler
   end
 
   def self.snapshot(verbose, url, hostname, token)
-    if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to snapshot vm"
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to snapshot vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
@@ -166,16 +142,12 @@ class Pooler
   end
 
   def self.revert(verbose, url, hostname, token, snapshot_sha)
-    if token.nil?
-      raise TokenError, "Token provided was nil. Request cannot be made to revert vm"
-    end
+    raise TokenError, 'Token provided was nil. Request cannot be made to revert vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
-    if snapshot_sha.nil?
-      raise "Snapshot SHA provided was nil, could not revert #{hostname}"
-    end
+    raise "Snapshot SHA provided was nil, could not revert #{hostname}" if snapshot_sha.nil?
 
     response = conn.post "vm/#{hostname}/snapshot/#{snapshot_sha}"
     res_body = JSON.parse(response.body)

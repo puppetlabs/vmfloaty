@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 require_relative '../../lib/vmfloaty/service'
 
 describe Service do
-
   describe '#initialize' do
     it 'store configuration options' do
       options = MockOptions.new({})
-      config = {'url' => 'http://example.url'}
+      config = { 'url' => 'http://example.url' }
       service = Service.new(options, config)
       expect(service.config).to include config
     end
@@ -43,31 +44,31 @@ describe Service do
 
   describe '#delete_token' do
     it 'deletes a token' do
-      service = Service.new(MockOptions.new,{'user' => 'first.last', 'url' => 'http://default.url'})
+      service = Service.new(MockOptions.new, 'user' => 'first.last', 'url' => 'http://default.url')
       allow(Commander::UI).to(receive(:password)
                                   .with('Enter your pooler service password:', '*')
                                   .and_return('hunter2'))
       allow(Auth).to(receive(:delete_token)
                          .with(nil, 'http://default.url', 'first.last', 'hunter2', 'token-value')
                          .and_return('ok' => true))
-      expect(service.delete_token(nil, 'token-value')).to eql({'ok' => true})
+      expect(service.delete_token(nil, 'token-value')).to eql('ok' => true)
     end
   end
 
   describe '#token_status' do
     it 'reports the status of a token' do
       config = {
-          'user' => 'first.last',
-          'url' => 'http://default.url'
+        'user' => 'first.last',
+        'url'  => 'http://default.url',
       }
       options = MockOptions.new('token' => 'token-value')
       service = Service.new(options, config)
       status = {
-          'ok' => true,
-          'user' => config['user'],
-          'created' => '2017-09-22 02:04:18 +0000',
-          'last_accessed' => '2017-09-22 02:04:28 +0000',
-          'reserved_hosts' => []
+        'ok'             => true,
+        'user'           => config['user'],
+        'created'        => '2017-09-22 02:04:18 +0000',
+        'last_accessed'  => '2017-09-22 02:04:28 +0000',
+        'reserved_hosts' => [],
       }
       allow(Auth).to(receive(:token_status)
                          .with(nil, config['url'], 'token-value')
@@ -75,5 +76,4 @@ describe Service do
       expect(service.token_status(nil, 'token-value')).to eql(status)
     end
   end
-
 end

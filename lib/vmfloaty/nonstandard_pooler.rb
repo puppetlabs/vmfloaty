@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'vmfloaty/errors'
 require 'vmfloaty/http'
 require 'faraday'
@@ -24,18 +26,8 @@ class NonstandardPooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    os_string = ''
-    os_type.each do |os, num|
-      num.times do |_i|
-        os_string << os + '+'
-      end
-    end
-
-    os_string = os_string.chomp('+')
-
-    if os_string.empty?
-      raise MissingParamError, 'No operating systems provided to obtain.'
-    end
+    os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
+    raise MissingParamError, 'No operating systems provided to obtain.' if os_string.empty?
 
     response = conn.post "host/#{os_string}"
 
@@ -51,14 +43,10 @@ class NonstandardPooler
   end
 
   def self.modify(verbose, url, hostname, token, modify_hash)
-    if token.nil?
-      raise TokenError, 'Token provided was nil; Request cannot be made to modify VM'
-    end
+    raise TokenError, 'Token provided was nil; Request cannot be made to modify VM' if token.nil?
 
-    modify_hash.each do |key, value|
-      unless [:reason, :reserved_for_reason].include? key
-        raise ModifyError, "Configured service type does not support modification of #{key}"
-      end
+    modify_hash.each do |key, _value|
+      raise ModifyError, "Configured service type does not support modification of #{key}" unless %i[reason reserved_for_reason].include? key
     end
 
     if modify_hash[:reason]
@@ -77,22 +65,20 @@ class NonstandardPooler
     response.body.empty? ? {} : JSON.parse(response.body)
   end
 
-  def self.disk(verbose, url, hostname, token, disk)
+  def self.disk(_verbose, _url, _hostname, _token, _disk)
     raise ModifyError, 'Configured service type does not support modification of disk space'
   end
 
-  def self.snapshot(verbose, url, hostname, token)
+  def self.snapshot(_verbose, _url, _hostname, _token)
     raise ModifyError, 'Configured service type does not support snapshots'
   end
 
-  def self.revert(verbose, url, hostname, token, snapshot_sha)
+  def self.revert(_verbose, _url, _hostname, _token, _snapshot_sha)
     raise ModifyError, 'Configured service type does not support snapshots'
   end
 
   def self.delete(verbose, url, hosts, token)
-    if token.nil?
-      raise TokenError, 'Token provided was nil; Request cannot be made to delete VM'
-    end
+    raise TokenError, 'Token provided was nil; Request cannot be made to delete VM' if token.nil?
 
     conn = Http.get_conn(verbose, url)
 
@@ -100,9 +86,7 @@ class NonstandardPooler
 
     response_body = {}
 
-    unless hosts.is_a? Array
-      hosts = hosts.split(',')
-    end
+    hosts = hosts.split(',') unless hosts.is_a? Array
     hosts.each do |host|
       response = conn.delete "host/#{host}"
       res_body = JSON.parse(response.body)

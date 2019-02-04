@@ -1,4 +1,6 @@
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+# frozen_string_literal: true
+
+$LOAD_PATH.push File.expand_path('lib', __dir__)
 require 'vmfloaty/version'
 
 Gem::Specification.new do |s|
@@ -16,7 +18,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*']
   s.require_path = 'lib'
 
+  s.add_dependency 'colorize', '~> 0.8.1'
   s.add_dependency 'commander', '~> 4.4.3'
   s.add_dependency 'faraday', '~> 0.9.0'
-  s.add_dependency 'colorize', '~> 0.8.1'
 end

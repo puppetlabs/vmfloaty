@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'vmfloaty/pooler'
 require 'vmfloaty/nonstandard_pooler'
 
@@ -28,9 +30,7 @@ class Utils
     #   }
     # }
 
-    unless response_body.delete('ok')
-      raise ArgumentError, "Bad GET response passed to format_hosts: #{response_body.to_json}"
-    end
+    raise ArgumentError, "Bad GET response passed to format_hosts: #{response_body.to_json}" unless response_body.delete('ok')
 
     # vmpooler reports the domain separately from the hostname
     domain = response_body.delete('domain')
@@ -39,9 +39,7 @@ class Utils
 
     response_body.each do |os, value|
       hostnames = Array(value['hostname'])
-      if domain
-        hostnames.map! {|host| "#{host}.#{domain}"}
-      end
+      hostnames.map! { |host| "#{host}.#{domain}" } if domain
       result[os] = hostnames
     end
 
@@ -65,13 +63,8 @@ class Utils
     #   ...]
     os_types = {}
     os_args.each do |arg|
-      os_arr = arg.split("=")
-      if os_arr.size == 1
-        # assume they didn't specify an = sign if split returns 1 size
-        os_types[os_arr[0]] = 1
-      else
-        os_types[os_arr[0]] = os_arr[1].to_i
-      end
+      os_arr = arg.split('=')
+      os_types[os_arr[0]] = os_arr.size == 1 ? 1 : os_arr[1].to_i
     end
     os_types
   end
@@ -84,26 +77,22 @@ class Utils
         host_data = response[hostname]
 
         case service.type
-          when 'Pooler'
-            tag_pairs = []
-            unless host_data['tags'].nil?
-              tag_pairs = host_data['tags'].map {|key, value| "#{key}: #{value}"}
-            end
-            duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
-            metadata = [host_data['template'], duration, *tag_pairs]
-            puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(", ")})"
-          when 'NonstandardPooler'
-            line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
-            line += ", #{host_data['hours_left_on_reservation']}h remaining"
-            unless host_data['reserved_for_reason'].empty?
-              line += ", reason: #{host_data['reserved_for_reason']}"
-            end
-            line += ')'
-            puts line
-          else
-            raise "Invalid service type #{service.type}"
+        when 'Pooler'
+          tag_pairs = []
+          tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
+          duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
+          metadata = [host_data['template'], duration, *tag_pairs]
+          puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
+        when 'NonstandardPooler'
+          line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
+          line += ", #{host_data['hours_left_on_reservation']}h remaining"
+          line += ", reason: #{host_data['reserved_for_reason']}" unless host_data['reserved_for_reason'].empty?
+          line += ')'
+          puts line
+        else
+          raise "Invalid service type #{service.type}"
         end
-      rescue => e
+      rescue StandardError => e
         STDERR.puts("Something went wrong while trying to gather information on #{hostname}:")
         STDERR.puts(e)
       end
@@ -114,45 +103,45 @@ class Utils
     status_response = service.status(verbose)
 
     case service.type
-      when 'Pooler'
-        message = status_response['status']['message']
-        pools = status_response['pools']
-        pools.select! {|_, pool| pool['ready'] < pool['max']} unless verbose
+    when 'Pooler'
+      message = status_response['status']['message']
+      pools = status_response['pools']
+      pools.select! { |_, pool| pool['ready'] < pool['max'] } unless verbose
 
-        width = pools.keys.map(&:length).max
-        pools.each do |name, pool|
-          begin
-            max = pool['max']
-            ready = pool['ready']
-            pending = pool['pending']
-            missing = max - ready - pending
-            char = 'o'
-            puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
-          rescue => e
-            puts "#{name.ljust(width)} #{e.red}"
-          end
+      width = pools.keys.map(&:length).max
+      pools.each do |name, pool|
+        begin
+          max = pool['max']
+          ready = pool['ready']
+          pending = pool['pending']
+          missing = max - ready - pending
+          char = 'o'
+          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+        rescue StandardError => e
+          puts "#{name.ljust(width)} #{e.red}"
         end
-        puts message.colorize(status_response['status']['ok'] ? :default : :red)
-      when 'NonstandardPooler'
-        pools = status_response
-        pools.delete 'ok'
-        pools.select! {|_, pool| pool['available_hosts'] < pool['total_hosts']} unless verbose
+      end
+      puts message.colorize(status_response['status']['ok'] ? :default : :red)
+    when 'NonstandardPooler'
+      pools = status_response
+      pools.delete 'ok'
+      pools.select! { |_, pool| pool['available_hosts'] < pool['total_hosts'] } unless verbose
 
-        width = pools.keys.map(&:length).max
-        pools.each do |name, pool|
-          begin
-            max = pool['total_hosts']
-            ready = pool['available_hosts']
-            pending = pool['pending'] || 0 # not available for nspooler
-            missing = max - ready - pending
-            char = 'o'
-            puts "#{name.ljust(width)} #{(char*ready).green}#{(char*pending).yellow}#{(char*missing).red}"
-          rescue => e
-            puts "#{name.ljust(width)} #{e.red}"
-          end
+      width = pools.keys.map(&:length).max
+      pools.each do |name, pool|
+        begin
+          max = pool['total_hosts']
+          ready = pool['available_hosts']
+          pending = pool['pending'] || 0 # not available for nspooler
+          missing = max - ready - pending
+          char = 'o'
+          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+        rescue StandardError => e
+          puts "#{name.ljust(width)} #{e.red}"
         end
-      else
-        raise "Invalid service type #{service.type}"
+      end
+    else
+      raise "Invalid service type #{service.type}"
     end
   end
 
@@ -165,7 +154,7 @@ class Utils
   end
 
   def self.get_service_object(type = '')
-    nspooler_strings = ['ns', 'nspooler', 'nonstandard', 'nonstandard_pooler']
+    nspooler_strings = %w[ns nspooler nonstandard nonstandard_pooler]
     if nspooler_strings.include? type.downcase
       NonstandardPooler
     else
@@ -176,10 +165,10 @@ class Utils
   def self.get_service_config(config, options)
     # The top-level url, user, and token values in the config file are treated as defaults
     service_config = {
-        'url' => config['url'],
-        'user' => config['user'],
-        'token' => config['token'],
-        'type' => config['type'] || 'vmpooler'
+      'url'   => config['url'],
+      'user'  => config['user'],
+      'token' => config['token'],
+      'type'  => config['type'] || 'vmpooler',
     }
 
     if config['services']
@@ -190,12 +179,10 @@ class Utils
         service_config.merge! values
       else
         # If the user provided a service name at the command line, use that service if posible, or fail
-        if config['services'][options.service]
-          # If the service is configured but some values are missing, use the top-level defaults to fill them in
-          service_config.merge! config['services'][options.service]
-        else
-          raise ArgumentError, "Could not find a configured service named '#{options.service}' in ~/.vmfloaty.yml"
-        end
+        raise ArgumentError, "Could not find a configured service named '#{options.service}' in ~/.vmfloaty.yml" unless config['services'][options.service]
+
+        # If the service is configured but some values are missing, use the top-level defaults to fill them in
+        service_config.merge! config['services'][options.service]
       end
     end
 

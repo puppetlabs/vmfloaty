@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'rubygems'
 require 'commander'
@@ -43,22 +43,22 @@ class Vmfloaty
         force = options.force
 
         if args.empty?
-          STDERR.puts "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
+          STDERR.puts 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
         os_types = Utils.generate_os_hash(args)
 
         max_pool_request = 5
-        large_pool_requests = os_types.select{|_,v| v > max_pool_request}
-        if ! large_pool_requests.empty? and ! force
+        large_pool_requests = os_types.select { |_, v| v > max_pool_request }
+        if !large_pool_requests.empty? && !force
           STDERR.puts "Requesting vms over #{max_pool_request} requires a --force flag."
-          STDERR.puts "Try again with `floaty get --force`"
+          STDERR.puts 'Try again with `floaty get --force`'
           exit 1
         end
 
         if os_types.empty?
-          STDERR.puts "No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs."
+          STDERR.puts 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
@@ -143,18 +143,18 @@ class Vmfloaty
         hostname = args[0]
         modify_all = options.all
 
-        if hostname.nil? and !modify_all
-          STDERR.puts "ERROR: Provide a hostname or specify --all."
+        if hostname.nil? && !modify_all
+          STDERR.puts 'ERROR: Provide a hostname or specify --all.'
           exit 1
         end
-        running_vms = modify_all ? service.list_active(verbose) : hostname.split(",")
+        running_vms = modify_all ? service.list_active(verbose) : hostname.split(',')
 
         tags = options.tags ? JSON.parse(options.tags) : nil
         modify_hash = {
-            lifetime: options.lifetime,
-            disk: options.disk,
-            tags: tags,
-            reason: options.reason
+          :lifetime => options.lifetime,
+          :disk     => options.disk,
+          :tags     => tags,
+          :reason   => options.reason,
         }
         modify_hash.delete_if { |_, value| value.nil? }
 
@@ -171,11 +171,11 @@ class Vmfloaty
           end
           if ok
             if modify_all
-              puts "Successfully modified all VMs."
+              puts 'Successfully modified all VMs.'
             else
               puts "Successfully modified VM #{hostname}."
             end
-            puts "Use `floaty list --active` to see the results."
+            puts 'Use `floaty list --active` to see the results.'
           end
         end
       end
@@ -205,15 +205,13 @@ class Vmfloaty
         if delete_all
           running_vms = service.list_active(verbose)
           if running_vms.empty?
-            STDERR.puts "You have no running VMs."
+            STDERR.puts 'You have no running VMs.'
           else
             Utils.pretty_print_hosts(verbose, service, running_vms)
             # Confirm deletion
             puts
             confirmed = true
-            unless force
-              confirmed = agree('Delete all these VMs? [y/N]')
-            end
+            confirmed = agree('Delete all these VMs? [y/N]') unless force
             if confirmed
               response = service.delete(verbose, running_vms)
               response.each do |hostname, result|
@@ -236,7 +234,7 @@ class Vmfloaty
             end
           end
         else
-          STDERR.puts "You did not provide any hosts to delete"
+          STDERR.puts 'You did not provide any hosts to delete'
           exit 1
         end
 
@@ -302,9 +300,7 @@ class Vmfloaty
         hostname = args[0]
         snapshot_sha = args[1] || options.snapshot
 
-        if args[1] && options.snapshot
-          STDERR.puts "Two snapshot arguments were given....using snapshot #{snapshot_sha}"
-        end
+        STDERR.puts "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
 
         begin
           revert_req = service.revert(verbose, hostname, snapshot_sha)
@@ -372,25 +368,23 @@ class Vmfloaty
 
         begin
           case action
-            when 'get'
-              token = service.get_new_token(verbose)
-              puts token
-            when 'delete'
-              result = service.delete_token(verbose, options.token)
-              puts result
-            when 'status'
-              token_value = options.token
-              if token_value.nil?
-                token_value = args[1]
-              end
-              status = service.token_status(verbose, token_value)
-              puts status
-            when nil
-              STDERR.puts 'No action provided'
-              exit 1
-            else
-              STDERR.puts "Unknown action: #{action}"
-              exit 1
+          when 'get'
+            token = service.get_new_token(verbose)
+            puts token
+          when 'delete'
+            result = service.delete_token(verbose, options.token)
+            puts result
+          when 'status'
+            token_value = options.token
+            token_value = args[1] if token_value.nil?
+            status = service.token_status(verbose, token_value)
+            puts status
+          when nil
+            STDERR.puts 'No action provided'
+            exit 1
+          else
+            STDERR.puts "Unknown action: #{action}"
+            exit 1
           end
         rescue TokenError => e
           STDERR.puts e
@@ -417,15 +411,13 @@ class Vmfloaty
         use_token = !options.notoken
 
         if args.empty?
-          STDERR.puts "No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs."
+          STDERR.puts 'No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs.'
           exit 1
         end
 
         host_os = args.first
 
-        if args.length > 1
-          STDERR.puts "Can't ssh to multiple hosts; Using #{host_os} only..."
-        end
+        STDERR.puts "Can't ssh to multiple hosts; Using #{host_os} only..." if args.length > 1
 
         service.ssh(verbose, host_os, use_token)
         exit 0
@@ -435,13 +427,13 @@ class Vmfloaty
     command :completion do |c|
       c.syntax = 'floaty completion [options]'
       c.summary = 'Outputs path to completion script'
-      c.description = Utils.strip_heredoc(<<-EOF)
+      c.description = Utils.strip_heredoc(<<-DESCRIPTION)
         Outputs path to a completion script for the specified shell (or 'bash' if not specified). This makes it easy to add the completion script to your profile:
 
           source $(floaty completion --shell bash)
 
         This subcommand will exit non-zero with an error message if no completion script is available for the requested shell.
-      EOF
+      DESCRIPTION
       c.example 'Gets path to bash tab completion script', 'floaty completion --shell bash'
       c.option '--shell STRING', String, 'Shell to request completion script for'
       c.action do |_, options|
