@@ -53,7 +53,7 @@ $ floaty --help
 Grabbing a token for authenticated pooler requests:
 
 ```
-floaty token get --user username --url https://vmpooler.mycompany.net/api/v1
+floaty token get --user username --url https://vmpooler.example.net/api/v1
 ```
 
 This command will then ask you to log in. If successful, it will return a token that you can save either in a dotfile or use with other cli commands.
@@ -61,7 +61,7 @@ This command will then ask you to log in. If successful, it will return a token 
 Grabbing vms:
 
 ```
-floaty get centos-7-x86_64=2 debian-7-x86_64 windows-10=3 --token mytokenstring --url https://vmpooler.mycompany.net/api/v1
+floaty get centos-7-x86_64=2 debian-7-x86_64 windows-10=3 --token mytokenstring --url https://vmpooler.example.net/api/v1
 ```
 
 ### vmfloaty dotfile
@@ -72,7 +72,7 @@ If you do not wish to continuely specify various config options with the cli, yo
 
 ```yaml
 # file at /Users/me/.vmfloaty.yml
-url: 'https://vmpooler.mycompany.net/api/v1'
+url: 'https://vmpooler.example.net/api/v1'
 user: 'brian'
 token: 'tokenstring'
 ```
@@ -90,10 +90,10 @@ To configure multiple services, you can set up your `~/.vmfloaty.yml` config fil
 user: 'brian'
 services:
   main:
-    url: 'https://vmpooler.mycompany.net/api/v1'
+    url: 'https://vmpooler.example.net/api/v1'
     token: 'tokenstring'
   alternate:
-    url: 'https://vmpooler.alternate.net/api/v1'
+    url: 'https://vmpooler.example.com/api/v1'
     token: 'alternate-tokenstring'
 ```
 
@@ -125,10 +125,10 @@ vmfloaty is capable of working with Puppet's [nonstandard pooler](https://github
 user: 'brian'
 services:
   vm:
-    url: 'https://vmpooler.mycompany.net/api/v1'
+    url: 'https://vmpooler.example.net/api/v1'
     token: 'tokenstring'
   ns:
-    url: 'https://nspooler.mycompany.net/api/v1'
+    url: 'https://nspooler.example.net/api/v1'
     token: 'nspooler-tokenstring'
     type: 'nonstandard'  # <-- 'type' is necessary for any non-vmpooler service
 ```
