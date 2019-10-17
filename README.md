@@ -131,6 +131,10 @@ services:
     url: 'https://nspooler.example.net/api/v1'
     token: 'nspooler-tokenstring'
     type: 'nonstandard'  # <-- 'type' is necessary for any non-vmpooler service
+  abs:
+    url: 'https://abs.example.net/api/v2'
+    token: 'abs-tokenstring'
+    type: 'abs'  # <-- 'type' is necessary for any non-vmpooler service
 ```
 
 With this configuration, you could list available OS types from nspooler like this:

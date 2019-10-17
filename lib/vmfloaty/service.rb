@@ -52,7 +52,7 @@ class Service
 
   def get_new_token(verbose)
     username = user
-    pass = Commander::UI.password 'Enter your pooler service password:', '*'
+    pass = Commander::UI.password "Enter your #{@config["url"]} service password:", '*'
     Auth.get_token(verbose, url, username, pass)
   end
 
