@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'vmfloaty/pooler'
+require 'vmfloaty/abs'
 require 'vmfloaty/nonstandard_pooler'
+require 'vmfloaty/pooler'
 
 class Utils
   # TODO: Takes the json response body from an HTTP GET
@@ -155,8 +156,11 @@ class Utils
 
   def self.get_service_object(type = '')
     nspooler_strings = %w[ns nspooler nonstandard nonstandard_pooler]
+    abs_strings = %w[abs alwaysbescheduling always_be_scheduling]
     if nspooler_strings.include? type.downcase
       NonstandardPooler
+    elsif abs_strings.include? type.downcase
+      ABS
     else
       Pooler
     end
