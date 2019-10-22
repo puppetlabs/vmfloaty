@@ -8,21 +8,9 @@ require 'vmfloaty/nonstandard_pooler'
 describe NonstandardPooler do
   before :each do
     @nspooler_url = 'https://nspooler.example.com'
-    @post_request_headers = {
-      'Accept'          => '*/*',
-      'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-      'User-Agent'      => 'Faraday v0.9.2',
-      'X-Auth-Token'    => 'token-value',
+    @auth_token_headers = {
+      'X-Auth-Token' => 'token-value',
     }
-    @get_request_headers = {
-      'Accept'          => '*/*',
-      'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-      'User-Agent'      => 'Faraday v0.9.2',
-      'X-Auth-Token'    => 'token-value',
-    }
-    @get_request_headers_notoken = @get_request_headers.tap do |headers|
-      headers.delete('X-Auth-Token')
-    end
   end
 
   describe '#list' do
@@ -133,7 +121,7 @@ describe NonstandardPooler do
 
     it 'raises an AuthError if the token is invalid' do
       stub_request(:post, "#{@nspooler_url}/host/solaris-11-sparc")
-        .with(:headers => @post_request_headers)
+        .with(:headers => @auth_token_headers)
         .to_return(:status => 401, :body => '{"ok":false,"reason": "token: token-value does not exist"}', :headers => {})
 
       vm_hash = { 'solaris-11-sparc' => 1 }
@@ -142,7 +130,7 @@ describe NonstandardPooler do
 
     it 'retrieves a single vm with a token' do
       stub_request(:post, "#{@nspooler_url}/host/solaris-11-sparc")
-        .with(:headers => @post_request_headers)
+        .with(:headers => @auth_token_headers)
         .to_return(:status => 200, :body => @retrieve_response_body_single, :headers => {})
 
       vm_hash = { 'solaris-11-sparc' => 1 }
@@ -154,7 +142,7 @@ describe NonstandardPooler do
 
     it 'retrieves a multiple vms with a token' do
       stub_request(:post, "#{@nspooler_url}/host/aix-7.1-power+solaris-10-sparc+solaris-10-sparc")
-        .with(:headers => @post_request_headers)
+        .with(:headers => @auth_token_headers)
         .to_return(:status => 200, :body => @retrieve_response_body_many, :headers => {})
 
       vm_hash = { 'aix-7.1-power' => 1, 'solaris-10-sparc' => 2 }
@@ -175,7 +163,7 @@ describe NonstandardPooler do
     it 'raises an error if the user tries to modify an unsupported attribute' do
       stub_request(:put, 'https://nspooler.example.com/host/myfakehost')
         .with(:body    => { '{}' => true },
-              :headers => { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type' => 'application/x-www-form-urlencoded', 'User-Agent' => 'Faraday v0.9.2', 'X-Auth-Token' => 'token-value' })
+              :headers => @auth_token_headers)
         .to_return(:status => 200, :body => '', :headers => {})
       details = { :lifetime => 12 }
       expect { NonstandardPooler.modify(false, @nspooler_url, 'myfakehost', 'token-value', details) }
@@ -186,7 +174,7 @@ describe NonstandardPooler do
       modify_request_body = { '{"reserved_for_reason":"testing"}' => true }
       stub_request(:put, "#{@nspooler_url}/host/myfakehost")
         .with(:body    => modify_request_body,
-              :headers => @post_request_headers)
+              :headers => @auth_token_headers)
         .to_return(:status => 200, :body => '{"ok": true}', :headers => {})
 
       modify_hash = { :reason => 'testing' }
@@ -220,7 +208,6 @@ describe NonstandardPooler do
 
     it 'prints the status' do
       stub_request(:get, "#{@nspooler_url}/status")
-        .with(:headers => @get_request_headers)
         .to_return(:status => 200, :body => @status_response_body, :headers => {})
 
       status = NonstandardPooler.status(false, @nspooler_url)
@@ -244,7 +231,6 @@ describe NonstandardPooler do
 
     it 'prints the summary' do
       stub_request(:get, "#{@nspooler_url}/summary")
-        .with(:headers => @get_request_headers)
         .to_return(:status => 200, :body => @status_response_body, :headers => {})
 
       summary = NonstandardPooler.summary(false, @nspooler_url)
@@ -270,7 +256,6 @@ describe NonstandardPooler do
 
     it 'makes a query about a vm' do
       stub_request(:get, "#{@nspooler_url}/host/sol10-11")
-        .with(:headers => @get_request_headers_notoken)
         .to_return(:status => 200, :body => @query_response_body, :headers => {})
 
       query_req = NonstandardPooler.query(false, @nspooler_url, 'sol10-11')
@@ -286,7 +271,7 @@ describe NonstandardPooler do
 
     it 'deletes a single existing vm' do
       stub_request(:delete, "#{@nspooler_url}/host/sol11-7")
-        .with(:headers => @post_request_headers)
+        .with(:headers => @auth_token_headers)
         .to_return(:status => 200, :body => @delete_response_success, :headers => {})
 
       request = NonstandardPooler.delete(false, @nspooler_url, 'sol11-7', 'token-value')
@@ -295,7 +280,7 @@ describe NonstandardPooler do
 
     it 'does not delete a nonexistant vm' do
       stub_request(:delete, "#{@nspooler_url}/host/fakehost")
-        .with(:headers => @post_request_headers)
+        .with(:headers => @auth_token_headers)
         .to_return(:status => 401, :body => @delete_response_failure, :headers => {})
 
       request = NonstandardPooler.delete(false, @nspooler_url, 'fakehost', 'token-value')

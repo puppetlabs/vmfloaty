@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'colorize', '~> 0.8.1'
   s.add_dependency 'commander', '~> 4.4.3'
-  s.add_dependency 'faraday', '~> 0.9.0'
+  s.add_dependency 'faraday', '~> 0.15.0'
 end
