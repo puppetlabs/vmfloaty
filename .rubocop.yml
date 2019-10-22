@@ -16,5 +16,5 @@ Style/TrailingCommaInArguments:
 
 Layout/AlignHash:
     EnforcedHashRocketStyle: table
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
     EnforcedStyle: consistent
