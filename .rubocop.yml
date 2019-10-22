@@ -18,3 +18,8 @@ Layout/AlignHash:
     EnforcedHashRocketStyle: table
 Layout/IndentFirstHashElement:
     EnforcedStyle: consistent
+
+Style/StderrPuts:
+  Enabled: false
+Style/WordArray:
+  Enabled: false
