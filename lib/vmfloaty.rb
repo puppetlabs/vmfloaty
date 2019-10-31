@@ -84,6 +84,7 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of pooler service'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
+
         service = Service.new(options, config)
         filter = args[0]
 

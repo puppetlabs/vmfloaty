@@ -31,6 +31,13 @@ class Utils
     #   }
     # }
 
+    # abs pooler response body example when `floaty get` arguments are :
+    # {
+    #   "hostname"=>"thin-soutane.delivery.puppetlabs.net",
+    #   "type"=>"centos-7.2-tmpfs-x86_64",
+    #   "engine"=>"vmpooler"
+    # }
+
     raise ArgumentError, "Bad GET response passed to format_hosts: #{response_body.to_json}" unless response_body.delete('ok')
 
     # vmpooler reports the domain separately from the hostname

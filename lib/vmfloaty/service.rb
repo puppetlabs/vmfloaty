@@ -36,7 +36,7 @@ class Service
 
   def user
     unless @config['user']
-      puts 'Enter your pooler service username:'
+      puts "Enter your #{@config['url']} service username:"
       @config['user'] = STDIN.gets.chomp
     end
     @config['user']
@@ -52,13 +52,13 @@ class Service
 
   def get_new_token(verbose)
     username = user
-    pass = Commander::UI.password "Enter your #{@config["url"]} service password:", '*'
+    pass = Commander::UI.password "Enter your #{@config['url']} service password:", '*'
     Auth.get_token(verbose, url, username, pass)
   end
 
   def delete_token(verbose, token_value = @config['token'])
     username = user
-    pass = Commander::UI.password 'Enter your pooler service password:', '*'
+    pass = Commander::UI.password "Enter your #{@config['url']} service password:", '*'
     Auth.delete_token(verbose, url, username, pass, token_value)
   end
 
@@ -72,13 +72,13 @@ class Service
   end
 
   def list_active(verbose)
-    @service_object.list_active verbose, url, token
+    @service_object.list_active verbose, url, token, user
   end
 
   def retrieve(verbose, os_types, use_token = true)
     puts 'Requesting a vm without a token...' unless use_token
     token_value = use_token ? token : nil
-    @service_object.retrieve verbose, os_types, token_value, url
+    @service_object.retrieve verbose, os_types, token_value, url, user
   end
 
   def ssh(verbose, host_os, use_token = true)
