@@ -34,5 +34,29 @@ describe ABS do
       vmpooler_formatted_compare.delete('ok')
       expect(vmpooler_formatted_response).to eq(vmpooler_formatted_compare)
     end
+
+    it 'won\'t delete a job if not all vms are listed' do
+      hosts = ["host1"]
+      allocated_resources = [
+        {
+          "hostname" => "host1"
+        },
+        {
+          "hostname" => "host2"
+        }
+      ]
+      expect(ABS.all_job_resources_accounted_for(allocated_resources, hosts)).to eq(false)
+
+      hosts = ["host1", "host2"]
+      allocated_resources = [
+        {
+          "hostname" => "host1"
+        },
+        {
+          "hostname" => "host2"
+        }
+      ]
+      expect(ABS.all_job_resources_accounted_for(allocated_resources, hosts)).to eq(true)
+    end
   end
 end

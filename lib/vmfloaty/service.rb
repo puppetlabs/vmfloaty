@@ -112,7 +112,7 @@ class Service
   end
 
   def delete(verbose, hosts)
-    @service_object.delete verbose, url, hosts, token
+    @service_object.delete verbose, url, hosts, token, user
   end
 
   def status(verbose)

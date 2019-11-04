@@ -85,6 +85,13 @@ class Utils
         host_data = response[hostname]
 
         case service.type
+        when 'ABS'
+          # For ABS, 'hostname' variable is the jobID
+          if host_data['state'] == 'allocated' || host_data['state'] == 'filled'
+            host_data['allocated_resources'].each do |vm_name, i|
+              puts "- [JobID:#{host_data['request']['job']['id']}] #{vm_name["hostname"]} (#{vm_name["type"]}) <#{host_data['state']}>"
+            end
+          end
         when 'Pooler'
           tag_pairs = []
           tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?

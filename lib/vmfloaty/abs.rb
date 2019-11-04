@@ -7,8 +7,7 @@ require 'json'
 
 class ABS
   # List active VMs in ABS
-  #
-  #
+  # This is what a job request looks like:
   # {
   #   "state":"filled",
   #   "last_processed":"2019-10-31 20:59:33 +0000",
@@ -37,32 +36,82 @@ class ABS
   #       }
   #     }
   #
+
+  @@active_hostnames = Hash.new
+
   def self.list_active(verbose, url, _token, user)
+    all_jobs = Array.new()
+    @@active_hostnames = Hash.new
+
+    self.get_active_requests(verbose, url, user).each do |reqHash|
+      all_jobs.push(reqHash['request']['job']['id'])
+      @@active_hostnames[reqHash['request']['job']['id']] = reqHash
+    end
+
+    all_jobs
+  end
+
+  def self.get_active_requests verbose, url, user
     conn = Http.get_conn(verbose, url)
     res = conn.get 'status/queue'
     requests = JSON.parse(res.body)
 
+    retVal = []
     requests.each do |req|
       reqHash = JSON.parse(req)
       next unless user == reqHash['request']['job']['user']
-
-      puts '------------------------------------'
-      puts "State: #{reqHash['state']}"
-      puts "Job ID: #{reqHash['request']['job']['id']}"
-      reqHash['request']['resources'].each do |vm_template, i|
-        puts "--VMRequest: #{vm_template}: #{i}"
-      end
-      if reqHash['state'] == 'allocated' || reqHash['state'] == 'filled'
-        reqHash['allocated_resources'].each do |vm_name, i|
-          puts "----VM: #{vm_name}: #{i}"
-        end
-      end
-      puts "User: #{reqHash['request']['job']['user']}"
-      puts ''
+      retVal.push(reqHash)
     end
 
-    sleep(100)
+    retVal
   end
+
+  def self.all_job_resources_accounted_for(allocated_resources, hosts)
+    allocated_host_list = allocated_resources.map {|ar| ar["hostname"] }
+    return (allocated_host_list-hosts).empty?
+  end
+
+  def self.delete(verbose, url, hosts, token, user)
+    # In ABS terms, this is a "returned" host.
+    conn = Http.get_conn(verbose, url)
+    conn.headers['X-AUTH-TOKEN'] = token if token
+
+    puts "Trying to delete hosts #{hosts}" if verbose
+    requests = self.get_active_requests(verbose, url, user)
+
+    jobs_to_delete = []
+
+    requests.each do |reqHash|
+      if reqHash['state'] == 'allocated' || reqHash['state'] == 'filled'
+        reqHash['allocated_resources'].each do |vm_name, i|
+          if hosts.include? vm_name["hostname"]
+            if (all_job_resources_accounted_for(job['allocated_resources'], hosts))
+              jobs_to_delete.push(reqHash)
+            else
+              puts "Can't delete #{job_id}: #{hosts} does not include all of #{job['allocated_resources']}"
+            end
+          end
+        end
+      end
+    end
+
+    response_body = {}
+
+    jobs_to_delete.each do |job|
+      reqObj = {
+        'job_id': job['request']['job']['id'],
+        'hosts': job['allocated_resources'],
+      }
+
+      puts "Deleting #{reqObj}" if verbose
+
+      res = conn.post 'api/v2/return', reqObj.to_json
+      response_body[job_id] = res_body
+    end
+
+    return response_body
+  end
+
 
   # List available VMs in ABS
   def self.list(verbose, url, os_filter = nil)
@@ -96,7 +145,7 @@ class ABS
   # Retrieve an OS from ABS.
   def self.retrieve(verbose, os_types, token, url, user)
     #
-    # Contents of post must be:j
+    # Contents of post must be like:
     #
     # {
     #   "resources": {
@@ -179,6 +228,10 @@ class ABS
     [queue_info['queue_place'], nil]
   end
 
+  def self.snapshot(verbose, url, hostname, token)
+    puts "Can't snapshot with ABS, use '--service vmpooler' (even for vms checked out with ABS)"
+  end
+
   def self.status(verbose, url)
     conn = Http.get_conn(verbose, url)
 
@@ -194,6 +247,8 @@ class ABS
   end
 
   def self.query(verbose, url, hostname)
+    return @@active_hostnames if @@active_hostnames
+    puts "For vmpooler/snapshot information, use '--service vmpooler' (even for vms checked out with ABS)"
     conn = Http.get_conn(verbose, url)
 
     res = conn.get "host/#{hostname}"
