@@ -53,7 +53,7 @@ describe Pooler do
 
       vm_hash = {}
       vm_hash['debian-7-i386'] = 1
-      expect { Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url) }.to raise_error(AuthError)
+      expect { Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url, 'user', {}) }.to raise_error(AuthError)
     end
 
     it 'retrieves a single vm with a token' do
@@ -63,7 +63,7 @@ describe Pooler do
 
       vm_hash = {}
       vm_hash['debian-7-i386'] = 1
-      vm_req = Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url)
+      vm_req = Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url, 'user', {})
       expect(vm_req).to be_an_instance_of Hash
       expect(vm_req['ok']).to equal true
       expect(vm_req['debian-7-i386']['hostname']).to eq 'fq6qlpjlsskycq6'
@@ -77,7 +77,7 @@ describe Pooler do
       vm_hash = {}
       vm_hash['debian-7-i386'] = 2
       vm_hash['centos-7-x86_64'] = 1
-      vm_req = Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url)
+      vm_req = Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url, 'user', {})
       expect(vm_req).to be_an_instance_of Hash
       expect(vm_req['ok']).to equal true
       expect(vm_req['debian-7-i386']['hostname']).to be_an_instance_of Array

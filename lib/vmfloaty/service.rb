@@ -78,7 +78,7 @@ class Service
   def retrieve(verbose, os_types, use_token = true)
     puts 'Requesting a vm without a token...' unless use_token
     token_value = use_token ? token : nil
-    @service_object.retrieve verbose, os_types, token_value, url, user
+    @service_object.retrieve verbose, os_types, token_value, url, user, @config
   end
 
   def ssh(verbose, host_os, use_token = true)

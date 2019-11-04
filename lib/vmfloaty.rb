@@ -33,6 +33,7 @@ class Vmfloaty
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--url STRING', String, 'URL of pooler service'
       c.option '--token STRING', String, 'Token for pooler service'
+      c.option '--priority STRING', 'Priority for supported backends(ABS) (High(1), Medium(2), Low(3))'
       c.option '--notoken', 'Makes a request without a token'
       c.option '--force', 'Forces vmfloaty to get requested vms'
       c.option '--json', 'Prints retrieved vms in JSON format'

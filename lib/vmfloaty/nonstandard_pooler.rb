@@ -22,7 +22,7 @@ class NonstandardPooler
     status['reserved_hosts'] || []
   end
 
-  def self.retrieve(verbose, os_type, token, url, _user)
+  def self.retrieve(verbose, os_type, token, url, _user, _options)
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 
