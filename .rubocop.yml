@@ -14,9 +14,9 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInArguments:
     EnforcedStyleForMultiline: comma
 
-Layout/AlignHash:
+Layout/HashAlignment:
     EnforcedHashRocketStyle: table
-Layout/IndentFirstHashElement:
+Layout/FirstHashElementIndentation:
     EnforcedStyle: consistent
 
 Style/StderrPuts:
