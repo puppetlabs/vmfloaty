@@ -72,7 +72,14 @@ class Pooler
     end
 
     res_body = JSON.parse(response.body)
-    res_body
+
+    if res_body['ok']
+      res_body
+    elsif response.status == 401
+      raise AuthError, "HTTP #{response.status}: The token provided could not authenticate to the pooler.\n#{res_body}"
+    else
+      raise ModifyError, "HTTP #{response.status}: Failed to modify VMs from the pooler vm/#{hostname}. #{res_body}"
+    end
   end
 
   def self.disk(verbose, url, hostname, token, disk)
