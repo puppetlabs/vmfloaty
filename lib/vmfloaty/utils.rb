@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'vmfloaty/pooler'
+require 'vmfloaty/abs'
 require 'vmfloaty/nonstandard_pooler'
+require 'vmfloaty/pooler'
 
 class Utils
   # TODO: Takes the json response body from an HTTP GET
@@ -28,6 +29,13 @@ class Utils
     #   "ubuntu-16.04-power8": {
     #     "hostname": "power8-ubuntu1604-6.delivery.mycompany.net"
     #   }
+    # }
+
+    # abs pooler response body example when `floaty get` arguments are :
+    # {
+    #   "hostname"=>"thin-soutane.delivery.puppetlabs.net",
+    #   "type"=>"centos-7.2-tmpfs-x86_64",
+    #   "engine"=>"vmpooler"
     # }
 
     raise ArgumentError, "Bad GET response passed to format_hosts: #{response_body.to_json}" unless response_body.delete('ok')
@@ -77,6 +85,13 @@ class Utils
         host_data = response[hostname]
 
         case service.type
+        when 'ABS'
+          # For ABS, 'hostname' variable is the jobID
+          if host_data['state'] == 'allocated' || host_data['state'] == 'filled'
+            host_data['allocated_resources'].each do |vm_name, _i|
+              puts "- [JobID:#{host_data['request']['job']['id']}] #{vm_name['hostname']} (#{vm_name['type']}) <#{host_data['state']}>"
+            end
+          end
         when 'Pooler'
           tag_pairs = []
           tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
@@ -140,6 +155,9 @@ class Utils
           puts "#{name.ljust(width)} #{e.red}"
         end
       end
+    when 'ABS'
+      puts 'ABS Not OK'.red unless status_response
+      puts 'ABS is OK'.green if status_response
     else
       raise "Invalid service type #{service.type}"
     end
@@ -155,8 +173,11 @@ class Utils
 
   def self.get_service_object(type = '')
     nspooler_strings = %w[ns nspooler nonstandard nonstandard_pooler]
+    abs_strings = %w[abs alwaysbescheduling always_be_scheduling]
     if nspooler_strings.include? type.downcase
       NonstandardPooler
+    elsif abs_strings.include? type.downcase
+      ABS
     else
       Pooler
     end
@@ -187,6 +208,7 @@ class Utils
     end
 
     # Prioritize an explicitly specified url, user, or token if the user provided one
+    service_config['priority'] = options.priority unless options.priority.nil?
     service_config['url'] = options.url unless options.url.nil?
     service_config['token'] = options.token unless options.token.nil?
     service_config['user'] = options.user unless options.user.nil?

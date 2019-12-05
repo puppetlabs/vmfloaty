@@ -17,12 +17,12 @@ class NonstandardPooler
     os_filter ? os_list.select { |i| i[/#{os_filter}/] } : os_list
   end
 
-  def self.list_active(verbose, url, token)
+  def self.list_active(verbose, url, token, _user)
     status = Auth.token_status(verbose, url, token)
     status['reserved_hosts'] || []
   end
 
-  def self.retrieve(verbose, os_type, token, url)
+  def self.retrieve(verbose, os_type, token, url, _user, _options)
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 

@@ -66,7 +66,7 @@ floaty get centos-7-x86_64=2 debian-7-x86_64 windows-10=3 --token mytokenstring 
 
 ### vmfloaty dotfile
 
-If you do not wish to continuely specify various config options with the cli, you can have a dotfile in your home directory for some defaults. For example:
+If you do not wish to continually specify various config options with the cli, you can have a dotfile in your home directory for some defaults. For example:
 
 #### Basic configuration
 
@@ -131,6 +131,11 @@ services:
     url: 'https://nspooler.example.net/api/v1'
     token: 'nspooler-tokenstring'
     type: 'nonstandard'  # <-- 'type' is necessary for any non-vmpooler service
+  abs:
+    url: 'https://abs.example.net/'
+    token: 'abs-tokenstring'
+    type: 'abs'  # <-- 'type' is necessary for any non-vmpooler service
+
 ```
 
 With this configuration, you could list available OS types from nspooler like this:

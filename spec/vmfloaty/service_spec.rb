@@ -16,9 +16,9 @@ describe Service do
     it 'prompts the user for their password and retrieves a token' do
       config = { 'user' => 'first.last', 'url' => 'http://default.url' }
       service = Service.new(MockOptions.new, config)
-      allow(STDOUT).to receive(:puts).with('Enter your pooler service password:')
+      allow(STDOUT).to receive(:puts).with('Enter your http://default.url service password:')
       allow(Commander::UI).to(receive(:password)
-                                  .with('Enter your pooler service password:', '*')
+                                  .with('Enter your http://default.url service password:', '*')
                                   .and_return('hunter2'))
       allow(Auth).to(receive(:get_token)
                          .with(nil, config['url'], config['user'], 'hunter2')
@@ -29,11 +29,11 @@ describe Service do
     it 'prompts the user for their username and password if the username is unknown' do
       config = { 'url' => 'http://default.url' }
       service = Service.new(MockOptions.new({}), config)
-      allow(STDOUT).to receive(:puts).with 'Enter your pooler service username:'
+      allow(STDOUT).to receive(:puts).with 'Enter your http://default.url service username:'
       allow(STDOUT).to receive(:puts).with "\n"
       allow(STDIN).to receive(:gets).and_return('first.last')
       allow(Commander::UI).to(receive(:password)
-                                  .with('Enter your pooler service password:', '*')
+                                  .with('Enter your http://default.url service password:', '*')
                                   .and_return('hunter2'))
       allow(Auth).to(receive(:get_token)
                          .with(nil, config['url'], 'first.last', 'hunter2')
@@ -46,7 +46,7 @@ describe Service do
     it 'deletes a token' do
       service = Service.new(MockOptions.new, 'user' => 'first.last', 'url' => 'http://default.url')
       allow(Commander::UI).to(receive(:password)
-                                  .with('Enter your pooler service password:', '*')
+                                  .with('Enter your http://default.url service password:', '*')
                                   .and_return('hunter2'))
       allow(Auth).to(receive(:delete_token)
                          .with(nil, 'http://default.url', 'first.last', 'hunter2', 'token-value')

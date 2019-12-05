@@ -21,14 +21,14 @@ class Pooler
     hosts
   end
 
-  def self.list_active(verbose, url, token)
+  def self.list_active(verbose, url, token, _user)
     status = Auth.token_status(verbose, url, token)
     vms = []
     vms = status[token]['vms']['running'] if status[token] && status[token]['vms']
     vms
   end
 
-  def self.retrieve(verbose, os_type, token, url)
+  def self.retrieve(verbose, os_type, token, url, _user, _options)
     # NOTE:
     #   Developers can use `Utils.generate_os_hash` to
     #   generate the os_type param.

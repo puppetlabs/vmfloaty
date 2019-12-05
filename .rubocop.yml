@@ -14,10 +14,12 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInArguments:
     EnforcedStyleForMultiline: comma
 
-Layout/AlignHash:
+Layout/HashAlignment:
     EnforcedHashRocketStyle: table
-Layout/IndentFirstHashElement:
+Layout/FirstHashElementIndentation:
     EnforcedStyle: consistent
+Metrics/ParameterLists:
+    Enabled: False
 
 Style/StderrPuts:
   Enabled: false

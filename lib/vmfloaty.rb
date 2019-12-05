@@ -17,7 +17,7 @@ require 'vmfloaty/ssh'
 class Vmfloaty
   include Commander::Methods
 
-  def run
+  def run # rubocop:disable Metrics/AbcSize
     program :version, Vmfloaty::VERSION
     program :description, 'A CLI helper tool for Puppet Labs VM poolers to help you stay afloat'
 
@@ -33,6 +33,7 @@ class Vmfloaty
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--url STRING', String, 'URL of pooler service'
       c.option '--token STRING', String, 'Token for pooler service'
+      c.option '--priority STRING', 'Priority for supported backends(ABS) (High(1), Medium(2), Low(3))'
       c.option '--notoken', 'Makes a request without a token'
       c.option '--force', 'Forces vmfloaty to get requested vms'
       c.option '--json', 'Prints retrieved vms in JSON format'
@@ -84,6 +85,7 @@ class Vmfloaty
       c.option '--url STRING', String, 'URL of pooler service'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
+
         service = Service.new(options, config)
         filter = args[0]
 

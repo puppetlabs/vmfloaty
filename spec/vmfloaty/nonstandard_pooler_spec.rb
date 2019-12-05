@@ -88,7 +88,7 @@ describe NonstandardPooler do
         .with(false, @nspooler_url, 'token-value')
         .and_return(JSON.parse(@token_status_body_active))
 
-      list = NonstandardPooler.list_active(false, @nspooler_url, 'token-value')
+      list = NonstandardPooler.list_active(false, @nspooler_url, 'token-value', 'user')
       expect(list).to eql ['sol10-9', 'sol10-11']
     end
   end
@@ -125,7 +125,7 @@ describe NonstandardPooler do
         .to_return(:status => 401, :body => '{"ok":false,"reason": "token: token-value does not exist"}', :headers => {})
 
       vm_hash = { 'solaris-11-sparc' => 1 }
-      expect { NonstandardPooler.retrieve(false, vm_hash, 'token-value', @nspooler_url) }.to raise_error(AuthError)
+      expect { NonstandardPooler.retrieve(false, vm_hash, 'token-value', @nspooler_url, 'first.last', {}) }.to raise_error(AuthError)
     end
 
     it 'retrieves a single vm with a token' do
@@ -134,7 +134,7 @@ describe NonstandardPooler do
         .to_return(:status => 200, :body => @retrieve_response_body_single, :headers => {})
 
       vm_hash = { 'solaris-11-sparc' => 1 }
-      vm_req = NonstandardPooler.retrieve(false, vm_hash, 'token-value', @nspooler_url)
+      vm_req = NonstandardPooler.retrieve(false, vm_hash, 'token-value', @nspooler_url, 'first.last', {})
       expect(vm_req).to be_an_instance_of Hash
       expect(vm_req['ok']).to equal true
       expect(vm_req['solaris-11-sparc']['hostname']).to eq 'sol11-4.delivery.puppetlabs.net'
@@ -146,7 +146,7 @@ describe NonstandardPooler do
         .to_return(:status => 200, :body => @retrieve_response_body_many, :headers => {})
 
       vm_hash = { 'aix-7.1-power' => 1, 'solaris-10-sparc' => 2 }
-      vm_req = NonstandardPooler.retrieve(false, vm_hash, 'token-value', @nspooler_url)
+      vm_req = NonstandardPooler.retrieve(false, vm_hash, 'token-value', @nspooler_url, 'first.last', {})
       expect(vm_req).to be_an_instance_of Hash
       expect(vm_req['ok']).to equal true
       expect(vm_req['solaris-10-sparc']['hostname']).to be_an_instance_of Array
