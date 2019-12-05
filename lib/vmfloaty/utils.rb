@@ -156,8 +156,8 @@ class Utils
         end
       end
     when 'ABS'
-      puts "ABS Not OK".red unless status_response
-      puts "ABS is OK".green if status_response
+      puts 'ABS Not OK'.red unless status_response
+      puts 'ABS is OK'.green if status_response
     else
       raise "Invalid service type #{service.type}"
     end

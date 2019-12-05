@@ -17,7 +17,7 @@ require 'vmfloaty/ssh'
 class Vmfloaty
   include Commander::Methods
 
-  def run
+  def run # rubocop:disable Metrics/AbcSize
     program :version, Vmfloaty::VERSION
     program :description, 'A CLI helper tool for Puppet Labs VM poolers to help you stay afloat'
 

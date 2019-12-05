@@ -82,10 +82,10 @@ class ABS
 
     jobs_to_delete = []
 
-    retStatus = {}
+    ret_status = {}
     hosts.each do |host|
-      retStatus[host] = {
-        'ok' => false
+      ret_status[host] = {
+        'ok' => false,
       }
     end
 
@@ -95,11 +95,11 @@ class ABS
       req_hash['allocated_resources'].each do |vm_name, _i|
         if hosts.include? vm_name['hostname']
           if all_job_resources_accounted_for(req_hash['allocated_resources'], hosts)
-            retStatus[vm_name['hostname']] = {
-              'ok' => true
+            ret_status[vm_name['hostname']] = {
+              'ok' => true,
             }
             jobs_to_delete.push(req_hash)
-        else
+          else
             puts "When using ABS you must delete all vms that you requested at the same time: Can't delete #{req_hash['request']['job']['id']}: #{hosts} does not include all of #{req_hash['allocated_resources']}"
           end
         end
@@ -118,7 +118,7 @@ class ABS
 
       return_result = conn.post 'return', req_obj.to_json
       req_obj['hosts'].each do |host|
-        response_body[host["hostname"]] = { 'ok' => true } if return_result.body == "OK"
+        response_body[host['hostname']] = { 'ok' => true } if return_result.body == 'OK'
       end
     end
 
@@ -187,16 +187,16 @@ class ABS
       },
     }
 
-    if options["priority"]
-      if options["priority"] == "high"
-        req_obj[:priority] = 1
-      elsif options["priority"] == "medium"
-        req_obj[:priority] = 2
-      elsif options["priority"] == "low"
-        req_obj[:priority] = 3
-      else
-        req_obj[:priority] = options["priority"].to_i
-      end
+    if options['priority']
+      req_obj[:priority] = if options['priority'] == 'high'
+                             1
+                           elsif options['priority'] == 'medium'
+                             2
+                           elsif options['priority'] == 'low'
+                             3
+                           else
+                             options['priority'].to_i
+                           end
     end
 
     puts "Posting to ABS #{req_obj.to_json}" if verbose
@@ -214,12 +214,11 @@ class ABS
       queue_place, res_body = check_queue(conn, saved_job_id, req_obj)
       return translated(res_body) if res_body
 
-      
-      sleepSeconds = 10 if i >= 10
-      sleepSeconds = i if i < 10
-      puts "Waiting #{sleepSeconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
+      sleep_seconds = 10 if i >= 10
+      sleep_seconds = i if i < 10
+      puts "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
 
-      sleep(sleepSeconds)
+      sleep(sleep_seconds)
     end
     nil
   end
@@ -264,7 +263,7 @@ class ABS
 
     res = conn.get 'status'
 
-    return res.body == "OK"
+    res.body == 'OK'
   end
 
   def self.summary(verbose, url)

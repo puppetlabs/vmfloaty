@@ -18,6 +18,8 @@ Layout/HashAlignment:
     EnforcedHashRocketStyle: table
 Layout/FirstHashElementIndentation:
     EnforcedStyle: consistent
+Metrics/ParameterLists:
+    Enabled: False
 
 Style/StderrPuts:
   Enabled: false
