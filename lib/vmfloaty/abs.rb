@@ -57,11 +57,19 @@ class ABS
     requests = JSON.parse(res.body)
 
     ret_val = []
-    requests.each do |req|
-      req_hash = JSON.parse(req)
-      next unless user == req_hash['request']['job']['user']
 
-      ret_val.push(req_hash)
+    requests.each do |req|
+      next if req == 'null'
+
+      req_hash = JSON.parse(req)
+
+      begin
+        next unless user == req_hash['request']['job']['user']
+
+        ret_val.push(req_hash)
+      rescue NoMethodError
+        puts "Warning: couldn't parse line returned from abs/status/queue: ".yellow
+      end
     end
 
     ret_val
