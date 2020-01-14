@@ -94,7 +94,7 @@ class Pooler
     res_body
   end
 
-  def self.delete(verbose, url, hosts, token)
+  def self.delete(verbose, url, hosts, token, _user)
     raise TokenError, 'Token provided was nil. Request cannot be made to delete vm' if token.nil?
 
     conn = Http.get_conn(verbose, url)

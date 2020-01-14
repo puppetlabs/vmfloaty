@@ -77,7 +77,7 @@ class NonstandardPooler
     raise ModifyError, 'Configured service type does not support snapshots'
   end
 
-  def self.delete(verbose, url, hosts, token)
+  def self.delete(verbose, url, hosts, token, _user)
     raise TokenError, 'Token provided was nil; Request cannot be made to delete VM' if token.nil?
 
     conn = Http.get_conn(verbose, url)
