@@ -274,7 +274,7 @@ describe NonstandardPooler do
         .with(:headers => @auth_token_headers)
         .to_return(:status => 200, :body => @delete_response_success, :headers => {})
 
-      request = NonstandardPooler.delete(false, @nspooler_url, 'sol11-7', 'token-value')
+      request = NonstandardPooler.delete(false, @nspooler_url, 'sol11-7', 'token-value', nil)
       expect(request['sol11-7']['ok']).to be true
     end
 
@@ -283,7 +283,7 @@ describe NonstandardPooler do
         .with(:headers => @auth_token_headers)
         .to_return(:status => 401, :body => @delete_response_failure, :headers => {})
 
-      request = NonstandardPooler.delete(false, @nspooler_url, 'fakehost', 'token-value')
+      request = NonstandardPooler.delete(false, @nspooler_url, 'fakehost', 'token-value', nil)
       expect(request['fakehost']['ok']).to be false
     end
   end

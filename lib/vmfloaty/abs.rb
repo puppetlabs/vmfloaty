@@ -290,4 +290,16 @@ class ABS
     res = conn.get "host/#{hostname}"
     JSON.parse(res.body)
   end
+
+  def self.modify(_verbose, _url, _hostname, _token, _modify_hash)
+    raise NoMethodError, 'modify is not defined for ABS'
+  end
+
+  def self.disk(_verbose, _url, _hostname, _token, _disk)
+    raise NoMethodError, 'disk is not defined for ABS'
+  end
+
+  def self.revert(_verbose, _url, _hostname, _token, _snapshot_sha)
+    raise NoMethodError, 'revert is not defined for ABS'
+  end
 end
