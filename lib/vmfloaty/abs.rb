@@ -100,6 +100,11 @@ class ABS
     requests.each do |req_hash|
       next unless req_hash['state'] == 'allocated' || req_hash['state'] == 'filled'
 
+      if hosts.include? req_hash['request']['job']['id']
+        jobs_to_delete.push(req_hash)
+        next
+      end
+
       req_hash['allocated_resources'].each do |vm_name, _i|
         if hosts.include? vm_name['hostname']
           if all_job_resources_accounted_for(req_hash['allocated_resources'], hosts)

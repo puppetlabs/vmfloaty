@@ -185,9 +185,11 @@ class Vmfloaty
 
     command :delete do |c|
       c.syntax = 'floaty delete hostname,hostname2 [options]'
+      c.syntax += "\n    floaty delete job1,job2 [options] (only supported with ABS)"
       c.summary = 'Schedules the deletion of a host or hosts'
-      c.description = 'Given a comma separated list of hostnames, or --all for all vms, vmfloaty makes a request to the pooler service to schedule the deletion of those vms.'
+      c.description = 'Given a comma separated list of hostnames, or --all for all vms, vmfloaty makes a request to the pooler service to schedule the deletion of those vms. If you are using the ABS service, you can also pass in JobIDs here. Note that passing in a Job ID will delete *all* of the hosts in the job.' # rubocop:disable Layout/LineLength
       c.example 'Schedules the deletion of a host or hosts', 'floaty delete myhost1,myhost2 --url http://vmpooler.example.com'
+      c.example 'Schedules the deletion of a JobID or JobIDs', 'floaty delete 1579300120799,1579300120800 --url http://abs.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--all', 'Deletes all vms acquired by a token'
