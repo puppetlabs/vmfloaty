@@ -91,7 +91,7 @@ class Service
         STDERR.puts 'Could not get token... requesting vm without a token anyway...'
       end
     end
-    Ssh.ssh(verbose, host_os, token_value, url)
+    Ssh.ssh(verbose, self, host_os, token_value)
   end
 
   def pretty_print_running(verbose, hostnames = [])
