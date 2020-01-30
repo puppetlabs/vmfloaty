@@ -61,9 +61,9 @@ class Pooler
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token
 
-    if modify_hash['disk']
-      disk(verbose, url, hostname, token, modify_hash['disk'])
-      modify_hash.delete 'disk'
+    if modify_hash[:disk]
+      disk(verbose, url, hostname, token, modify_hash[:disk])
+      modify_hash.delete :disk
     end
 
     response = conn.put do |req|
