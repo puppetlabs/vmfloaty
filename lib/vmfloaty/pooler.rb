@@ -28,7 +28,7 @@ class Pooler
     vms
   end
 
-  def self.retrieve(verbose, os_type, token, url, _user, _options)
+  def self.retrieve(verbose, os_type, token, url, _user, _options, ondemand = nil)
     # NOTE:
     #   Developers can use `Utils.generate_os_hash` to
     #   generate the os_type param.
@@ -38,7 +38,8 @@ class Pooler
     os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
     raise MissingParamError, 'No operating systems provided to obtain.' if os_string.empty?
 
-    response = conn.post "vm/#{os_string}"
+    response = conn.post "vm/#{os_string}" unless ondemand
+    response ||= conn.post "ondemandvm/#{os_string}"
 
     res_body = JSON.parse(response.body)
 
@@ -46,9 +47,38 @@ class Pooler
       res_body
     elsif response.status == 401
       raise AuthError, "HTTP #{response.status}: The token provided could not authenticate to the pooler.\n#{res_body}"
+    elsif response.status == 403
+      raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. Request exceeds the configured per pool maximum. #{res_body}"
     else
-      raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. #{res_body}"
+      raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. #{res_body}" unless ondemand
+      raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/ondemandvm/#{os_string}. #{res_body}"
     end
+  end
+
+  def self.wait_for_request(verbose, request_id, url, timeout = 300)
+    start_time = Time.now
+    while check_ondemandvm(verbose, request_id, url) == false
+      return false if (Time.now - start_time).to_i > timeout
+
+      STDOUT.puts "waiting for request #{request_id} to be fulfilled"
+      sleep 5
+    end
+    STDOUT.puts "The request has been fulfilled"
+    check_ondemandvm(verbose, request_id, url)
+  end
+
+  def self.check_ondemandvm(verbose, request_id, url)
+    conn = Http.get_conn(verbose, url)
+
+    response = conn.get "ondemandvm/#{request_id}"
+    res_body = JSON.parse(response.body)
+    return res_body if response.status == 200
+
+    return false if response.status == 202
+
+    raise "HTTP #{response.status}: The request cannot be found, or an unknown error occurred" if response.status == 404
+
+    false
   end
 
   def self.modify(verbose, url, hostname, token, modify_hash)

@@ -37,6 +37,7 @@ class Vmfloaty
       c.option '--notoken', 'Makes a request without a token'
       c.option '--force', 'Forces vmfloaty to get requested vms'
       c.option '--json', 'Prints retrieved vms in JSON format'
+      c.option '--ondemand', 'Requested vms are provisioned upon receival of the request, tracked by a request ID'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
@@ -63,9 +64,13 @@ class Vmfloaty
           exit 1
         end
 
-        response = service.retrieve(verbose, os_types, use_token)
+        response = service.retrieve(verbose, os_types, use_token, options.ondemand)
+        request_id = response['request_id'] if options.ondemand
+        response = service.wait_for_request(verbose, request_id) if options.ondemand
+
         hosts = Utils.standardize_hostnames(response)
-        if options.json
+
+        if options.json || options.ondemand
           puts JSON.pretty_generate(hosts)
         else
           puts Utils.format_host_output(hosts)

@@ -84,6 +84,26 @@ describe Pooler do
       expect(vm_req['debian-7-i386']['hostname']).to eq %w[sc0o4xqtodlul5w 4m4dkhqiufnjmxy]
       expect(vm_req['centos-7-x86_64']['hostname']).to eq 'zb91y9qbrbf6d3q'
     end
+
+    context 'with ondemand provisioning' do
+      let(:ondemand_response) { '{"ok":true,"request_id":"1234"}' }
+      it 'retreives the vm with a token' do
+        stub_request(:post, "#{@vmpooler_url}/ondemandvm/debian-7-i386")
+          .with(:headers => { 'X-Auth-Token' => 'mytokenfile' })
+          .to_return(:status => 200, :body => ondemand_response, :headers => {})
+
+        stub_request(:get, "#{@vmpooler_url}/ondemandvm/1234")
+          .to_return(:status => 200, :body => @retrieve_response_body_single, :headers => {})
+
+        vm_hash = {}
+        vm_hash['debian-7-i386'] = 1
+        Pooler.retrieve(false, vm_hash, 'mytokenfile', @vmpooler_url, 'user', {}, true)
+        vm_req = Pooler.check_ondemandvm(false, '1234', @vmpooler_url)
+        expect(vm_req).to be_an_instance_of Hash
+        expect(vm_req['ok']).to equal true
+        expect(vm_req['debian-7-i386']['hostname']).to eq 'fq6qlpjlsskycq6'
+      end
+    end
   end
 
   describe '#modify' do
