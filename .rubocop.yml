@@ -14,14 +14,21 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInArguments:
     EnforcedStyleForMultiline: comma
 
+Layout/AlignHash:
+  Enabled: false
 Layout/HashAlignment:
-    EnforcedHashRocketStyle: table
+   EnforcedHashRocketStyle: table
 Layout/FirstHashElementIndentation:
     EnforcedStyle: consistent
 Metrics/ParameterLists:
     Enabled: False
+Layout/SpaceAroundOperators:
+  Enabled: false
 
 Style/StderrPuts:
   Enabled: false
 Style/WordArray:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
   Enabled: false
