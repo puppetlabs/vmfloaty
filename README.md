@@ -7,8 +7,6 @@ A CLI helper tool for [Puppet Labs vmpooler](https://github.com/puppetlabs/vmpoo
 
 <img src="http://i.imgur.com/xGcGwuH.jpg" width=200 height=200>
 
-This project is still supported by @briancain and @demophoon. Ping either of us if you'd like something merged and released.
-
 ## Install
 
 Grab the latest from ruby gems...
