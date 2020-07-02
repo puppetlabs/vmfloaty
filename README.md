@@ -1,38 +1,61 @@
-vmfloaty
-========
+# vmfloaty
 
-[![Gem Version](https://badge.fury.io/rb/vmfloaty.svg)](https://badge.fury.io/rb/vmfloaty) [![Build Status](https://travis-ci.org/briancain/vmfloaty.svg?branch=master)](https://travis-ci.org/briancain/vmfloaty)
+[![Gem Version](https://badge.fury.io/rb/vmfloaty.svg)](https://badge.fury.io/rb/vmfloaty) [![Build Status](https://travis-ci.com/puppetlabs/vmfloaty.svg?branch=master)](https://travis-ci.com/puppetlabs/vmfloaty)
 
-A CLI helper tool for [Puppet Labs vmpooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.
+A CLI helper tool for [Puppet's vmpooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.
 
-<img src="http://i.imgur.com/xGcGwuH.jpg" width=200 height=200>
+![float image](float.jpg)
+
+- [Install](#install)
+- [Usage](#usage)
+  - [Example workflow](#example-workflow)
+  - [vmfloaty dotfile](#vmfloaty-dotfile)
+    - [Basic configuration](#basic-configuration)
+    - [Default to Puppet's ABS instead of vmpooler](#default-to-puppets-abs-instead-of-vmpooler)
+    - [Configuring multiple services](#configuring-multiple-services)
+    - [Using a Nonstandard Pooler service](#using-a-nonstandard-pooler-service)
+    - [Valid config keys](#valid-config-keys)
+  - [Tab Completion](#tab-completion)
+- [vmpooler API](#vmpooler-api)
+- [Using the Pooler class](#using-the-pooler-class)
+  - [Example Projects](#example-projects)
+- [Special thanks](#special-thanks)
 
 ## Install
 
 Grab the latest from ruby gems...
 
-```
-$ gem install vmfloaty
-...
-...
-$ floaty --help
+```bash
+gem install vmfloaty
 ```
 
 ## Usage
 
-```
-    delete   Schedules the deletion of a host or hosts
-    get      Gets a vm or vms based on the os argument
-    help     Display global or [command] help documentation
-    list     Shows a list of available vms from the pooler or vms obtained with a token
-    modify   Modify a vms tags, time to live, and disk space
-    query    Get information about a given vm
-    revert   Reverts a vm to a specified snapshot
-    snapshot Takes a snapshot of a given vm
-    ssh      Grabs a single vm and sshs into it
-    status   Prints the status of pools in vmpooler
-    summary  Prints a summary of vmpooler
-    token    Retrieves or deletes a token or checks token status
+```plain
+$ floaty --help
+  NAME:
+
+    floaty
+
+  DESCRIPTION:
+
+    A CLI helper tool for Puppet's vmpooler to help you stay afloat
+
+  COMMANDS:
+
+    completion Outputs path to completion script
+    delete     Schedules the deletion of a host or hosts
+    get        Gets a vm or vms based on the os argument
+    help       Display global or [command] help documentation
+    list       Shows a list of available vms from the pooler or vms obtained with a token
+    modify     Modify a VM's tags, time to live, disk space, or reservation reason
+    query      Get information about a given vm
+    revert     Reverts a vm to a specified snapshot
+    snapshot   Takes a snapshot of a given vm
+    ssh        Grabs a single vm and sshs into it
+    status     Prints the status of pools in the pooler service
+    summary    Prints a summary of a pooler service
+    token      Retrieves or deletes a token or checks token status
 
   GLOBAL OPTIONS:
 
@@ -50,7 +73,7 @@ $ floaty --help
 
 Grabbing a token for authenticated pooler requests:
 
-```
+```bash
 floaty token get --user username --url https://vmpooler.example.net/api/v1
 ```
 
@@ -58,7 +81,7 @@ This command will then ask you to log in. If successful, it will return a token 
 
 Grabbing vms:
 
-```
+```bash
 floaty get centos-7-x86_64=2 debian-7-x86_64 windows-10=3 --token mytokenstring --url https://vmpooler.example.net/api/v1
 ```
 
@@ -69,13 +92,23 @@ If you do not wish to continually specify various config options with the cli, y
 #### Basic configuration
 
 ```yaml
-# file at /Users/me/.vmfloaty.yml
+# file at ~/.vmfloaty.yml
 url: 'https://vmpooler.example.net/api/v1'
 user: 'brian'
 token: 'tokenstring'
 ```
 
 Now vmfloaty will use those config files if no flag was specified.
+
+#### Default to Puppet's ABS instead of vmpooler
+
+```yaml
+# file at ~/.vmfloaty.yml
+url: 'https://abs.example.net'
+user: 'brian'
+token: 'tokenstring'
+type: 'abs'
+```
 
 #### Configuring multiple services
 
@@ -103,14 +136,16 @@ services:
 Examples using the above configuration:
 
 List available vm types from our main vmpooler instance:
-```sh
+
+```bash
 floaty list --service main
 # or, since the first configured service is used by default:
 floaty list
 ```
 
 List available vm types from our alternate vmpooler instance:
-```sh
+
+```bash
 floaty list --service alternate
 ```
 
@@ -138,7 +173,7 @@ services:
 
 With this configuration, you could list available OS types from nspooler like this:
 
-```sh
+```bash
 floaty list --service ns
 ```
 
@@ -146,20 +181,16 @@ floaty list --service ns
 
 Here are the keys that vmfloaty currently supports:
 
-- verbose
-  + Boolean
-- token
-  + String
-- user
-  + String
-- url
-  + String
-- services
-  + Map
+- verbose (Boolean)
+- token (String)
+- user (String)
+- url (String)
+- services (String)
+- type (String)
 
 ### Tab Completion
 
-There is a basic completion script for Bash (and possibly other shells) included with the gem in the [extras/completions](https://github.com/briancain/vmfloaty/blob/master/extras/completions) folder. To activate, that file simply needs to be sourced somehow in your shell profile.
+There is a basic completion script for Bash (and possibly other shells) included with the gem in the [extras/completions](https://github.com/puppetlabs/vmfloaty/blob/master/extras/completions) folder. To activate, that file simply needs to be sourced somehow in your shell profile.
 
 For convenience, the path to the completion script for the currently active version of the gem can be found with the `floaty completion` subcommand. This makes it easy to add the completion script to your profile like so:
 
@@ -184,6 +215,10 @@ vmfloaty providers a `Pooler` class that gives users the ability to make request
 ### Example Projects
 
 - [John McCabe: vmpooler-bitbar](https://github.com/johnmccabe/vmpooler-bitbar/)
-  + vmpooler status and management in your menubar with bitbar
+  - vmpooler status and management in your menubar with bitbar
 - [Brian Cain: vagrant-vmpooler](https://github.com/briancain/vagrant-vmpooler)
-  + Use Vagrant to manage your vmpooler instances
+  - Use Vagrant to manage your vmpooler instances
+
+## Special thanks
+
+Special thanks to [Brian Cain](https://github.com/briancain) as he is the original author of vmfloaty! Vast amounts of this code exist thanks to his efforts.
