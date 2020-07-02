@@ -6,10 +6,16 @@ require 'vmfloaty/version'
 Gem::Specification.new do |s|
   s.name = 'vmfloaty'
   s.version = Vmfloaty::VERSION
-  s.authors = ['Brian Cain']
-  s.email = ['brianccain@gmail.com']
+  s.authors = [
+    'Brian Cain',
+    'Puppet',
+  ]
+  s.email = [
+    'brianccain@gmail.com',
+    'dio-gems@puppet.com',
+  ]
   s.license = 'Apache-2.0'
-  s.homepage = 'https://github.com/briancain/vmfloaty'
+  s.homepage = 'https://github.com/puppetlabs/vmfloaty'
   s.description = 'A helper tool for vmpooler to help you stay afloat'
   s.summary = 'CLI application to interface with vmpooler'
 
