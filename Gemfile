@@ -7,6 +7,7 @@ gemspec
 gem 'rake', :require => false
 
 group :test do
+  gem 'coveralls', '~> 0.8.23'
   gem 'pry'
   gem 'rb-readline'
   gem 'rspec', '~> 3.5.0'
