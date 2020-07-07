@@ -1,6 +1,3 @@
-# Set Puppet's DIO team as the default code owner
-* @puppetlabs/dio
+# Set the default code owners
+* @puppetlabs/dio @briancain @highb
 
-# External code owners
-* @briancain
-* @highb
