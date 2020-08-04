@@ -75,10 +75,14 @@ class Service
     @service_object.list_active verbose, url, token, user
   end
 
-  def retrieve(verbose, os_types, use_token = true)
+  def retrieve(verbose, os_types, use_token = true, ondemand = nil)
     puts 'Requesting a vm without a token...' unless use_token
     token_value = use_token ? token : nil
-    @service_object.retrieve verbose, os_types, token_value, url, user, @config
+    @service_object.retrieve verbose, os_types, token_value, url, user, @config, ondemand
+  end
+
+  def wait_for_request(verbose, requestid)
+    @service_object.wait_for_request verbose, requestid, url
   end
 
   def ssh(verbose, host_os, use_token = true)

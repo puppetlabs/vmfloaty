@@ -45,7 +45,9 @@ class Utils
 
     result = {}
 
-    response_body.each do |os, value|
+    STDOUT.puts "response body is #{response_body}"
+    filtered_response_body = response_body.reject { |key, _| key == 'request_id' || key == 'ready' }
+    filtered_response_body.each do |os, value|
       hostnames = Array(value['hostname'])
       hostnames.map! { |host| "#{host}.#{domain}" } if domain
       result[os] = hostnames

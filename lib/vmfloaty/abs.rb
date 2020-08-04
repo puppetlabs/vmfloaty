@@ -150,6 +150,14 @@ class ABS
     os_list << '*** VMPOOLER Pools ***'
     os_list += JSON.parse(res_body['vmpooler_platforms'])
 
+    res = conn.get 'status/platforms/ondemand_vmpooler'
+    res_body = JSON.parse(res.body)
+    unless res_body['ondemand_vmpooler_platforms'] == '[]'
+      os_list << ''
+      os_list << '*** VMPOOLER ONDEMAND Pools ***'
+      os_list += JSON.parse(res_body['ondemand_vmpooler_platforms'])
+    end
+
     res = conn.get 'status/platforms/nspooler'
     res_body = JSON.parse(res.body)
     os_list << ''
@@ -168,7 +176,7 @@ class ABS
   end
 
   # Retrieve an OS from ABS.
-  def self.retrieve(verbose, os_types, token, url, user, options)
+  def self.retrieve(verbose, os_types, token, url, user, options, _ondemand = nil)
     #
     # Contents of post must be like:
     #
