@@ -36,7 +36,7 @@ class Service
 
   def user
     unless @config['user']
-      puts "Enter your #{@config['url']} service username:"
+      STDERR.puts "Enter your #{@config['url']} service username:"
       @config['user'] = STDIN.gets.chomp
     end
     @config['user']
@@ -44,7 +44,7 @@ class Service
 
   def token
     unless @config['token']
-      puts 'No token found. Retrieving a token...'
+      STDERR.puts 'No token found. Retrieving a token...'
       @config['token'] = get_new_token(nil)
     end
     @config['token']
@@ -76,7 +76,7 @@ class Service
   end
 
   def retrieve(verbose, os_types, use_token = true, ondemand = nil)
-    puts 'Requesting a vm without a token...' unless use_token
+    STDERR.puts 'Requesting a vm without a token...' unless use_token
     token_value = use_token ? token : nil
     @service_object.retrieve verbose, os_types, token_value, url, user, @config, ondemand
   end
@@ -96,15 +96,6 @@ class Service
       end
     end
     Ssh.ssh(verbose, self, host_os, token_value)
-  end
-
-  def pretty_print_running(verbose, hostnames = [])
-    if hostnames.empty?
-      puts 'You have no running VMs.'
-    else
-      puts 'Running VMs:'
-      @service_object.pretty_print_hosts(verbose, hostnames, url)
-    end
   end
 
   def query(verbose, hostname)

@@ -71,9 +71,9 @@ class Vmfloaty
         hosts = Utils.standardize_hostnames(response)
 
         if options.json || options.ondemand
-          puts JSON.pretty_generate(hosts)
+          STDOUT.puts JSON.pretty_generate(hosts)
         else
-          puts Utils.format_host_output(hosts)
+          STDOUT.puts Utils.format_host_output(hosts)
         end
       end
     end
@@ -99,15 +99,15 @@ class Vmfloaty
           running_vms = service.list_active(verbose)
           host = URI.parse(service.url).host
           if running_vms.empty?
-            puts "You have no running VMs on #{host}"
+            STDOUT.puts "You have no running VMs on #{host}"
           else
-            puts "Your VMs on #{host}:"
+            STDOUT.puts "Your VMs on #{host}:"
             Utils.pretty_print_hosts(verbose, service, running_vms)
           end
         else
           # list available vms from pooler
           os_list = service.list(verbose, filter)
-          puts os_list
+          STDOUT.puts os_list
         end
       end
     end
@@ -178,11 +178,11 @@ class Vmfloaty
           end
           if ok
             if modify_all
-              puts 'Successfully modified all VMs.'
+              STDOUT.puts 'Successfully modified all VMs.'
             else
-              puts "Successfully modified VM #{hostname}."
+              STDOUT.puts "Successfully modified VM #{hostname}."
             end
-            puts 'Use `floaty list --active` to see the results.'
+            STDOUT.puts 'Use `floaty list --active` to see the results.'
           end
         end
       end
@@ -214,11 +214,11 @@ class Vmfloaty
         if delete_all
           running_vms = service.list_active(verbose)
           if running_vms.empty?
-            STDERR.puts 'You have no running VMs.'
+            STDOUT.puts 'You have no running VMs.'
           else
-            Utils.pretty_print_hosts(verbose, service, running_vms)
+            Utils.pretty_print_hosts(verbose, service, running_vms, true)
             # Confirm deletion
-            puts
+            STDERR.puts
             confirmed = true
             confirmed = agree('Delete all these VMs? [y/N]') unless force
             if confirmed
@@ -256,10 +256,10 @@ class Vmfloaty
         end
 
         unless successes.empty?
-          puts unless failures.empty?
-          puts 'Scheduled the following VMs for deletion:'
+          STDERR.puts unless failures.empty?
+          STDOUT.puts 'Scheduled the following VMs for deletion:'
           successes.each do |hostname|
-            puts "- #{hostname}"
+            STDOUT.puts "- #{hostname}"
           end
         end
 
@@ -288,7 +288,7 @@ class Vmfloaty
           exit 1
         end
 
-        puts "Snapshot pending. Use `floaty query #{hostname}` to determine when snapshot is valid."
+        STDOUT.puts "Snapshot pending. Use `floaty query #{hostname}` to determine when snapshot is valid."
         pp snapshot_req
       end
     end
@@ -379,15 +379,15 @@ class Vmfloaty
           case action
           when 'get'
             token = service.get_new_token(verbose)
-            puts token
+            STDOUT.puts token
           when 'delete'
             result = service.delete_token(verbose, options.token)
-            puts result
+            STDOUT.puts result
           when 'status'
             token_value = options.token
             token_value = args[1] if token_value.nil?
             status = service.token_status(verbose, token_value)
-            puts status
+            STDOUT.puts status
           when nil
             STDERR.puts 'No action provided'
             exit 1
@@ -450,7 +450,7 @@ class Vmfloaty
         completion_file = File.expand_path(File.join('..', '..', 'extras', 'completions', "floaty.#{shell}"), __FILE__)
 
         if File.exist?(completion_file)
-          puts completion_file
+          STDOUT.puts completion_file
           exit 0
         else
           STDERR.puts "Could not find completion file for '#{shell}': No such file #{completion_file}"
