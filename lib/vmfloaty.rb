@@ -87,6 +87,7 @@ class Vmfloaty
       c.option '--verbose', 'Enables verbose output'
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--active', 'Prints information about active vms for a given token'
+      c.option '--json', 'Prints information as JSON'
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--url STRING', String, 'URL of pooler service'
       c.action do |args, options|
@@ -100,10 +101,18 @@ class Vmfloaty
           running_vms = service.list_active(verbose)
           host = URI.parse(service.url).host
           if running_vms.empty?
-            puts "You have no running VMs on #{host}"
+            if options.json
+              puts {}.to_json
+            else
+              FloatyLogger.info "You have no running VMs on #{host}"
+            end
           else
-            puts "Your VMs on #{host}:"
-            Utils.pretty_print_hosts(verbose, service, running_vms)
+            if options.json
+              puts Utils.get_host_data(verbose, service, running_vms).to_json
+            else
+              puts "Your VMs on #{host}:"
+              Utils.pretty_print_hosts(verbose, service, running_vms)
+            end
           end
         else
           # list available vms from pooler
@@ -200,6 +209,7 @@ class Vmfloaty
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--all', 'Deletes all vms acquired by a token'
       c.option '-f', 'Does not prompt user when deleting all vms'
+      c.option '--json', 'Outputs hosts scheduled for deletion as JSON'
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--url STRING', String, 'URL of pooler service'
       c.action do |args, options|
@@ -215,12 +225,18 @@ class Vmfloaty
         if delete_all
           running_vms = service.list_active(verbose)
           if running_vms.empty?
-            puts 'You have no running VMs.'
+            if options.json
+              puts {}.to_json
+            else
+              FloatyLogger.info "You have no running VMs."
+            end
           else
-            Utils.pretty_print_hosts(verbose, service, running_vms, true)
-            # Confirm deletion
             confirmed = true
-            confirmed = agree('Delete all these VMs? [y/N]') unless force
+            unless force
+              Utils.pretty_print_hosts(verbose, service, running_vms, true)
+              # Confirm deletion
+              confirmed = agree('Delete all these VMs? [y/N]')
+            end
             if confirmed
               response = service.delete(verbose, running_vms)
               response.each do |hostname, result|
@@ -257,9 +273,15 @@ class Vmfloaty
 
         unless successes.empty?
           FloatyLogger.info unless failures.empty?
-          puts 'Scheduled the following VMs for deletion:'
-          successes.each do |hostname|
-            puts "- #{hostname}"
+          if options.json
+            puts successes.to_json
+          else
+            puts 'Scheduled the following VMs for deletion:'
+            output = ''
+            successes.each do |hostname|
+              output += "- #{hostname}\n"
+            end
+            puts output
           end
         end
 
