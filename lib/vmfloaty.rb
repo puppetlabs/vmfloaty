@@ -13,9 +13,14 @@ require 'vmfloaty/conf'
 require 'vmfloaty/utils'
 require 'vmfloaty/service'
 require 'vmfloaty/ssh'
+require 'vmfloaty/logger'
 
 class Vmfloaty
   include Commander::Methods
+
+  def self.logger
+    @logger ||= FloatyLogger.new
+  end
 
   def run # rubocop:disable Metrics/AbcSize
     program :version, Vmfloaty::VERSION
@@ -45,7 +50,7 @@ class Vmfloaty
         force = options.force
 
         if args.empty?
-          STDERR.puts 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
+          logger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
@@ -54,13 +59,13 @@ class Vmfloaty
         max_pool_request = 5
         large_pool_requests = os_types.select { |_, v| v > max_pool_request }
         if !large_pool_requests.empty? && !force
-          STDERR.puts "Requesting vms over #{max_pool_request} requires a --force flag."
-          STDERR.puts 'Try again with `floaty get --force`'
+          logger.error "Requesting vms over #{max_pool_request} requires a --force flag."
+          logger.error 'Try again with `floaty get --force`'
           exit 1
         end
 
         if os_types.empty?
-          STDERR.puts 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
+          logger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
@@ -71,9 +76,9 @@ class Vmfloaty
         hosts = Utils.standardize_hostnames(response)
 
         if options.json || options.ondemand
-          STDOUT.puts JSON.pretty_generate(hosts)
+          puts JSON.pretty_generate(hosts)
         else
-          STDOUT.puts Utils.format_host_output(hosts)
+          puts Utils.format_host_output(hosts)
         end
       end
     end
@@ -99,15 +104,15 @@ class Vmfloaty
           running_vms = service.list_active(verbose)
           host = URI.parse(service.url).host
           if running_vms.empty?
-            STDOUT.puts "You have no running VMs on #{host}"
+            puts "You have no running VMs on #{host}"
           else
-            STDOUT.puts "Your VMs on #{host}:"
+            puts "Your VMs on #{host}:"
             Utils.pretty_print_hosts(verbose, service, running_vms)
           end
         else
           # list available vms from pooler
           os_list = service.list(verbose, filter)
-          STDOUT.puts os_list
+          puts os_list
         end
       end
     end
@@ -151,7 +156,7 @@ class Vmfloaty
         modify_all = options.all
 
         if hostname.nil? && !modify_all
-          STDERR.puts 'ERROR: Provide a hostname or specify --all.'
+          logger.error 'ERROR: Provide a hostname or specify --all.'
           exit 1
         end
         running_vms = modify_all ? service.list_active(verbose) : hostname.split(',')
@@ -172,17 +177,17 @@ class Vmfloaty
             begin
               modified_hash[vm] = service.modify(verbose, vm, modify_hash)
             rescue ModifyError => e
-              STDERR.puts e
+              logger.error e
               ok = false
             end
           end
           if ok
             if modify_all
-              STDOUT.puts 'Successfully modified all VMs.'
+              puts 'Successfully modified all VMs.'
             else
-              STDOUT.puts "Successfully modified VM #{hostname}."
+              puts "Successfully modified VM #{hostname}."
             end
-            STDOUT.puts 'Use `floaty list --active` to see the results.'
+            puts 'Use `floaty list --active` to see the results.'
           end
         end
       end
@@ -214,11 +219,10 @@ class Vmfloaty
         if delete_all
           running_vms = service.list_active(verbose)
           if running_vms.empty?
-            STDOUT.puts 'You have no running VMs.'
+            puts 'You have no running VMs.'
           else
             Utils.pretty_print_hosts(verbose, service, running_vms, true)
             # Confirm deletion
-            STDERR.puts
             confirmed = true
             confirmed = agree('Delete all these VMs? [y/N]') unless force
             if confirmed
@@ -243,23 +247,23 @@ class Vmfloaty
             end
           end
         else
-          STDERR.puts 'You did not provide any hosts to delete'
+          logger.info 'You did not provide any hosts to delete'
           exit 1
         end
 
         unless failures.empty?
-          STDERR.puts 'Unable to delete the following VMs:'
+          logger.info 'Unable to delete the following VMs:'
           failures.each do |hostname|
-            STDERR.puts "- #{hostname}"
+            logger.info "- #{hostname}"
           end
-          STDERR.puts 'Check `floaty list --active`; Do you need to specify a different service?'
+          logger.info 'Check `floaty list --active`; Do you need to specify a different service?'
         end
 
         unless successes.empty?
-          STDERR.puts unless failures.empty?
-          STDOUT.puts 'Scheduled the following VMs for deletion:'
+          logger.info unless failures.empty?
+          puts 'Scheduled the following VMs for deletion:'
           successes.each do |hostname|
-            STDOUT.puts "- #{hostname}"
+            puts "- #{hostname}"
           end
         end
 
@@ -284,11 +288,11 @@ class Vmfloaty
         begin
           snapshot_req = service.snapshot(verbose, hostname)
         rescue TokenError, ModifyError => e
-          STDERR.puts e
+          logger.error e
           exit 1
         end
 
-        STDOUT.puts "Snapshot pending. Use `floaty query #{hostname}` to determine when snapshot is valid."
+        puts "Snapshot pending. Use `floaty query #{hostname}` to determine when snapshot is valid."
         pp snapshot_req
       end
     end
@@ -309,12 +313,12 @@ class Vmfloaty
         hostname = args[0]
         snapshot_sha = args[1] || options.snapshot
 
-        STDERR.puts "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
+        logger.info "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
 
         begin
           revert_req = service.revert(verbose, hostname, snapshot_sha)
         rescue TokenError, ModifyError => e
-          STDERR.puts e
+          logger.error e
           exit 1
         end
 
@@ -379,24 +383,24 @@ class Vmfloaty
           case action
           when 'get'
             token = service.get_new_token(verbose)
-            STDOUT.puts token
+            puts token
           when 'delete'
             result = service.delete_token(verbose, options.token)
-            STDOUT.puts result
+            puts result
           when 'status'
             token_value = options.token
             token_value = args[1] if token_value.nil?
             status = service.token_status(verbose, token_value)
-            STDOUT.puts status
+            puts status
           when nil
-            STDERR.puts 'No action provided'
+            logger.error 'No action provided'
             exit 1
           else
-            STDERR.puts "Unknown action: #{action}"
+            logger.error "Unknown action: #{action}"
             exit 1
           end
         rescue TokenError => e
-          STDERR.puts e
+          logger.error e
           exit 1
         end
         exit 0
@@ -420,13 +424,13 @@ class Vmfloaty
         use_token = !options.notoken
 
         if args.empty?
-          STDERR.puts 'No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs.'
+          logger.error 'No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs.'
           exit 1
         end
 
         host_os = args.first
 
-        STDERR.puts "Can't ssh to multiple hosts; Using #{host_os} only..." if args.length > 1
+        logger.info "Can't ssh to multiple hosts; Using #{host_os} only..." if args.length > 1
 
         service.ssh(verbose, host_os, use_token)
         exit 0
@@ -450,10 +454,10 @@ class Vmfloaty
         completion_file = File.expand_path(File.join('..', '..', 'extras', 'completions', "floaty.#{shell}"), __FILE__)
 
         if File.exist?(completion_file)
-          STDOUT.puts completion_file
+          puts completion_file
           exit 0
         else
-          STDERR.puts "Could not find completion file for '#{shell}': No such file #{completion_file}"
+          logger.error "Could not find completion file for '#{shell}': No such file #{completion_file}"
           exit 1
         end
       end

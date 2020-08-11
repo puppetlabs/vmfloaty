@@ -68,7 +68,7 @@ class ABS
 
         ret_val.push(req_hash)
       rescue NoMethodError
-        STDERR.puts "Warning: couldn't parse line returned from abs/status/queue: ".yellow
+        Vmfloaty.logger.warn "Warning: couldn't parse line returned from abs/status/queue: "
       end
     end
 
@@ -85,7 +85,7 @@ class ABS
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    STDERR.puts "Trying to delete hosts #{hosts}" if verbose
+    Vmfloaty.logger.info "Trying to delete hosts #{hosts}" if verbose
     requests = get_active_requests(verbose, url, user)
 
     jobs_to_delete = []
@@ -113,7 +113,7 @@ class ABS
             }
             jobs_to_delete.push(req_hash)
           else
-            STDERR.puts "When using ABS you must delete all vms that you requested at the same time: Can't delete #{req_hash['request']['job']['id']}: #{hosts} does not include all of #{req_hash['allocated_resources']}"
+            Vmfloaty.logger.info "When using ABS you must delete all vms that you requested at the same time: Can't delete #{req_hash['request']['job']['id']}: #{hosts} does not include all of #{req_hash['allocated_resources']}"
           end
         end
       end
@@ -127,7 +127,7 @@ class ABS
         'hosts'  => job['allocated_resources'],
       }
 
-      STDERR.puts "Deleting #{req_obj}" if verbose
+      Vmfloaty.logger.info "Deleting #{req_obj}" if verbose
 
       return_result = conn.post 'return', req_obj.to_json
       req_obj['hosts'].each do |host|
@@ -220,11 +220,11 @@ class ABS
                            end
     end
 
-    STDERR.puts "Posting to ABS #{req_obj.to_json}" if verbose
+    Vmfloaty.logger.info "Posting to ABS #{req_obj.to_json}" if verbose
 
     # os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
     # raise MissingParamError, 'No operating systems provided to obtain.' if os_string.empty?
-    STDERR.puts "Requesting VMs with job_id: #{saved_job_id}.  Will retry for up to an hour."
+    Vmfloaty.logger.info "Requesting VMs with job_id: #{saved_job_id}.  Will retry for up to an hour."
     res = conn.post 'request', req_obj.to_json
 
     retries = 360
@@ -237,7 +237,7 @@ class ABS
 
       sleep_seconds = 10 if i >= 10
       sleep_seconds = i if i < 10
-      STDERR.puts "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
+      Vmfloaty.logger.info "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
 
       sleep(sleep_seconds)
     end
@@ -276,7 +276,7 @@ class ABS
   end
 
   def self.snapshot(_verbose, _url, _hostname, _token)
-    STDERR.puts "Can't snapshot with ABS, use '--service vmpooler' (even for vms checked out with ABS)"
+    Vmfloaty.logger.info "Can't snapshot with ABS, use '--service vmpooler' (even for vms checked out with ABS)"
   end
 
   def self.status(verbose, url)
@@ -297,7 +297,7 @@ class ABS
   def self.query(verbose, url, hostname)
     return @active_hostnames if @active_hostnames
 
-    STDERR.puts "For vmpooler/snapshot information, use '--service vmpooler' (even for vms checked out with ABS)"
+    Vmfloaty.logger.info "For vmpooler/snapshot information, use '--service vmpooler' (even for vms checked out with ABS)"
     conn = Http.get_conn(verbose, url)
 
     res = conn.get "host/#{hostname}"

@@ -45,7 +45,6 @@ class Utils
 
     result = {}
 
-    STDERR.puts "response body is #{response_body}"
     filtered_response_body = response_body.reject { |key, _| key == 'request_id' || key == 'ready' }
     filtered_response_body.each do |os, value|
       hostnames = Array(value['hostname'])
@@ -91,7 +90,7 @@ class Utils
           # For ABS, 'hostname' variable is the jobID
           if host_data['state'] == 'allocated' || host_data['state'] == 'filled'
             host_data['allocated_resources'].each do |vm_name, _i|
-              STDOUT.puts "- [JobID:#{host_data['request']['job']['id']}] #{vm_name['hostname']} (#{vm_name['type']}) <#{host_data['state']}>"
+              puts "- [JobID:#{host_data['request']['job']['id']}] #{vm_name['hostname']} (#{vm_name['type']}) <#{host_data['state']}>"
             end
           end
         when 'Pooler'
@@ -99,19 +98,19 @@ class Utils
           tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
           duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
           metadata = [host_data['template'], duration, *tag_pairs]
-          STDOUT.puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
+          puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
         when 'NonstandardPooler'
           line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
           line += ", #{host_data['hours_left_on_reservation']}h remaining"
           line += ", reason: #{host_data['reserved_for_reason']}" unless host_data['reserved_for_reason'].empty?
           line += ')'
-          STDOUT.puts line
+          puts line
         else
           raise "Invalid service type #{service.type}"
         end
       rescue StandardError => e
-        STDERR.puts("Something went wrong while trying to gather information on #{hostname}:")
-        STDERR.puts(e)
+        Vmfloaty.logger.error("Something went wrong while trying to gather information on #{hostname}:")
+        Vmfloaty.logger.error(e)
       end
     end
   end
@@ -133,12 +132,12 @@ class Utils
           pending = pool['pending']
           missing = max - ready - pending
           char = 'o'
-          STDOUT.puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
         rescue StandardError => e
-          STDERR.puts "#{name.ljust(width)} #{e.red}"
+          Vmfloaty.logger.error "#{name.ljust(width)} #{e.red}"
         end
       end
-      STDOUT.puts message.colorize(status_response['status']['ok'] ? :default : :red)
+      puts message.colorize(status_response['status']['ok'] ? :default : :red)
     when 'NonstandardPooler'
       pools = status_response
       pools.delete 'ok'
@@ -152,14 +151,14 @@ class Utils
           pending = pool['pending'] || 0 # not available for nspooler
           missing = max - ready - pending
           char = 'o'
-          STDOUT.puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
         rescue StandardError => e
-          STDERR.puts "#{name.ljust(width)} #{e.red}"
+          Vmfloaty.logger.error "#{name.ljust(width)} #{e.red}"
         end
       end
     when 'ABS'
-      STDERR.puts 'ABS Not OK'.red unless status_response
-      STDOUT.puts 'ABS is OK'.green if status_response
+      Vmfloaty.logger.error 'ABS Not OK' unless status_response
+      puts 'ABS is OK'.green if status_response
     else
       raise "Invalid service type #{service.type}"
     end
