@@ -169,7 +169,7 @@ describe Utils do
       } }
       output = '- mcpy42eqjxli9g2.delivery.mycompany.net (ubuntu-1604-x86_64, 9.66/12 hours)'
 
-      expect(Utils).to receive(:puts).with(output)
+      expect(STDOUT).to receive(:puts).with(output)
 
       service = Service.new(MockOptions.new, 'url' => url)
       allow(service).to receive(:query)
@@ -195,7 +195,7 @@ describe Utils do
       } }
       output = '- aiydvzpg23r415q.delivery.mycompany.net (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)'
 
-      expect(Utils).to receive(:puts).with(output)
+      expect(STDOUT).to receive(:puts).with(output)
 
       service = Service.new(MockOptions.new, 'url' => url)
       allow(service).to receive(:query)
@@ -216,7 +216,7 @@ describe Utils do
       } }
       output = '- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining)'
 
-      expect(Utils).to receive(:puts).with(output)
+      expect(STDOUT).to receive(:puts).with(output)
 
       service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
       allow(service).to receive(:query)
@@ -237,7 +237,7 @@ describe Utils do
       } }
       output = '- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining, reason: testing)'
 
-      expect(Utils).to receive(:puts).with(output)
+      expect(STDOUT).to receive(:puts).with(output)
 
       service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
       allow(service).to receive(:query)

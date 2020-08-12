@@ -45,7 +45,6 @@ class Utils
 
     result = {}
 
-    STDOUT.puts "response body is #{response_body}"
     filtered_response_body = response_body.reject { |key, _| key == 'request_id' || key == 'ready' }
     filtered_response_body.each do |os, value|
       hostnames = Array(value['hostname'])
@@ -79,7 +78,7 @@ class Utils
     os_types
   end
 
-  def self.pretty_print_hosts(verbose, service, hostnames = [])
+  def self.pretty_print_hosts(verbose, service, hostnames = [], print_to_stderr = false)
     hostnames = [hostnames] unless hostnames.is_a? Array
     hostnames.each do |hostname|
       begin
@@ -110,8 +109,8 @@ class Utils
           raise "Invalid service type #{service.type}"
         end
       rescue StandardError => e
-        STDERR.puts("Something went wrong while trying to gather information on #{hostname}:")
-        STDERR.puts(e)
+        FloatyLogger.error("Something went wrong while trying to gather information on #{hostname}:")
+        FloatyLogger.error(e)
       end
     end
   end
@@ -135,7 +134,7 @@ class Utils
           char = 'o'
           puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
         rescue StandardError => e
-          puts "#{name.ljust(width)} #{e.red}"
+          FloatyLogger.error "#{name.ljust(width)} #{e.red}"
         end
       end
       puts message.colorize(status_response['status']['ok'] ? :default : :red)
@@ -154,11 +153,11 @@ class Utils
           char = 'o'
           puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
         rescue StandardError => e
-          puts "#{name.ljust(width)} #{e.red}"
+          FloatyLogger.error "#{name.ljust(width)} #{e.red}"
         end
       end
     when 'ABS'
-      puts 'ABS Not OK'.red unless status_response
+      FloatyLogger.error 'ABS Not OK' unless status_response
       puts 'ABS is OK'.green if status_response
     else
       raise "Invalid service type #{service.type}"

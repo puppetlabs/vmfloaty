@@ -36,7 +36,7 @@ class Service
 
   def user
     unless @config['user']
-      puts "Enter your #{@config['url']} service username:"
+      FloatyLogger.info "Enter your #{@config['url']} service username:"
       @config['user'] = STDIN.gets.chomp
     end
     @config['user']
@@ -44,7 +44,7 @@ class Service
 
   def token
     unless @config['token']
-      puts 'No token found. Retrieving a token...'
+      FloatyLogger.info 'No token found. Retrieving a token...'
       @config['token'] = get_new_token(nil)
     end
     @config['token']
@@ -76,7 +76,7 @@ class Service
   end
 
   def retrieve(verbose, os_types, use_token = true, ondemand = nil)
-    puts 'Requesting a vm without a token...' unless use_token
+    FloatyLogger.info 'Requesting a vm without a token...' unless use_token
     token_value = use_token ? token : nil
     @service_object.retrieve verbose, os_types, token_value, url, user, @config, ondemand
   end
@@ -91,20 +91,11 @@ class Service
       begin
         token_value = token || get_new_token(verbose)
       rescue TokenError => e
-        STDERR.puts e
-        STDERR.puts 'Could not get token... requesting vm without a token anyway...'
+        FloatyLogger.error e
+        FloatyLogger.info 'Could not get token... requesting vm without a token anyway...'
       end
     end
     Ssh.ssh(verbose, self, host_os, token_value)
-  end
-
-  def pretty_print_running(verbose, hostnames = [])
-    if hostnames.empty?
-      puts 'You have no running VMs.'
-    else
-      puts 'Running VMs:'
-      @service_object.pretty_print_hosts(verbose, hostnames, url)
-    end
   end
 
   def query(verbose, hostname)
