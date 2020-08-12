@@ -109,8 +109,8 @@ class Utils
           raise "Invalid service type #{service.type}"
         end
       rescue StandardError => e
-        Vmfloaty.logger.error("Something went wrong while trying to gather information on #{hostname}:")
-        Vmfloaty.logger.error(e)
+        FloatyLogger.error("Something went wrong while trying to gather information on #{hostname}:")
+        FloatyLogger.error(e)
       end
     end
   end
@@ -134,7 +134,7 @@ class Utils
           char = 'o'
           puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
         rescue StandardError => e
-          Vmfloaty.logger.error "#{name.ljust(width)} #{e.red}"
+          FloatyLogger.error "#{name.ljust(width)} #{e.red}"
         end
       end
       puts message.colorize(status_response['status']['ok'] ? :default : :red)
@@ -153,11 +153,11 @@ class Utils
           char = 'o'
           puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
         rescue StandardError => e
-          Vmfloaty.logger.error "#{name.ljust(width)} #{e.red}"
+          FloatyLogger.error "#{name.ljust(width)} #{e.red}"
         end
       end
     when 'ABS'
-      Vmfloaty.logger.error 'ABS Not OK' unless status_response
+      FloatyLogger.error 'ABS Not OK' unless status_response
       puts 'ABS is OK'.green if status_response
     else
       raise "Invalid service type #{service.type}"

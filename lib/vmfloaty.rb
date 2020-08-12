@@ -18,10 +18,6 @@ require 'vmfloaty/logger'
 class Vmfloaty
   include Commander::Methods
 
-  def self.logger
-    @logger ||= FloatyLogger.new
-  end
-
   def run # rubocop:disable Metrics/AbcSize
     program :version, Vmfloaty::VERSION
     program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat"
@@ -50,7 +46,7 @@ class Vmfloaty
         force = options.force
 
         if args.empty?
-          logger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
+          FloatyLogger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
@@ -59,13 +55,13 @@ class Vmfloaty
         max_pool_request = 5
         large_pool_requests = os_types.select { |_, v| v > max_pool_request }
         if !large_pool_requests.empty? && !force
-          logger.error "Requesting vms over #{max_pool_request} requires a --force flag."
-          logger.error 'Try again with `floaty get --force`'
+          FloatyLogger.error "Requesting vms over #{max_pool_request} requires a --force flag."
+          FloatyLogger.error 'Try again with `floaty get --force`'
           exit 1
         end
 
         if os_types.empty?
-          logger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
+          FloatyLogger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
           exit 1
         end
 
@@ -156,7 +152,7 @@ class Vmfloaty
         modify_all = options.all
 
         if hostname.nil? && !modify_all
-          logger.error 'ERROR: Provide a hostname or specify --all.'
+          FloatyLogger.error 'ERROR: Provide a hostname or specify --all.'
           exit 1
         end
         running_vms = modify_all ? service.list_active(verbose) : hostname.split(',')
@@ -177,7 +173,7 @@ class Vmfloaty
             begin
               modified_hash[vm] = service.modify(verbose, vm, modify_hash)
             rescue ModifyError => e
-              logger.error e
+              FloatyLogger.error e
               ok = false
             end
           end
@@ -247,20 +243,20 @@ class Vmfloaty
             end
           end
         else
-          logger.info 'You did not provide any hosts to delete'
+          FloatyLogger.info 'You did not provide any hosts to delete'
           exit 1
         end
 
         unless failures.empty?
-          logger.info 'Unable to delete the following VMs:'
+          FloatyLogger.info 'Unable to delete the following VMs:'
           failures.each do |hostname|
-            logger.info "- #{hostname}"
+            FloatyLogger.info "- #{hostname}"
           end
-          logger.info 'Check `floaty list --active`; Do you need to specify a different service?'
+          FloatyLogger.info 'Check `floaty list --active`; Do you need to specify a different service?'
         end
 
         unless successes.empty?
-          logger.info unless failures.empty?
+          FloatyLogger.info unless failures.empty?
           puts 'Scheduled the following VMs for deletion:'
           successes.each do |hostname|
             puts "- #{hostname}"
@@ -288,7 +284,7 @@ class Vmfloaty
         begin
           snapshot_req = service.snapshot(verbose, hostname)
         rescue TokenError, ModifyError => e
-          logger.error e
+          FloatyLogger.error e
           exit 1
         end
 
@@ -313,12 +309,12 @@ class Vmfloaty
         hostname = args[0]
         snapshot_sha = args[1] || options.snapshot
 
-        logger.info "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
+        FloatyLogger.info "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
 
         begin
           revert_req = service.revert(verbose, hostname, snapshot_sha)
         rescue TokenError, ModifyError => e
-          logger.error e
+          FloatyLogger.error e
           exit 1
         end
 
@@ -393,14 +389,14 @@ class Vmfloaty
             status = service.token_status(verbose, token_value)
             puts status
           when nil
-            logger.error 'No action provided'
+            FloatyLogger.error 'No action provided'
             exit 1
           else
-            logger.error "Unknown action: #{action}"
+            FloatyLogger.error "Unknown action: #{action}"
             exit 1
           end
         rescue TokenError => e
-          logger.error e
+          FloatyLogger.error e
           exit 1
         end
         exit 0
@@ -424,13 +420,13 @@ class Vmfloaty
         use_token = !options.notoken
 
         if args.empty?
-          logger.error 'No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs.'
+          FloatyLogger.error 'No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs.'
           exit 1
         end
 
         host_os = args.first
 
-        logger.info "Can't ssh to multiple hosts; Using #{host_os} only..." if args.length > 1
+        FloatyLogger.info "Can't ssh to multiple hosts; Using #{host_os} only..." if args.length > 1
 
         service.ssh(verbose, host_os, use_token)
         exit 0
@@ -457,7 +453,7 @@ class Vmfloaty
           puts completion_file
           exit 0
         else
-          logger.error "Could not find completion file for '#{shell}': No such file #{completion_file}"
+          FloatyLogger.error "Could not find completion file for '#{shell}': No such file #{completion_file}"
           exit 1
         end
       end

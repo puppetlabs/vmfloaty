@@ -60,10 +60,10 @@ class Pooler
     while check_ondemandvm(verbose, request_id, url) == false
       return false if (Time.now - start_time).to_i > timeout
 
-      Vmfloaty.logger.info "waiting for request #{request_id} to be fulfilled"
+      FloatyLogger.info "waiting for request #{request_id} to be fulfilled"
       sleep 5
     end
-    Vmfloaty.logger.info "The request has been fulfilled"
+    FloatyLogger.info "The request has been fulfilled"
     check_ondemandvm(verbose, request_id, url)
   end
 
