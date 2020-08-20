@@ -229,10 +229,10 @@ class ABS
 
     retries = 360
 
-    raise AuthError, "HTTP #{res.status}: The token provided could not authenticate to the pooler.\n#{res_body}" if res.status == 401
+    validate_queue_status_response(res.status, res.body, "Initial request", verbose)
 
     (1..retries).each do |i|
-      queue_place, res_body = check_queue(conn, saved_job_id, req_obj)
+      queue_place, res_body = check_queue(conn, saved_job_id, req_obj, verbose)
       return translated(res_body) if res_body
 
       sleep_seconds = 10 if i >= 10
@@ -262,11 +262,12 @@ class ABS
     vmpooler_formatted_body
   end
 
-  def self.check_queue(conn, job_id, req_obj)
+  def self.check_queue(conn, job_id, req_obj, verbose)
     queue_info_res = conn.get "status/queue/info/#{job_id}"
     queue_info = JSON.parse(queue_info_res.body)
 
     res = conn.post 'request', req_obj.to_json
+    validate_queue_status_response(res.status, res.body, "Check queue request", verbose)
 
     unless res.body.empty?
       res_body = JSON.parse(res.body)
@@ -314,5 +315,22 @@ class ABS
 
   def self.revert(_verbose, _url, _hostname, _token, _snapshot_sha)
     raise NoMethodError, 'revert is not defined for ABS'
+  end
+
+  # Validate the http code returned during a queue status request.
+  #
+  # Return a success message that can be displayed if the status code is
+  # success, otherwise raise an error.
+  def self.validate_queue_status_response(status_code, body, request_name, verbose)
+    case status_code
+    when 200
+      "#{request_name} returned success (Code 200)" if verbose
+    when 202
+      "#{request_name} returned accepted, processing (Code 202)" if verbose
+    when 401
+      raise AuthError, "HTTP #{status_code}: The token provided could not authenticate.\n#{body}"
+    else
+      raise "HTTP #{status_code}: #{request_name} request to ABS failed!\n#{body}"
+    end
   end
 end

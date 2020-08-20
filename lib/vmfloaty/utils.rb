@@ -79,40 +79,62 @@ class Utils
   end
 
   def self.pretty_print_hosts(verbose, service, hostnames = [], print_to_stderr = false)
+    fetched_data = self.get_host_data(verbose, service, hostnames)
+    fetched_data.each do |hostname, host_data|
+      case service.type
+      when 'ABS'
+      # For ABS, 'hostname' variable is the jobID
+        host_data['allocated_resources'].each do |vm_name, _i|
+          puts "- [JobID:#{host_data['request']['job']['id']}] #{vm_name['hostname']} (#{vm_name['type']}) <#{host_data['state']}>"
+        end
+      when 'Pooler'
+        tag_pairs = []
+        tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
+        duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
+        metadata = [host_data['template'], duration, *tag_pairs]
+        puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
+      when 'NonstandardPooler'
+        line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
+        line += ", #{host_data['hours_left_on_reservation']}h remaining"
+        line += ", reason: #{host_data['reserved_for_reason']}" unless host_data['reserved_for_reason'].empty?
+        line += ')'
+        puts line
+      else
+        raise "Invalid service type #{service.type}"
+      end
+    end
+  end
+
+  def self.get_host_data(verbose, service, hostnames = [])
+    result = {}
     hostnames = [hostnames] unless hostnames.is_a? Array
     hostnames.each do |hostname|
       begin
         response = service.query(verbose, hostname)
         host_data = response[hostname]
-
-        case service.type
-        when 'ABS'
-          # For ABS, 'hostname' variable is the jobID
-          if host_data['state'] == 'allocated' || host_data['state'] == 'filled'
-            host_data['allocated_resources'].each do |vm_name, _i|
-              puts "- [JobID:#{host_data['request']['job']['id']}] #{vm_name['hostname']} (#{vm_name['type']}) <#{host_data['state']}>"
-            end
-          end
-        when 'Pooler'
-          tag_pairs = []
-          tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
-          duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
-          metadata = [host_data['template'], duration, *tag_pairs]
-          puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
-        when 'NonstandardPooler'
-          line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
-          line += ", #{host_data['hours_left_on_reservation']}h remaining"
-          line += ", reason: #{host_data['reserved_for_reason']}" unless host_data['reserved_for_reason'].empty?
-          line += ')'
-          puts line
+        if block_given?
+          yield host_data result
         else
-          raise "Invalid service type #{service.type}"
+          case service.type
+          when 'ABS'
+            # For ABS, 'hostname' variable is the jobID
+            if host_data['state'] == 'allocated' || host_data['state'] == 'filled'
+              result[hostname] = host_data
+            end
+          when 'Pooler'
+            result[hostname] = host_data
+          when 'NonstandardPooler'
+            result[hostname] = host_data
+          else
+            raise "Invalid service type #{service.type}"
+          end
         end
       rescue StandardError => e
         FloatyLogger.error("Something went wrong while trying to gather information on #{hostname}:")
         FloatyLogger.error(e)
       end
     end
+    result
   end
 
   def self.pretty_print_status(verbose, service)
