@@ -206,6 +206,9 @@ class Utils
         # If the service is configured but some values are missing, use the top-level defaults to fill them in
         service_config.merge! config['services'][options.service]
       end
+    # No config file but service is declared on command line
+    elsif !config['services'] && options.service
+      service_config['type'] = options.service
     end
 
     # Prioritize an explicitly specified url, user, or token if the user provided one
