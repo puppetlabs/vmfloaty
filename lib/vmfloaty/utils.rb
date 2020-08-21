@@ -84,6 +84,21 @@ class Utils
     os_types
   end
 
+  def self.print_fqdn_for_host(service, hostname, host_data)
+    case service.type
+    when 'ABS'
+      host_data['allocated_resources'].each do |vm_name, _i|
+        puts vm_name['hostname']
+      end
+    when 'Pooler'
+      puts "#{hostname}.#{host_data['domain']}"
+    when 'NonstandardPooler'
+      puts host_data['fqdn']
+    else
+      raise "Invalid service type #{service.type}"
+    end
+  end
+
   def self.pretty_print_hosts(verbose, service, hostnames = [], print_to_stderr = false, indent = 0)
     output_target = print_to_stderr ? $stderr : $stdout
 

@@ -162,6 +162,89 @@ describe Utils do
     end
   end
 
+  describe '#print_fqdn_for_host' do
+    let(:url) { 'http://pooler.example.com' }
+
+    subject { Utils.print_fqdn_for_host(service, hostname, host_data) }
+
+    describe 'with vmpooler host' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url) }
+      let(:hostname) { 'mcpy42eqjxli9g2' }
+      let(:domain) { 'delivery.mycompany.net' }
+      let(:fqdn) { [hostname, domain].join('.') }
+
+      let(:host_data) do
+        {
+          'template' => 'ubuntu-1604-x86_64',
+          'lifetime' => 12,
+          'running'  => 9.66,
+          'state'    => 'running',
+          'ip'       => '127.0.0.1',
+          'domain'   => domain,
+        }
+      end
+
+      it 'outputs fqdn for host' do
+        expect(STDOUT).to receive(:puts).with(fqdn)
+
+        subject
+      end
+    end
+
+    describe 'with nonstandard pooler host' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url, 'type' => 'ns') }
+      let(:hostname) { 'sol11-9.delivery.mycompany.net' }
+      let(:host_data) do
+        {
+          'fqdn'                      => hostname,
+          'os_triple'                 => 'solaris-11-sparc',
+          'reserved_by_user'          => 'first.last',
+          'reserved_for_reason'       => '',
+          'hours_left_on_reservation' => 35.89,
+        }
+      end
+      let(:fqdn) { hostname } # for nspooler these are the same
+
+      it 'outputs fqdn for host' do
+        expect(STDOUT).to receive(:puts).with(fqdn)
+
+        subject
+      end
+    end
+
+    describe 'with ABS host' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url, 'type' => 'abs') }
+      let(:hostname) { '1597952189390' }
+      let(:fqdn) { 'example-noun.delivery.puppetlabs.net' }
+      let(:template) { 'ubuntu-1604-x86_64' }
+
+      # This seems to be the miminal stub response from ABS for the current output
+      let(:host_data) do
+        {
+          'state' => 'allocated',
+          'allocated_resources' => [
+            {
+              'hostname' => fqdn,
+              'type' => template,
+              'enging' => 'vmpooler',
+            },
+          ],
+          'request' => {
+            'job' => {
+              'id' => hostname,
+            }
+          },
+        }
+      end
+
+      it 'outputs fqdn for host' do
+        expect(STDOUT).to receive(:puts).with(fqdn)
+
+        subject
+      end
+    end
+  end
+
   describe '#pretty_print_hosts' do
     let(:url) { 'http://pooler.example.com' }
 

@@ -88,6 +88,7 @@ class Vmfloaty
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--active', 'Prints information about active vms for a given token'
       c.option '--json', 'Prints information as JSON'
+      c.option '--hostnameonly', 'When listing active vms, prints only hostnames, one per line'
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--url STRING', String, 'URL of pooler service'
       c.option '--user STRING', String, 'User to authenticate with'
@@ -115,6 +116,10 @@ class Vmfloaty
           else
             if options.json
               puts Utils.get_host_data(verbose, service, running_vms).to_json
+            elsif options.hostnameonly
+              Utils.get_host_data(verbose, service, running_vms).each do |hostname, host_data|
+                Utils.print_fqdn_for_host(service, hostname, host_data)
+              end
             else
               puts "Your VMs on #{host}:"
               Utils.pretty_print_hosts(verbose, service, running_vms)
