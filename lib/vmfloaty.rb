@@ -20,7 +20,7 @@ class Vmfloaty
 
   def run # rubocop:disable Metrics/AbcSize
     program :version, Vmfloaty::VERSION
-    program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat"
+    program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat.\n\nConfiguration may be placed in a ~/.vmfloaty.yml file."
 
     config = Conf.read_config
 
