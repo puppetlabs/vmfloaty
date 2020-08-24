@@ -87,9 +87,13 @@ class Utils
   def self.print_fqdn_for_host(service, hostname, host_data)
     case service.type
     when 'ABS'
+      abs_hostnames = []
+
       host_data['allocated_resources'].each do |vm_name, _i|
-        puts vm_name['hostname']
+        abs_hostnames << vm_name['hostname']
       end
+
+      puts abs_hostnames.join("\n")
     when 'Pooler'
       puts "#{hostname}.#{host_data['domain']}"
     when 'NonstandardPooler'
