@@ -233,7 +233,7 @@ class ABS
 
     (1..retries).each do |i|
       queue_place, res_body = check_queue(conn, saved_job_id, req_obj, verbose)
-      return translated(res_body) if res_body
+      return translated(res_body, saved_job_id) if res_body
 
       sleep_seconds = 10 if i >= 10
       sleep_seconds = i if i < 10
@@ -247,8 +247,8 @@ class ABS
   #
   # We should fix the ABS API to be more like the vmpooler or nspooler api, but for now
   #
-  def self.translated(res_body)
-    vmpooler_formatted_body = {}
+  def self.translated(res_body, job_id)
+    vmpooler_formatted_body = {'job_id' => job_id}
 
     res_body.each do |host|
       if vmpooler_formatted_body[host['type']] && vmpooler_formatted_body[host['type']]['hostname'].class == Array

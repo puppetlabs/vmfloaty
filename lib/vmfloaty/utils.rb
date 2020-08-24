@@ -45,6 +45,10 @@ class Utils
 
     result = {}
 
+    # ABS has a job_id associated with hosts so pass that along
+    abs_job_id = response_body.delete('job_id')
+    result['job_id'] = abs_job_id unless abs_job_id.nil?
+
     filtered_response_body = response_body.reject { |key, _| key == 'request_id' || key == 'ready' }
     filtered_response_body.each do |os, value|
       hostnames = Array(value['hostname'])
@@ -57,7 +61,8 @@ class Utils
 
   def self.format_host_output(hosts)
     hosts.flat_map do |os, names|
-      names.map { |name| "- #{name} (#{os})" }
+      # Assume hosts are stored in Arrays and ignore everything else
+      names.map { |name| "- #{name} (#{os})" } if names.is_a? Array
     end.join("\n")
   end
 
