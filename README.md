@@ -19,6 +19,7 @@ A CLI helper tool for [Puppet's vmpooler](https://github.com/puppetlabs/vmpooler
     - [Using a Nonstandard Pooler service](#using-a-nonstandard-pooler-service)
     - [Valid config keys](#valid-config-keys)
   - [Tab Completion](#tab-completion)
+  - [Use as a gem](#use-as-a-gem)
 - [vmpooler API](#vmpooler-api)
 - [Using the Pooler class](#using-the-pooler-class)
   - [Example Projects](#example-projects)
@@ -205,6 +206,32 @@ If you are running on macOS and use Homebrew's `bash-completion` formula, you ca
 
 ```bash
 ln -s $(floaty completion --shell bash) /usr/local/etc/bash_completion.d/floaty
+```
+
+### Use as a gem
+
+Add to your Gemfile
+```ruby
+    require 'vmfloaty'
+    Vmfloaty.new("token get --user username --url https://vmpooler.example.net/api/v1").run
+```
+
+Or access the commander
+```ruby
+    require 'vmfloaty'
+    vmfloaty = Vmfloaty.new("token get --user username --url https://vmpooler.example.net/api/v1")
+    commander = vmfloaty.commander_instance
+    # do something else with the commander
+    vmfloaty.run
+```
+
+You will need to redirect stdout and stderr if you want to process the results
+```ruby
+    stdout, stderr = StringIO.new, StringIO.new
+    $stdout, $stderr = stdout, stderr
+    results = Vmfloaty.new("token get --user username --url https://vmpooler.example.net/api/v1").run
+    $stdout, $stderr = STDOUT, STDERR
+    puts results
 ```
 
 ## vmpooler API

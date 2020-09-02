@@ -18,13 +18,26 @@ require 'vmfloaty/logger'
 class Vmfloaty
   include Commander::Methods
 
+  attr_reader :commander_instance
+
+  @commander_instance = nil
+
+  def initialize(*args)
+    @commander_instance = if args && args[0].is_a?(String)
+                            Commander::Runner.new(args[0].split)
+                          elsif args && args[0].is_a?(Array)
+                            Commander::Runner.new(args[0])
+                          else
+                            Commander::Runner.new
+                          end
+  end
+
   def run # rubocop:disable Metrics/AbcSize
-    program :version, Vmfloaty::VERSION
-    program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat"
+    commander_instance.program :version, Vmfloaty::VERSION
+    commander_instance.program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat"
 
     config = Conf.read_config
-
-    command :get do |c|
+    commander_instance.command :get do |c|
       c.syntax = 'floaty get os_type0 os_type1=x ox_type2=y [options]'
       c.summary = 'Gets a vm or vms based on the os argument'
       c.description = 'A command to retrieve vms from a pooler service. Can either be a single vm, or multiple with the `=` syntax.'
@@ -79,7 +92,7 @@ class Vmfloaty
       end
     end
 
-    command :list do |c|
+    commander_instance.command :list do |c|
       c.syntax = 'floaty list [options]'
       c.summary = 'Shows a list of available vms from the pooler or vms obtained with a token'
       c.description = 'List will either show all vm templates available in pooler service, or with the --active flag it will list vms obtained with a pooler service token.'
@@ -122,7 +135,7 @@ class Vmfloaty
       end
     end
 
-    command :query do |c|
+    commander_instance.command :query do |c|
       c.syntax = 'floaty query hostname [options]'
       c.summary = 'Get information about a given vm'
       c.description = 'Given a hostname from the pooler service, vmfloaty with query the service to get various details about the vm.'
@@ -140,7 +153,7 @@ class Vmfloaty
       end
     end
 
-    command :modify do |c|
+    commander_instance.command :modify do |c|
       c.syntax = 'floaty modify hostname [options]'
       c.summary = 'Modify a VM\'s tags, time to live, disk space, or reservation reason'
       c.description = 'This command makes modifications to the virtual machines state in the pooler service. You can either append tags to the vm, increase how long it stays active for, or increase the amount of disk space.'
@@ -168,10 +181,10 @@ class Vmfloaty
 
         tags = options.tags ? JSON.parse(options.tags) : nil
         modify_hash = {
-          :lifetime => options.lifetime,
-          :disk     => options.disk,
-          :tags     => tags,
-          :reason   => options.reason,
+            :lifetime => options.lifetime,
+            :disk     => options.disk,
+            :tags     => tags,
+            :reason   => options.reason,
         }
         modify_hash.delete_if { |_, value| value.nil? }
 
@@ -198,7 +211,7 @@ class Vmfloaty
       end
     end
 
-    command :delete do |c|
+    commander_instance.command :delete do |c|
       c.syntax = 'floaty delete hostname,hostname2 [options]'
       c.syntax += "\n    floaty delete job1,job2 [options] (only supported with ABS)"
       c.summary = 'Schedules the deletion of a host or hosts'
@@ -289,7 +302,7 @@ class Vmfloaty
       end
     end
 
-    command :snapshot do |c|
+    commander_instance.command :snapshot do |c|
       c.syntax = 'floaty snapshot hostname [options]'
       c.summary = 'Takes a snapshot of a given vm'
       c.description = 'Will request a snapshot be taken of the given hostname in the pooler service. This command is known to take a while depending on how much load is on the pooler service.'
@@ -315,7 +328,7 @@ class Vmfloaty
       end
     end
 
-    command :revert do |c|
+    commander_instance.command :revert do |c|
       c.syntax = 'floaty revert hostname snapshot [options]'
       c.summary = 'Reverts a vm to a specified snapshot'
       c.description = 'Given a snapshot SHA, vmfloaty will request a revert to the pooler service to go back to a previous snapshot.'
@@ -344,7 +357,7 @@ class Vmfloaty
       end
     end
 
-    command :status do |c|
+    commander_instance.command :status do |c|
       c.syntax = 'floaty status [options]'
       c.summary = 'Prints the status of pools in the pooler service'
       c.description = 'Makes a request to the pooler service to request the information about vm pools and how many are ready to be used, what pools are empty, etc.'
@@ -364,7 +377,7 @@ class Vmfloaty
       end
     end
 
-    command :summary do |c|
+    commander_instance.command :summary do |c|
       c.syntax = 'floaty summary [options]'
       c.summary = 'Prints a summary of a pooler service'
       c.description = 'Gives a very detailed summary of information related to the pooler service.'
@@ -382,7 +395,7 @@ class Vmfloaty
       end
     end
 
-    command :token do |c|
+    commander_instance.command :token do |c|
       c.syntax = 'floaty token <get delete status> [options]'
       c.summary = 'Retrieves or deletes a token or checks token status'
       c.description = 'This command is used to manage your pooler service token. Through the various options, you are able to get a new token, delete an existing token, and request a tokens status.'
@@ -425,7 +438,7 @@ class Vmfloaty
       end
     end
 
-    command :ssh do |c|
+    commander_instance.command :ssh do |c|
       c.syntax = 'floaty ssh os_type [options]'
       c.summary = 'Grabs a single vm and sshs into it'
       c.description = 'This command simply will grab a vm template that was requested, and then ssh the user into the machine all at once.'
@@ -455,7 +468,7 @@ class Vmfloaty
       end
     end
 
-    command :completion do |c|
+    commander_instance.command :completion do |c|
       c.syntax = 'floaty completion [options]'
       c.summary = 'Outputs path to completion script'
       c.description = Utils.strip_heredoc(<<-DESCRIPTION)
@@ -480,7 +493,6 @@ class Vmfloaty
         end
       end
     end
-
-    run!
+    commander_instance.run!
   end
 end
