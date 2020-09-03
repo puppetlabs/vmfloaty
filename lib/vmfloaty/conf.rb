@@ -8,7 +8,7 @@ class Conf
     begin
       conf = YAML.load_file("#{Dir.home}/.vmfloaty.yml")
     rescue StandardError
-      FloatyLogger.warn "WARNING: There was no config file at #{Dir.home}/.vmfloaty.yml"
+      # ignore
     end
     conf
   end

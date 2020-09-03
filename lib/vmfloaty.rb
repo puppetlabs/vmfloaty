@@ -20,7 +20,7 @@ class Vmfloaty
 
   def run # rubocop:disable Metrics/AbcSize
     program :version, Vmfloaty::VERSION
-    program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat"
+    program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat.\n\nConfiguration may be placed in a ~/.vmfloaty.yml file."
 
     config = Conf.read_config
 
@@ -90,6 +90,7 @@ class Vmfloaty
       c.option '--json', 'Prints information as JSON'
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--url STRING', String, 'URL of pooler service'
+      c.option '--user STRING', String, 'User to authenticate with'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
 
@@ -212,6 +213,7 @@ class Vmfloaty
       c.option '--json', 'Outputs hosts scheduled for deletion as JSON'
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--url STRING', String, 'URL of pooler service'
+      c.option '--user STRING', String, 'User to authenticate with'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
