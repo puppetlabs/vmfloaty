@@ -3,6 +3,7 @@
 require 'vmfloaty/abs'
 require 'vmfloaty/nonstandard_pooler'
 require 'vmfloaty/pooler'
+require 'vmfloaty/conf'
 
 class Utils
   # TODO: Takes the json response body from an HTTP GET
@@ -78,21 +79,28 @@ class Utils
     os_types
   end
 
-  def self.pretty_print_hosts(verbose, service, hostnames = [], print_to_stderr = false)
+  def self.pretty_print_hosts(verbose, service, hostnames = [], print_to_stderr = false, indent = 0)
     fetched_data = self.get_host_data(verbose, service, hostnames)
     fetched_data.each do |hostname, host_data|
       case service.type
       when 'ABS'
-      # For ABS, 'hostname' variable is the jobID
+        # For ABS, 'hostname' variable is the jobID
+        #
+        # Create a vmpooler service to query each hostname there so as to get the metadata too
+
+        vmpooler_service = service.clone
+        vmpooler_service.silent = true
+        vmpooler_service.maybe_use_vmpooler
+        puts "- [JobID:#{host_data['request']['job']['id']}] <#{host_data['state']}>"
         host_data['allocated_resources'].each do |vm_name, _i|
-          puts "- [JobID:#{host_data['request']['job']['id']}] #{vm_name['hostname']} (#{vm_name['type']}) <#{host_data['state']}>"
+          self.pretty_print_hosts(verbose, vmpooler_service, vm_name['hostname'].split('.')[0], print_to_stderr, indent+2)
         end
       when 'Pooler'
         tag_pairs = []
         tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
         duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
         metadata = [host_data['template'], duration, *tag_pairs]
-        puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})"
+        puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
       when 'NonstandardPooler'
         line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
         line += ", #{host_data['hours_left_on_reservation']}h remaining"
@@ -238,6 +246,28 @@ class Utils
     service_config['url'] = options.url unless options.url.nil?
     service_config['token'] = options.token unless options.token.nil?
     service_config['user'] = options.user unless options.user.nil?
+
+    service_config
+  end
+
+  # This method gets the vmpooler service configured in ~/.vmfloaty
+  def self.get_vmpooler_service_config
+    config = Conf.read_config
+    # The top-level url, user, and token values in the config file are treated as defaults
+    service_config = {
+        'url'   => config['url'],
+        'user'  => config['user'],
+        'token' => config['token'],
+        'type'  => 'vmpooler',
+    }
+
+    # at a minimum, the url needs to be configured
+    if config['services'] && config['services']['vmpooler'] && config['services']['vmpooler']['url']
+      # If the service is configured but some values are missing, use the top-level defaults to fill them in
+      service_config.merge! config['services']['vmpooler']
+    else
+      raise ArgumentError, "Could not find a configured service named 'vmpooler' in ~/.vmfloaty.yml use this format:\nservices:\n  vmpooler:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
+    end
 
     service_config
   end

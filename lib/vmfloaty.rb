@@ -99,7 +99,12 @@ class Vmfloaty
 
         if options.active
           # list active vms
-          running_vms = service.list_active(verbose)
+          if service.type == "ABS"
+            # this is actually job_ids
+            running_vms = service.list_active_job_ids(verbose, service.url, service.user)
+          else
+            running_vms = service.list_active(verbose)
+          end
           host = URI.parse(service.url).host
           if running_vms.empty?
             if options.json
@@ -126,7 +131,7 @@ class Vmfloaty
     command :query do |c|
       c.syntax = 'floaty query hostname [options]'
       c.summary = 'Get information about a given vm'
-      c.description = 'Given a hostname from the pooler service, vmfloaty with query the service to get various details about the vm.'
+      c.description = 'Given a hostname from the pooler service, vmfloaty with query the service to get various details about the vm. If using ABS, you can query a job_id'
       c.example 'Get information about a sample host', 'floaty query hostname --url http://vmpooler.example.com'
       c.option '--verbose', 'Enables verbose output'
       c.option '--service STRING', String, 'Configured pooler service name'
@@ -165,7 +170,12 @@ class Vmfloaty
           FloatyLogger.error 'ERROR: Provide a hostname or specify --all.'
           exit 1
         end
-        running_vms = modify_all ? service.list_active(verbose) : hostname.split(',')
+        running_vms =
+            if modify_all
+              service.list_active(verbose)
+            else
+              hostname.split(',')
+            end
 
         tags = options.tags ? JSON.parse(options.tags) : nil
         modify_hash = {
@@ -189,7 +199,7 @@ class Vmfloaty
           end
           if ok
             if modify_all
-              puts 'Successfully modified all VMs.'
+              puts "Successfully modified all #{running_vms.count} VMs."
             else
               puts "Successfully modified VM #{hostname}."
             end
@@ -225,7 +235,12 @@ class Vmfloaty
         successes = []
 
         if delete_all
-          running_vms = service.list_active(verbose)
+          if service.type == "ABS"
+            # this is actually job_ids
+            running_vms = service.list_active_job_ids(verbose, service.url, service.user)
+          else
+            running_vms = service.list_active(verbose)
+          end
           if running_vms.empty?
             if options.json
               puts {}.to_json
@@ -274,7 +289,6 @@ class Vmfloaty
         end
 
         unless successes.empty?
-          FloatyLogger.info unless failures.empty?
           if options.json
             puts successes.to_json
           else
