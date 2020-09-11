@@ -105,12 +105,20 @@ Now vmfloaty will use those config files if no flag was specified.
 
 #### Default to Puppet's ABS instead of vmpooler
 
+When the --service is not specified on the command line, the first one is selected, so put ABS first.
+Also provide a "vmpooler" service that ABS can use as fallback for operations targeting vmpooler directly
 ```yaml
 # file at ~/.vmfloaty.yml
-url: 'https://abs.example.net'
-user: 'brian'
-token: 'tokenstring'
-type: 'abs'
+services:
+  abs:
+    url: 'https://abs/api/v2'
+    type: 'abs'
+    user: 'samuel'
+    token: 'foo'
+  vmpooler:
+    url: 'http://vmpooler'
+    user: 'samuel'
+    token: 'bar'
 ```
 
 #### Configuring multiple services
