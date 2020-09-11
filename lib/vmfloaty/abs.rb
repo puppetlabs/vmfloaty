@@ -2,6 +2,7 @@
 
 require 'vmfloaty/errors'
 require 'vmfloaty/http'
+require 'vmfloaty/utils'
 require 'faraday'
 require 'json'
 
@@ -36,39 +37,59 @@ class ABS
   #       }
   #     }
   #
-
   @active_hostnames = {}
 
-  def self.list_active(verbose, url, _token, user)
-    all_jobs = []
+  def self.list_active_job_ids(verbose, url, user)
+    all_job_ids = []
     @active_hostnames = {}
-
     get_active_requests(verbose, url, user).each do |req_hash|
-      all_jobs.push(req_hash['request']['job']['id'])
-      @active_hostnames[req_hash['request']['job']['id']] = req_hash
+      @active_hostnames[req_hash['request']['job']['id']] = req_hash # full hash saved for later retrieval
+      all_job_ids.push(req_hash['request']['job']['id'])
     end
 
-    all_jobs
+    all_job_ids
+  end
+
+  def self.list_active(verbose, url, _token, user)
+    hosts = []
+    get_active_requests(verbose, url, user).each do |req_hash|
+      if req_hash.key?('allocated_resources')
+        req_hash['allocated_resources'].each do |onehost|
+          hosts.push(onehost['hostname'])
+        end
+      end
+    end
+
+    hosts
   end
 
   def self.get_active_requests(verbose, url, user)
     conn = Http.get_conn(verbose, url)
     res = conn.get 'status/queue'
-    requests = JSON.parse(res.body)
+    if valid_json?(res.body)
+      requests = JSON.parse(res.body)
+    else
+      FloatyLogger.warn "Warning: couldn't parse body returned from abs/status/queue"
+    end
 
     ret_val = []
 
     requests.each do |req|
       next if req == 'null'
 
-      req_hash = JSON.parse(req)
+      if valid_json?(req)
+        req_hash = JSON.parse(req)
+      else
+        FloatyLogger.warn "Warning: couldn't parse request returned from abs/status/queue"
+        next
+      end
 
       begin
         next unless user == req_hash['request']['job']['user']
 
         ret_val.push(req_hash)
       rescue NoMethodError
-        FloatyLogger.warn "Warning: couldn't parse line returned from abs/status/queue: "
+        FloatyLogger.warn "Warning: couldn't parse user returned from abs/status/queue: "
       end
     end
 
@@ -145,30 +166,43 @@ class ABS
     os_list = []
 
     res = conn.get 'status/platforms/vmpooler'
-
-    res_body = JSON.parse(res.body)
-    os_list << '*** VMPOOLER Pools ***'
-    os_list += JSON.parse(res_body['vmpooler_platforms'])
+    if valid_json?(res.body)
+      res_body = JSON.parse(res.body)
+      if res_body.key?('vmpooler_platforms')
+        os_list << '*** VMPOOLER Pools ***'
+        os_list += JSON.parse(res_body['vmpooler_platforms'])
+      end
+    end
 
     res = conn.get 'status/platforms/ondemand_vmpooler'
-    res_body = JSON.parse(res.body)
-    unless res_body['ondemand_vmpooler_platforms'] == '[]'
-      os_list << ''
-      os_list << '*** VMPOOLER ONDEMAND Pools ***'
-      os_list += JSON.parse(res_body['ondemand_vmpooler_platforms'])
+    if valid_json?(res.body)
+      res_body = JSON.parse(res.body)
+      if res_body.key?('ondemand_vmpooler_platforms') && res_body['ondemand_vmpooler_platforms'] != '[]'
+        os_list << ''
+        os_list << '*** VMPOOLER ONDEMAND Pools ***'
+        os_list += JSON.parse(res_body['ondemand_vmpooler_platforms'])
+      end
     end
 
     res = conn.get 'status/platforms/nspooler'
-    res_body = JSON.parse(res.body)
-    os_list << ''
-    os_list << '*** NSPOOLER Pools ***'
-    os_list += JSON.parse(res_body['nspooler_platforms'])
+    if valid_json?(res.body)
+      res_body = JSON.parse(res.body)
+      if res_body.key?('nspooler_platforms')
+        os_list << ''
+        os_list << '*** NSPOOLER Pools ***'
+        os_list += JSON.parse(res_body['nspooler_platforms'])
+      end
+    end
 
     res = conn.get 'status/platforms/aws'
-    res_body = JSON.parse(res.body)
-    os_list << ''
-    os_list << '*** AWS Pools ***'
-    os_list += JSON.parse(res_body['aws_platforms'])
+    if valid_json?(res.body)
+      res_body = JSON.parse(res.body)
+      if res_body.key?('aws_platforms')
+        os_list << ''
+        os_list << '*** AWS Pools ***'
+        os_list += JSON.parse(res_body['aws_platforms'])
+      end
+    end
 
     os_list.delete 'ok'
 
@@ -197,7 +231,7 @@ class ABS
     conn.headers['X-AUTH-TOKEN'] = token if token
 
     saved_job_id = DateTime.now.strftime('%Q')
-
+    vmpooler_config = Utils.get_vmpooler_service_config
     req_obj = {
       :resources => os_types,
       :job       => {
@@ -206,6 +240,7 @@ class ABS
           :user => user,
         },
       },
+      :vm_token => vmpooler_config['token'] # request with this token, on behalf of this user
     }
 
     if options['priority']
@@ -264,12 +299,17 @@ class ABS
 
   def self.check_queue(conn, job_id, req_obj, verbose)
     queue_info_res = conn.get "status/queue/info/#{job_id}"
-    queue_info = JSON.parse(queue_info_res.body)
+    if valid_json?(queue_info_res.body)
+      queue_info = JSON.parse(queue_info_res.body)
+    else
+      FloatyLogger.warn "Could not parse the status/queue/info/#{job_id}"
+      return [nil, nil]
+    end
 
     res = conn.post 'request', req_obj.to_json
     validate_queue_status_response(res.status, res.body, "Check queue request", verbose)
 
-    unless res.body.empty?
+    unless res.body.empty? || !valid_json?(res.body)
       res_body = JSON.parse(res.body)
       return queue_info['queue_place'], res_body
     end
@@ -277,7 +317,7 @@ class ABS
   end
 
   def self.snapshot(_verbose, _url, _hostname, _token)
-    FloatyLogger.info "Can't snapshot with ABS, use '--service vmpooler' (even for vms checked out with ABS)"
+    raise NoMethodError, "Can't snapshot with ABS, use '--service vmpooler' (even for vms checked out with ABS)"
   end
 
   def self.status(verbose, url)
@@ -289,20 +329,24 @@ class ABS
   end
 
   def self.summary(verbose, url)
-    conn = Http.get_conn(verbose, url)
-
-    res = conn.get 'summary'
-    JSON.parse(res.body)
+    raise NoMethodError, 'summary is not defined for ABS'
   end
 
-  def self.query(verbose, url, hostname)
-    return @active_hostnames if @active_hostnames
+  def self.query(verbose, url, job_id)
+    # return saved hostnames from the last time list_active was run
+    # preventing having to query the API again.
+    # This works as long as query is called after list_active
+    return @active_hostnames if @active_hostnames && !@active_hostnames.empty?
 
-    FloatyLogger.info "For vmpooler/snapshot information, use '--service vmpooler' (even for vms checked out with ABS)"
+    # If using the cli query job_id
     conn = Http.get_conn(verbose, url)
-
-    res = conn.get "host/#{hostname}"
-    JSON.parse(res.body)
+    queue_info_res = conn.get "status/queue/info/#{job_id}"
+    if valid_json?(queue_info_res.body)
+      queue_info = JSON.parse(queue_info_res.body)
+    else
+      FloatyLogger.warn "Could not parse the status/queue/info/#{job_id}"
+    end
+    queue_info
   end
 
   def self.modify(_verbose, _url, _hostname, _token, _modify_hash)
@@ -332,5 +376,12 @@ class ABS
     else
       raise "HTTP #{status_code}: #{request_name} request to ABS failed!\n#{body}"
     end
+  end
+
+  def self.valid_json?(json)
+    JSON.parse(json)
+    return true
+  rescue TypeError, JSON::ParserError => e
+    return false
   end
 end

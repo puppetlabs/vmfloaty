@@ -7,11 +7,13 @@ require 'vmfloaty/ssh'
 
 class Service
   attr_reader :config
+  attr_accessor :silent
 
   def initialize(options, config_hash = {})
     options ||= Commander::Command::Options.new
     @config = Utils.get_service_config config_hash, options
     @service_object = Utils.get_service_object @config['type']
+    @silent = false
   end
 
   def method_missing(method_name, *args, &block)
@@ -103,6 +105,7 @@ class Service
   end
 
   def modify(verbose, hostname, modify_hash)
+    maybe_use_vmpooler
     @service_object.modify verbose, url, hostname, token, modify_hash
   end
 
@@ -115,18 +118,35 @@ class Service
   end
 
   def summary(verbose)
+    maybe_use_vmpooler
     @service_object.summary verbose, url
   end
 
   def snapshot(verbose, hostname)
+    maybe_use_vmpooler
     @service_object.snapshot verbose, url, hostname, token
   end
 
   def revert(verbose, hostname, snapshot_sha)
+    maybe_use_vmpooler
     @service_object.revert verbose, url, hostname, token, snapshot_sha
   end
 
   def disk(verbose, hostname, disk)
+    maybe_use_vmpooler
     @service_object.disk(verbose, url, hostname, token, disk)
+  end
+
+  # some methods do not exist for ABS, and if possible should target the Pooler service
+  def maybe_use_vmpooler
+    if @service_object.is_a?(ABS.class)
+      if !self.silent
+        FloatyLogger.info "The service in use is ABS, but the requested method should run against vmpooler directly, using vmpooler config from ~/.vmfloaty.yml"
+        self.silent = true
+      end
+
+      @config = Utils.get_vmpooler_service_config
+      @service_object = Pooler
+    end
   end
 end
