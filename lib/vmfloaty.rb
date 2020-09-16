@@ -497,6 +497,70 @@ class Vmfloaty
       end
     end
 
+    command :service do |c|
+      c.syntax = 'floaty service <types examples>'
+      c.summary = 'Display information about floaty services and their configuration'
+      c.description = 'Display information about floaty services to aid in setting up a configuration file.'
+      c.example 'Print a list of the valid service types', 'floaty service types'
+      c.example 'Print a sample config file with multiple services', 'floaty service examples'
+      c.example 'list vms from the service named "nspooler-prod"', 'floaty list --service nspooler-prod'
+      c.action do |args, options|
+        action = args.first
+
+        example_config = Utils.strip_heredoc(<<-CONFIG)
+          # Sample ~/.vmfloaty.yml with just vmpooler
+          user: 'jdoe'
+          url: 'https://vmpooler.example.net'
+          token: '456def789'
+
+          # Sample ~/.vmfloaty.yml with multiple services
+          # Note: when the --service is not specified on the command line,
+          # the first service listed here is selected automatically
+          user: 'jdoe'
+          services:
+            abs-prod:
+              type: 'abs'
+              url: 'https://abs.example.net/api/v2'
+              token: '123abc456'
+              vmpooler_fallback: 'vmpooler-prod'
+            nspooler-prod:
+              type: 'nspooler'
+              url: 'https://nspooler.example.net'
+              token:  '789ghi012'
+            vmpooler-dev:
+              type: 'vmpooler'
+              url: 'https://vmpooler-dev.example.net'
+              token: '987dsa654'
+            vmpooler-prod:
+              type: 'vmpooler'
+              url: 'https://vmpooler.example.net'
+              token: '456def789'
+
+        CONFIG
+
+        types_output = Utils.strip_heredoc(<<-TYPES)
+          The values on the left below can be used in ~/.vmfloaty.yml as the value of type:
+
+          abs:       Puppet's Always Be Scheduling
+          nspooler:  Puppet's Non-standard Pooler, aka NSPooler
+          vmpooler:  Puppet's VMPooler
+        TYPES
+
+        case action
+        when 'examples'
+          FloatyLogger.info example_config
+        when 'types'
+          FloatyLogger.info types_output
+        when nil
+          FloatyLogger.error 'No action provided'
+          exit 1
+        else
+          FloatyLogger.error "Unknown action: #{action}"
+          exit 1
+        end
+      end
+    end
+
     run!
   end
 end
