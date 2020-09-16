@@ -210,7 +210,7 @@ class ABS
   end
 
   # Retrieve an OS from ABS.
-  def self.retrieve(verbose, os_types, token, url, user, options, _ondemand = nil)
+  def self.retrieve(verbose, os_types, token, url, user, config, _ondemand = nil)
     #
     # Contents of post must be like:
     #
@@ -231,7 +231,7 @@ class ABS
     conn.headers['X-AUTH-TOKEN'] = token if token
 
     saved_job_id = DateTime.now.strftime('%Q')
-    vmpooler_config = Utils.get_vmpooler_service_config
+    vmpooler_config = Utils.get_vmpooler_service_config(config['vmpooler_fallback'])
     req_obj = {
       :resources => os_types,
       :job       => {
@@ -243,15 +243,15 @@ class ABS
       :vm_token => vmpooler_config['token'] # request with this token, on behalf of this user
     }
 
-    if options['priority']
-      req_obj[:priority] = if options['priority'] == 'high'
+    if config['priority']
+      req_obj[:priority] = if config['priority'] == 'high'
                              1
-                           elsif options['priority'] == 'medium'
+                           elsif config['priority'] == 'medium'
                              2
-                           elsif options['priority'] == 'low'
+                           elsif config['priority'] == 'low'
                              3
                            else
-                             options['priority'].to_i
+                             config['priority'].to_i
                            end
     end
 

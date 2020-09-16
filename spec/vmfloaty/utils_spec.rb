@@ -247,4 +247,61 @@ describe Utils do
       Utils.pretty_print_hosts(nil, service, hostname)
     end
   end
+
+  describe '#get_vmpooler_service_config' do
+    let(:Conf) { double }
+    it 'returns an error if the vmpooler_fallback is not setup' do
+      config = {
+        'user' => 'foo',
+        'services' => {
+            'myabs' => {
+              'url' => 'http://abs.com',
+              'token' => 'krypto-night',
+              'type' => 'abs'
+            }
+        }
+      }
+      allow(Conf).to receive(:read_config).and_return(config)
+      expect{Utils.get_vmpooler_service_config(config['services']['myabs']['vmpooler_fallback'])}.to raise_error(ArgumentError)
+    end
+    it 'returns an error if the vmpooler_fallback is setup but cannot be found' do
+      config = {
+        'user' => 'foo',
+        'services' => {
+          'myabs' => {
+              'url' => 'http://abs.com',
+              'token' => 'krypto-night',
+              'type' => 'abs',
+              'vmpooler_fallback' => 'myvmpooler'
+          }
+        }
+      }
+      allow(Conf).to receive(:read_config).and_return(config)
+      expect{Utils.get_vmpooler_service_config(config['services']['myabs']['vmpooler_fallback'])}.to raise_error(ArgumentError, /myvmpooler/)
+    end
+    it 'returns the vmpooler_fallback config' do
+      config = {
+        'user' => 'foo',
+        'services' => {
+          'myabs' => {
+              'url' => 'http://abs.com',
+              'token' => 'krypto-night',
+              'type' => 'abs',
+              'vmpooler_fallback' => 'myvmpooler'
+          },
+          'myvmpooler' => {
+              'url' => 'http://vmpooler.com',
+              'token' => 'krypto-knight'
+          }
+        }
+      }
+      allow(Conf).to receive(:read_config).and_return(config)
+      expect(Utils.get_vmpooler_service_config(config['services']['myabs']['vmpooler_fallback'])).to include({
+                                                                                       'url' => 'http://vmpooler.com',
+                                                                                       'token' => 'krypto-knight',
+                                                                                       'user' => 'foo',
+                                                                                       'type' => 'vmpooler'
+                                                                                   })
+    end
+  end
 end

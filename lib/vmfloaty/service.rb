@@ -141,11 +141,11 @@ class Service
   def maybe_use_vmpooler
     if @service_object.is_a?(ABS.class)
       if !self.silent
-        FloatyLogger.info "The service in use is ABS, but the requested method should run against vmpooler directly, using vmpooler config from ~/.vmfloaty.yml"
+        FloatyLogger.info "The service in use is ABS, but the requested method should run against vmpooler directly, using fallback_vmpooler config from ~/.vmfloaty.yml"
         self.silent = true
       end
 
-      @config = Utils.get_vmpooler_service_config
+      @config = Utils.get_vmpooler_service_config(@config['vmpooler_fallback'])
       @service_object = Pooler
     end
   end
