@@ -7,7 +7,7 @@ _vmfloaty()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-  subcommands="delete get help list modify query revert snapshot ssh status summary token"
+  subcommands="delete get help list modify query revert service snapshot ssh status summary token"
   template_subcommands="get ssh"
   hostname_subcommands="delete modify query revert snapshot"
 

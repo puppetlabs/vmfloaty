@@ -77,8 +77,16 @@ describe Utils do
       expect(Utils.get_service_object).to be Pooler
     end
 
+    it 'uses abs when told explicitly' do
+      expect(Utils.get_service_object('abs')).to be ABS
+    end
+
     it 'uses nspooler when told explicitly' do
       expect(Utils.get_service_object('nspooler')).to be NonstandardPooler
+    end
+
+    it 'uses vmpooler when told explicitly' do
+      expect(Utils.get_service_object('vmpooler')).to be Pooler
     end
   end
 

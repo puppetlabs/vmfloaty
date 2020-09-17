@@ -208,12 +208,15 @@ class Utils
   end
 
   def self.get_service_object(type = '')
-    nspooler_strings = %w[ns nspooler nonstandard nonstandard_pooler]
     abs_strings = %w[abs alwaysbescheduling always_be_scheduling]
-    if nspooler_strings.include? type.downcase
-      NonstandardPooler
-    elsif abs_strings.include? type.downcase
+    nspooler_strings = %w[ns nspooler nonstandard nonstandard_pooler]
+    vmpooler_strings = %w[vmpooler]
+    if abs_strings.include? type.downcase
       ABS
+    elsif nspooler_strings.include? type.downcase
+      NonstandardPooler
+    elsif vmpooler_strings.include? type.downcase
+      Pooler
     else
       Pooler
     end
