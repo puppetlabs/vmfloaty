@@ -10,14 +10,15 @@ describe ABS do
   end
 
   describe '#format' do
-    it 'returns an hash formatted like a vmpooler return' do
+    it 'returns an hash formatted like a vmpooler return, plus the job_id' do
+      job_id = "generated_by_floaty_12345"
       abs_formatted_response = [
         { 'hostname' => 'aaaaaaaaaaaaaaa.delivery.puppetlabs.net', 'type' => 'centos-7.2-x86_64', 'engine' => 'vmpooler' },
         { 'hostname' => 'aaaaaaaaaaaaaab.delivery.puppetlabs.net', 'type' => 'centos-7.2-x86_64', 'engine' => 'vmpooler' },
         { 'hostname' => 'aaaaaaaaaaaaaac.delivery.puppetlabs.net', 'type' => 'ubuntu-7.2-x86_64', 'engine' => 'vmpooler' },
       ]
 
-      vmpooler_formatted_response = ABS.translated(abs_formatted_response)
+      vmpooler_formatted_response = ABS.translated(abs_formatted_response, job_id)
 
       vmpooler_formatted_compare = {
         'centos-7.2-x86_64' => {},
@@ -28,6 +29,8 @@ describe ABS do
       vmpooler_formatted_compare['ubuntu-7.2-x86_64']['hostname'] = ['aaaaaaaaaaaaaac.delivery.puppetlabs.net']
 
       vmpooler_formatted_compare['ok'] = true
+
+      vmpooler_formatted_compare['job_id'] = job_id
 
       expect(vmpooler_formatted_response).to eq(vmpooler_formatted_compare)
       vmpooler_formatted_response.delete('ok')
