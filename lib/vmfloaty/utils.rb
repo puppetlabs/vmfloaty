@@ -259,7 +259,7 @@ class Utils
   end
 
   # This method gets the vmpooler service configured in ~/.vmfloaty
-  def self.get_vmpooler_service_config
+  def self.get_vmpooler_service_config(vmpooler_fallback)
     config = Conf.read_config
     # The top-level url, user, and token values in the config file are treated as defaults
     service_config = {
@@ -270,11 +270,15 @@ class Utils
     }
 
     # at a minimum, the url needs to be configured
-    if config['services'] && config['services']['vmpooler'] && config['services']['vmpooler']['url']
+    if config['services'] && config['services'][vmpooler_fallback] && config['services'][vmpooler_fallback]['url']
       # If the service is configured but some values are missing, use the top-level defaults to fill them in
-      service_config.merge! config['services']['vmpooler']
+      service_config.merge! config['services'][vmpooler_fallback]
     else
-      raise ArgumentError, "Could not find a configured service named 'vmpooler' in ~/.vmfloaty.yml use this format:\nservices:\n  vmpooler:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
+      if vmpooler_fallback.nil?
+        raise ArgumentError, "The abs service should have a key named 'vmpooler_fallback' in ~/.vmfloaty.yml with a value that points to a vmpooler service name use this format:\nservices:\n  myabs:\n    url: 'http://abs.com'\n    user: 'superman'\n    token: 'kryptonite'\n    vmpooler_fallback: 'myvmpooler'\n  myvmpooler:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
+      else
+        raise ArgumentError, "Could not find a configured service named '#{vmpooler_fallback}' in ~/.vmfloaty.yml use this format:\nservices:\n  #{vmpooler_fallback}:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
+      end
     end
 
     service_config
