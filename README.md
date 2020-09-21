@@ -145,6 +145,12 @@ If you are running on macOS and use Homebrew's `bash-completion` formula, you ca
 ln -s $(floaty completion --shell bash) /usr/local/etc/bash_completion.d/floaty
 ```
 
+There is also tab completion for zsh:
+
+```zsh
+source $(floaty completion --shell zsh)
+```
+
 ## vmpooler API
 
 This cli tool uses the [vmpooler API](https://github.com/puppetlabs/vmpooler/blob/master/API.md).
