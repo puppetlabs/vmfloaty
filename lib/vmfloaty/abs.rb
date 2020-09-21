@@ -172,10 +172,10 @@ class ABS
       res_body = JSON.parse(res.body)
       if res_body.key?('vmpooler_platforms')
         os_list << '*** VMPOOLER Pools ***'
-        if res_body['vmpooler_platforms'].is_a?(Hash)
-          os_list += res_body['vmpooler_platforms']
-        else
+        if res_body['vmpooler_platforms'].is_a?(String)
           os_list += JSON.parse(res_body['vmpooler_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
+        else
+          os_list += res_body['vmpooler_platforms']
         end
       end
     end
@@ -186,10 +186,10 @@ class ABS
       if res_body.key?('ondemand_vmpooler_platforms') && res_body['ondemand_vmpooler_platforms'] != '[]'
         os_list << ''
         os_list << '*** VMPOOLER ONDEMAND Pools ***'
-        if res_body['ondemand_vmpooler_platforms'].is_a?(Hash)
-          os_list += res_body['ondemand_vmpooler_platforms']
-        else
+        if res_body['ondemand_vmpooler_platforms'].is_a?(String)
           os_list += JSON.parse(res_body['ondemand_vmpooler_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
+        else
+          os_list += res_body['ondemand_vmpooler_platforms']
         end
       end
     end
@@ -200,10 +200,10 @@ class ABS
       if res_body.key?('nspooler_platforms')
         os_list << ''
         os_list << '*** NSPOOLER Pools ***'
-        if res_body['nspooler_platforms'].is_a?(Hash)
-          os_list += res_body['nspooler_platforms']
-        else
+        if res_body['nspooler_platforms'].is_a?(String)
           os_list += JSON.parse(res_body['nspooler_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
+        else
+          os_list += res_body['nspooler_platforms']
         end
       end
     end
@@ -214,10 +214,10 @@ class ABS
       if res_body.key?('aws_platforms')
         os_list << ''
         os_list << '*** AWS Pools ***'
-        if res_body['aws_platforms'].is_a?(Hash)
-          os_list += res_body['aws_platforms']
-        else
+        if res_body['aws_platforms'].is_a?(String)
           os_list += JSON.parse(res_body['aws_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
+        else
+          os_list += res_body['aws_platforms']
         end
       end
     end

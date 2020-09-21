@@ -9,6 +9,50 @@ describe ABS do
   before :each do
   end
 
+  describe '#list' do
+    it 'skips empty platforms and lists aws' do
+      stub_request(:get, "http://foo/status/platforms/vmpooler").
+          to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:get, "http://foo/status/platforms/ondemand_vmpooler").
+          to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:get, "http://foo/status/platforms/nspooler").
+          to_return(:status => 200, :body => "", :headers => {})
+      body = '{
+                "aws_platforms": [
+                  "amazon-6-x86_64",
+                  "amazon-7-x86_64",
+                  "amazon-7-arm64",
+                  "centos-7-x86-64-west",
+                  "redhat-8-arm64"
+                ]
+              }'
+      stub_request(:get, "http://foo/status/platforms/aws").
+          to_return(:status => 200, :body => body, :headers => {})
+
+
+      results = ABS.list(false, "http://foo")
+
+      expect(results).to include("amazon-6-x86_64", "amazon-7-x86_64", "amazon-7-arm64", "centos-7-x86-64-west", "redhat-8-arm64")
+    end
+    it 'legacy JSON string, prior to PR 306' do
+      stub_request(:get, "http://foo/status/platforms/vmpooler").
+          to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:get, "http://foo/status/platforms/ondemand_vmpooler").
+          to_return(:status => 200, :body => "", :headers => {})
+      stub_request(:get, "http://foo/status/platforms/nspooler").
+          to_return(:status => 200, :body => "", :headers => {})
+      body = '{
+          "aws_platforms": "[\"amazon-6-x86_64\",\"amazon-7-x86_64\",\"amazon-7-arm64\",\"centos-7-x86-64-west\",\"redhat-8-arm64\"]"
+      }'
+      stub_request(:get, "http://foo/status/platforms/aws").
+          to_return(:status => 200, :body => body, :headers => {})
+
+      results = ABS.list(false, "http://foo")
+
+      expect(results).to include("amazon-6-x86_64", "amazon-7-x86_64", "amazon-7-arm64", "centos-7-x86-64-west", "redhat-8-arm64")
+    end
+  end
+
   describe '#format' do
     it 'returns an hash formatted like a vmpooler return, plus the job_id' do
       job_id = "generated_by_floaty_12345"
