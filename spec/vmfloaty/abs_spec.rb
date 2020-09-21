@@ -71,9 +71,9 @@ describe ABS do
         # rubocop:disable Layout/LineLength
         @active_requests_response = '
         [
-          "{ \"state\":\"allocated\",\"last_processed\":\"2019-12-16 23:00:34 +0000\",\"allocated_resources\":[{\"hostname\":\"take-this.delivery.puppetlabs.net\",\"type\":\"win-2012r2-x86_64\",\"engine\":\"vmpooler\"}],\"audit_log\":{\"2019-12-13 16:45:29 +0000\":\"Allocated take-this.delivery.puppetlabs.net for job 1576255517241\"},\"request\":{\"resources\":{\"win-2012r2-x86_64\":1},\"job\":{\"id\":\"1576255517241\",\"tags\":{\"user\":\"test-user\"},\"user\":\"test-user\",\"time-received\":1576255519},\"priority\":1}}",
+          { "state":"allocated","last_processed":"2019-12-16 23:00:34 +0000","allocated_resources":[{"hostname":"take-this.delivery.puppetlabs.net","type":"win-2012r2-x86_64","engine":"vmpooler"}],"audit_log":{"2019-12-13 16:45:29 +0000":"Allocated take-this.delivery.puppetlabs.net for job 1576255517241"},"request":{"resources":{"win-2012r2-x86_64":1},"job":{"id":"1576255517241","tags":{"user":"test-user"},"user":"test-user","time-received":1576255519},"priority":1}},
           "null",
-          "{\"state\":\"allocated\",\"last_processed\":\"2019-12-16 23:00:34 +0000\",\"allocated_resources\":[{\"hostname\":\"not-this.delivery.puppetlabs.net\",\"type\":\"win-2012r2-x86_64\",\"engine\":\"vmpooler\"}],\"audit_log\":{\"2019-12-13 16:46:14 +0000\":\"Allocated not-this.delivery.puppetlabs.net for job 1576255565159\"},\"request\":{\"resources\":{\"win-2012r2-x86_64\":1},\"job\":{\"id\":\"1576255565159\",\"tags\":{\"user\":\"not-test-user\"},\"user\":\"not-test-user\",\"time-received\":1576255566},\"priority\":1}}"
+          {"state":"allocated","last_processed":"2019-12-16 23:00:34 +0000","allocated_resources":[{"hostname":"not-this.delivery.puppetlabs.net","type":"win-2012r2-x86_64","engine":"vmpooler"}],"audit_log":{"2019-12-13 16:46:14 +0000":"Allocated not-this.delivery.puppetlabs.net for job 1576255565159"},"request":{"resources":{"win-2012r2-x86_64":1},"job":{"id":"1576255565159","tags":{"user":"not-test-user"},"user":"not-test-user","time-received":1576255566},"priority":1}}
         ]'
         # rubocop:enable Layout/LineLength
         @token = 'utpg2i2xswor6h8ttjhu3d47z53yy47y'
@@ -101,7 +101,7 @@ describe ABS do
         # rubocop:disable Layout/LineLength
         @active_requests_response = '
         [
-          "{ \"state\":\"allocated\", \"last_processed\":\"2020-01-17 22:29:13 +0000\", \"allocated_resources\":[{\"hostname\":\"craggy-chord.delivery.puppetlabs.net\", \"type\":\"centos-7-x86_64\", \"engine\":\"vmpooler\"}, {\"hostname\":\"visible-revival.delivery.puppetlabs.net\", \"type\":\"centos-7-x86_64\", \"engine\":\"vmpooler\"}], \"audit_log\":{\"2020-01-17 22:28:45 +0000\":\"Allocated craggy-chord.delivery.puppetlabs.net, visible-revival.delivery.puppetlabs.net for job 1579300120799\"}, \"request\":{\"resources\":{\"centos-7-x86_64\":2}, \"job\":{\"id\":\"1579300120799\", \"tags\":{\"user\":\"test-user\"}, \"user\":\"test-user\", \"time-received\":1579300120}, \"priority\":3}}"
+          { "state":"allocated", "last_processed":"2020-01-17 22:29:13 +0000", "allocated_resources":[{"hostname":"craggy-chord.delivery.puppetlabs.net", "type":"centos-7-x86_64", "engine":"vmpooler"}, {"hostname":"visible-revival.delivery.puppetlabs.net", "type":"centos-7-x86_64", "engine":"vmpooler"}], "audit_log":{"2020-01-17 22:28:45 +0000":"Allocated craggy-chord.delivery.puppetlabs.net, visible-revival.delivery.puppetlabs.net for job 1579300120799"}, "request":{"resources":{"centos-7-x86_64":2}, "job":{"id":"1579300120799", "tags":{"user":"test-user"}, "user":"test-user", "time-received":1579300120}, "priority":3}}
         ]'
         @return_request = { '{"job_id":"1579300120799","hosts":{"hostname":"craggy-chord.delivery.puppetlabs.net","type":"centos-7-x86_64","engine":"vmpooler"},{"hostname":"visible-revival.delivery.puppetlabs.net","type":"centos-7-x86_64","engine":"vmpooler"}}'=>true }
         # rubocop:enable Layout/LineLength
