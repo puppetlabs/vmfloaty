@@ -114,13 +114,17 @@ class Utils
         #
         # Create a vmpooler service to query each hostname there so as to get the metadata too
 
-        vmpooler_service = service.clone
-        vmpooler_service.silent = true
-        vmpooler_service.maybe_use_vmpooler
         output_target.puts "- [JobID:#{host_data['request']['job']['id']}] <#{host_data['state']}>"
-
-        host_data['allocated_resources'].each do |vm_name, _i|
-          self.pretty_print_hosts(verbose, vmpooler_service, vm_name['hostname'].split('.')[0], print_to_stderr, indent+2)
+        host_data['allocated_resources'].each do |allocated_resources, _i|
+          if allocated_resources['engine'] == "vmpooler"
+            vmpooler_service = service.clone
+            vmpooler_service.silent = true
+            vmpooler_service.maybe_use_vmpooler
+            self.pretty_print_hosts(verbose, vmpooler_service, allocated_resources['hostname'].split('.')[0], print_to_stderr, indent+2)
+          else
+            #TODO we could add more specific metadata for the other services, nspooler and aws
+            output_target.puts "  - #{allocated_resources['hostname']} (#{allocated_resources['type']})"
+          end
         end
       when 'Pooler'
         tag_pairs = []
