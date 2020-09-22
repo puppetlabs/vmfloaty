@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
 class Vmfloaty
-  VERSION = '0.11.1'
+  VERSION = '1.0.0'
 end
+
