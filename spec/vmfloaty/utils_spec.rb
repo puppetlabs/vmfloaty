@@ -387,6 +387,7 @@ describe Utils do
 
       let(:hostname) { '1597952189390' }
       let(:fqdn) { 'example-noun.delivery.puppetlabs.net' }
+      let(:fqdn_hostname) {'example-noun'}
       let(:template) { 'ubuntu-1604-x86_64' }
 
       # This seems to be the miminal stub response from ABS for the current output
@@ -410,17 +411,41 @@ describe Utils do
         }
       end
 
-      let(:default_output) { "- [JobID:#{hostname}] #{fqdn} (#{template}) <allocated>" }
+      # The vmpooler response contains metadata that is printed
+      let(:domain) { 'delivery.mycompany.net' }
+      let(:response_body_vmpooler) do
+        {
+            fqdn_hostname => {
+                'template' => 'redhat-7-x86_64',
+                'lifetime' => 48,
+                'running'  => 7.67,
+                'state'    => 'running',
+                'tags'     => {
+                    'user' => 'bob',
+                    'role' => 'agent',
+                },
+                'ip'       => '127.0.0.1',
+                'domain'   => domain,
+            }
+        }
+      end
 
       before(:each) do
         allow(Utils).to receive(:get_vmpooler_service_config).and_return({
           'url' => 'http://vmpooler.example.com',
           'token' => 'krypto-knight'
         })
+        allow(service).to receive(:query)
+                              .with(anything, fqdn_hostname)
+                              .and_return(response_body_vmpooler)
       end
 
+      let(:default_output_first_line) { "- [JobID:#{hostname}] <allocated>" }
+      let(:default_output_second_line) { "  - example-noun.delivery.mycompany.net (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)" }
+
       it 'prints output with job id, host, and template' do
-        expect(STDOUT).to receive(:puts).with(default_output)
+        expect(STDOUT).to receive(:puts).with(default_output_first_line)
+        expect(STDOUT).to receive(:puts).with(default_output_second_line)
 
         subject
       end
@@ -429,7 +454,8 @@ describe Utils do
         let(:print_to_stderr) { true }
 
         it 'outputs to stderr instead of stdout' do
-          expect(STDERR).to receive(:puts).with(default_output)
+          expect(STDERR).to receive(:puts).with(default_output_first_line)
+          expect(STDERR).to receive(:puts).with(default_output_second_line)
 
           subject
         end
