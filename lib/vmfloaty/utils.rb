@@ -84,7 +84,28 @@ class Utils
     os_types
   end
 
+  def self.print_fqdn_for_host(service, hostname, host_data)
+    case service.type
+    when 'ABS'
+      abs_hostnames = []
+
+      host_data['allocated_resources'].each do |vm_name, _i|
+        abs_hostnames << vm_name['hostname']
+      end
+
+      puts abs_hostnames.join("\n")
+    when 'Pooler'
+      puts "#{hostname}.#{host_data['domain']}"
+    when 'NonstandardPooler'
+      puts host_data['fqdn']
+    else
+      raise "Invalid service type #{service.type}"
+    end
+  end
+
   def self.pretty_print_hosts(verbose, service, hostnames = [], print_to_stderr = false, indent = 0)
+    output_target = print_to_stderr ? $stderr : $stdout
+
     fetched_data = self.get_host_data(verbose, service, hostnames)
     fetched_data.each do |hostname, host_data|
       case service.type
@@ -93,25 +114,30 @@ class Utils
         #
         # Create a vmpooler service to query each hostname there so as to get the metadata too
 
-        vmpooler_service = service.clone
-        vmpooler_service.silent = true
-        vmpooler_service.maybe_use_vmpooler
-        puts "- [JobID:#{host_data['request']['job']['id']}] <#{host_data['state']}>"
-        host_data['allocated_resources'].each do |vm_name, _i|
-          self.pretty_print_hosts(verbose, vmpooler_service, vm_name['hostname'].split('.')[0], print_to_stderr, indent+2)
+        output_target.puts "- [JobID:#{host_data['request']['job']['id']}] <#{host_data['state']}>"
+        host_data['allocated_resources'].each do |allocated_resources, _i|
+          if allocated_resources['engine'] == "vmpooler"
+            vmpooler_service = service.clone
+            vmpooler_service.silent = true
+            vmpooler_service.maybe_use_vmpooler
+            self.pretty_print_hosts(verbose, vmpooler_service, allocated_resources['hostname'].split('.')[0], print_to_stderr, indent+2)
+          else
+            #TODO we could add more specific metadata for the other services, nspooler and aws
+            output_target.puts "  - #{allocated_resources['hostname']} (#{allocated_resources['type']})"
+          end
         end
       when 'Pooler'
         tag_pairs = []
         tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
         duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
         metadata = [host_data['template'], duration, *tag_pairs]
-        puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
+        output_target.puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
       when 'NonstandardPooler'
         line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
         line += ", #{host_data['hours_left_on_reservation']}h remaining"
         line += ", reason: #{host_data['reserved_for_reason']}" unless host_data['reserved_for_reason'].empty?
         line += ')'
-        puts line
+        output_target.puts line
       else
         raise "Invalid service type #{service.type}"
       end

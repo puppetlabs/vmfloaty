@@ -21,7 +21,7 @@ _vmfloaty()
 
     COMPREPLY=( $(compgen -W "${_vmfloaty_avail_templates}" -- "${cur}") )
   elif [[ $hostname_subcommands =~ (^| )$prev($| ) ]] ; then
-    _vmfloaty_active_hostnames=$(floaty list --active 2>/dev/null | grep '^-' | cut -d' ' -f2)
+    _vmfloaty_active_hostnames=$(floaty list --active --hostnameonly 2>/dev/null)
     COMPREPLY=( $(compgen -W "${_vmfloaty_active_hostnames}" -- "${cur}") )
   else
     COMPREPLY=( $(compgen -W "${subcommands}" -- "${cur}") )

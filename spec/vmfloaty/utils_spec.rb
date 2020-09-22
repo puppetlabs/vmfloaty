@@ -162,97 +162,395 @@ describe Utils do
     end
   end
 
-  describe '#pretty_print_hosts' do
+  describe '#print_fqdn_for_host' do
     let(:url) { 'http://pooler.example.com' }
 
-    it 'prints a vmpooler output with host fqdn, template and duration info' do
-      hostname = 'mcpy42eqjxli9g2'
-      response_body = { hostname => {
-        'template' => 'ubuntu-1604-x86_64',
-        'lifetime' => 12,
-        'running'  => 9.66,
-        'state'    => 'running',
-        'ip'       => '127.0.0.1',
-        'domain'   => 'delivery.mycompany.net',
-      } }
-      output = '- mcpy42eqjxli9g2.delivery.mycompany.net (ubuntu-1604-x86_64, 9.66/12 hours)'
+    subject { Utils.print_fqdn_for_host(service, hostname, host_data) }
 
-      expect(STDOUT).to receive(:puts).with(output)
+    describe 'with vmpooler host' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url) }
+      let(:hostname) { 'mcpy42eqjxli9g2' }
+      let(:domain) { 'delivery.mycompany.net' }
+      let(:fqdn) { [hostname, domain].join('.') }
 
-      service = Service.new(MockOptions.new, 'url' => url)
-      allow(service).to receive(:query)
-        .with(nil, hostname)
-        .and_return(response_body)
+      let(:host_data) do
+        {
+          'template' => 'ubuntu-1604-x86_64',
+          'lifetime' => 12,
+          'running'  => 9.66,
+          'state'    => 'running',
+          'ip'       => '127.0.0.1',
+          'domain'   => domain,
+        }
+      end
 
-      Utils.pretty_print_hosts(nil, service, hostname)
+      it 'outputs fqdn for host' do
+        expect(STDOUT).to receive(:puts).with(fqdn)
+
+        subject
+      end
     end
 
-    it 'prints a vmpooler output with host fqdn, template, duration info, and tags when supplied' do
-      hostname = 'aiydvzpg23r415q'
-      response_body = { hostname => {
-        'template' => 'redhat-7-x86_64',
-        'lifetime' => 48,
-        'running'  => 7.67,
-        'state'    => 'running',
-        'tags'     => {
-          'user' => 'bob',
-          'role' => 'agent',
-        },
-        'ip'       => '127.0.0.1',
-        'domain'   => 'delivery.mycompany.net',
-      } }
-      output = '- aiydvzpg23r415q.delivery.mycompany.net (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)'
+    describe 'with nonstandard pooler host' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url, 'type' => 'ns') }
+      let(:hostname) { 'sol11-9.delivery.mycompany.net' }
+      let(:host_data) do
+        {
+          'fqdn'                      => hostname,
+          'os_triple'                 => 'solaris-11-sparc',
+          'reserved_by_user'          => 'first.last',
+          'reserved_for_reason'       => '',
+          'hours_left_on_reservation' => 35.89,
+        }
+      end
+      let(:fqdn) { hostname } # for nspooler these are the same
 
-      expect(STDOUT).to receive(:puts).with(output)
+      it 'outputs fqdn for host' do
+        expect(STDOUT).to receive(:puts).with(fqdn)
 
-      service = Service.new(MockOptions.new, 'url' => url)
-      allow(service).to receive(:query)
-        .with(nil, hostname)
-        .and_return(response_body)
-
-      Utils.pretty_print_hosts(nil, service, hostname)
+        subject
+      end
     end
 
-    it 'prints a nonstandard pooler output with host, template, and time remaining' do
-      hostname = 'sol11-9.delivery.mycompany.net'
-      response_body = { hostname => {
-        'fqdn'                      => hostname,
-        'os_triple'                 => 'solaris-11-sparc',
-        'reserved_by_user'          => 'first.last',
-        'reserved_for_reason'       => '',
-        'hours_left_on_reservation' => 35.89,
-      } }
-      output = '- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining)'
+    describe 'with ABS host' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url, 'type' => 'abs') }
+      let(:hostname) { '1597952189390' }
+      let(:fqdn) { 'example-noun.delivery.puppetlabs.net' }
+      let(:template) { 'ubuntu-1604-x86_64' }
 
-      expect(STDOUT).to receive(:puts).with(output)
+      # This seems to be the miminal stub response from ABS for the current output
+      let(:host_data) do
+        {
+          'state' => 'allocated',
+          'allocated_resources' => [
+            {
+              'hostname' => fqdn,
+              'type' => template,
+              'enging' => 'vmpooler',
+            },
+          ],
+          'request' => {
+            'job' => {
+              'id' => hostname,
+            }
+          },
+        }
+      end
 
-      service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
+      it 'outputs fqdn for host' do
+        expect(STDOUT).to receive(:puts).with(fqdn)
+
+        subject
+      end
+    end
+  end
+
+  describe '#pretty_print_hosts' do
+    let(:url) { 'http://pooler.example.com' }
+    let(:verbose) { nil }
+    let(:print_to_stderr) { false }
+
+    before(:each) do
       allow(service).to receive(:query)
-        .with(nil, hostname)
+        .with(anything, hostname)
         .and_return(response_body)
-
-      Utils.pretty_print_hosts(nil, service, hostname)
     end
 
-    it 'prints a nonstandard pooler output with host, template, time remaining, and reason' do
-      hostname = 'sol11-9.delivery.mycompany.net'
-      response_body = { hostname => {
-        'fqdn'                      => hostname,
-        'os_triple'                 => 'solaris-11-sparc',
-        'reserved_by_user'          => 'first.last',
-        'reserved_for_reason'       => 'testing',
-        'hours_left_on_reservation' => 35.89,
-      } }
-      output = '- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining, reason: testing)'
+    subject { Utils.pretty_print_hosts(verbose, service, hostname, print_to_stderr) }
 
-      expect(STDOUT).to receive(:puts).with(output)
+    describe 'with vmpooler service' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url) }
 
-      service = Service.new(MockOptions.new, 'url' => url, 'type' => 'ns')
-      allow(service).to receive(:query)
-        .with(nil, hostname)
-        .and_return(response_body)
+      let(:hostname) { 'mcpy42eqjxli9g2' }
+      let(:domain) { 'delivery.mycompany.net' }
+      let(:fqdn) { [hostname, domain].join('.') }
 
-      Utils.pretty_print_hosts(nil, service, hostname)
+      let(:response_body) do
+        {
+          hostname => {
+            'template' => 'ubuntu-1604-x86_64',
+            'lifetime' => 12,
+            'running'  => 9.66,
+            'state'    => 'running',
+            'ip'       => '127.0.0.1',
+            'domain'   => domain,
+          }
+        }
+      end
+
+      let(:default_output) { "- #{fqdn} (ubuntu-1604-x86_64, 9.66/12 hours)" }
+
+      it 'prints output with host fqdn, template and duration info' do
+        expect(STDOUT).to receive(:puts).with(default_output)
+
+        subject
+      end
+
+      context 'when tags are supplied' do
+        let(:hostname) { 'aiydvzpg23r415q' }
+        let(:response_body) do
+          {
+            hostname => {
+              'template' => 'redhat-7-x86_64',
+              'lifetime' => 48,
+              'running'  => 7.67,
+              'state'    => 'running',
+              'tags'     => {
+                'user' => 'bob',
+                'role' => 'agent',
+              },
+              'ip'       => '127.0.0.1',
+              'domain'   => domain,
+            }
+          }
+        end
+
+        it 'prints output with host fqdn, template, duration info, and tags' do
+          output = "- #{fqdn} (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)"
+
+          expect(STDOUT).to receive(:puts).with(output)
+
+          subject
+        end
+      end
+
+      context 'when print_to_stderr option is true' do
+        let(:print_to_stderr) { true }
+
+        it 'outputs to stderr instead of stdout' do
+          expect(STDERR).to receive(:puts).with(default_output)
+
+          subject
+        end
+      end
+    end
+
+    describe 'with nonstandard pooler service' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url, 'type' => 'ns') }
+
+      let(:hostname) { 'sol11-9.delivery.mycompany.net' }
+      let(:response_body) do
+        {
+          hostname => {
+            'fqdn'                      => hostname,
+            'os_triple'                 => 'solaris-11-sparc',
+            'reserved_by_user'          => 'first.last',
+            'reserved_for_reason'       => '',
+            'hours_left_on_reservation' => 35.89,
+          }
+        }
+      end
+
+      let(:default_output) { "- #{hostname} (solaris-11-sparc, 35.89h remaining)" }
+
+      it 'prints output with host, template, and time remaining' do
+        expect(STDOUT).to receive(:puts).with(default_output)
+
+        subject
+      end
+
+      context 'when reason is supplied' do
+        let(:response_body) do
+          {
+            hostname => {
+              'fqdn'                      => hostname,
+              'os_triple'                 => 'solaris-11-sparc',
+              'reserved_by_user'          => 'first.last',
+              'reserved_for_reason'       => 'testing',
+              'hours_left_on_reservation' => 35.89,
+            }
+          }
+        end
+
+        it 'prints output with host, template, time remaining, and reason' do
+          output = '- sol11-9.delivery.mycompany.net (solaris-11-sparc, 35.89h remaining, reason: testing)'
+
+          expect(STDOUT).to receive(:puts).with(output)
+
+          subject
+        end
+      end
+
+      context 'when print_to_stderr option is true' do
+        let(:print_to_stderr) { true }
+
+        it 'outputs to stderr instead of stdout' do
+          expect(STDERR).to receive(:puts).with(default_output)
+
+          subject
+        end
+      end
+    end
+
+    describe 'with ABS service' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url, 'type' => 'abs') }
+
+      let(:hostname) { '1597952189390' }
+      let(:fqdn) { 'example-noun.delivery.mycompany.net' }
+      let(:fqdn_hostname) {'example-noun'}
+      let(:template) { 'ubuntu-1604-x86_64' }
+
+      # This seems to be the miminal stub response from ABS for the current output
+      let(:response_body) do
+        {
+          hostname => {
+            'state' => 'allocated',
+            'allocated_resources' => [
+              {
+                'hostname' => fqdn,
+                'type' => template,
+                'engine' => 'vmpooler',
+              },
+            ],
+            'request' => {
+              'job' => {
+                'id' => hostname,
+              }
+            },
+          }
+        }
+      end
+
+      # The vmpooler response contains metadata that is printed
+      let(:domain) { 'delivery.mycompany.net' }
+      let(:response_body_vmpooler) do
+        {
+            fqdn_hostname => {
+                'template' => template,
+                'lifetime' => 48,
+                'running'  => 7.67,
+                'state'    => 'running',
+                'tags'     => {
+                    'user' => 'bob',
+                    'role' => 'agent',
+                },
+                'ip'       => '127.0.0.1',
+                'domain'   => domain,
+            }
+        }
+      end
+
+      before(:each) do
+        allow(Utils).to receive(:get_vmpooler_service_config).and_return({
+          'url' => 'http://vmpooler.example.com',
+          'token' => 'krypto-knight'
+        })
+        allow(service).to receive(:query)
+                              .with(anything, fqdn_hostname)
+                              .and_return(response_body_vmpooler)
+      end
+
+      let(:default_output_first_line) { "- [JobID:#{hostname}] <allocated>" }
+      let(:default_output_second_line) { "  - #{fqdn} (#{template}, 7.67/48 hours, user: bob, role: agent)" }
+
+      it 'prints output with job id, host, and template' do
+        expect(STDOUT).to receive(:puts).with(default_output_first_line)
+        expect(STDOUT).to receive(:puts).with(default_output_second_line)
+
+        subject
+      end
+
+      context 'when print_to_stderr option is true' do
+        let(:print_to_stderr) { true }
+
+        it 'outputs to stderr instead of stdout' do
+          expect(STDERR).to receive(:puts).with(default_output_first_line)
+          expect(STDERR).to receive(:puts).with(default_output_second_line)
+
+          subject
+        end
+      end
+    end
+
+    describe 'with ABS service returning vmpooler and nspooler resources' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url, 'type' => 'abs') }
+
+      let(:hostname) { '1597952189390' }
+      let(:fqdn) { 'this-noun.delivery.mycompany.net' }
+      let(:fqdn_ns) { 'that-noun.delivery.mycompany.net' }
+      let(:fqdn_hostname) {'this-noun'}
+      let(:fqdn_ns_hostname) {'that-noun'}
+      let(:template) { 'ubuntu-1604-x86_64' }
+      let(:template_ns) { 'solaris-10-sparc' }
+
+      # This seems to be the miminal stub response from ABS for the current output
+      let(:response_body) do
+        {
+            hostname => {
+                'state' => 'allocated',
+                'allocated_resources' => [
+                    {
+                        'hostname' => fqdn,
+                        'type' => template,
+                        'engine' => 'vmpooler',
+                    },
+                    {
+                        'hostname' => fqdn_ns,
+                        'type' => template_ns,
+                        'engine' => 'nspooler',
+                    },
+                ],
+                'request' => {
+                    'job' => {
+                        'id' => hostname,
+                    }
+                },
+            }
+        }
+      end
+
+      # The vmpooler response contains metadata that is printed
+      let(:domain) { 'delivery.mycompany.net' }
+      let(:response_body_vmpooler) do
+        {
+            fqdn_hostname => {
+                'template' => template,
+                'lifetime' => 48,
+                'running'  => 7.67,
+                'state'    => 'running',
+                'tags'     => {
+                    'user' => 'bob',
+                    'role' => 'agent',
+                },
+                'ip'       => '127.0.0.1',
+                'domain'   => domain,
+            }
+        }
+      end
+
+      before(:each) do
+        allow(Utils).to receive(:get_vmpooler_service_config).and_return({
+                                                                             'url' => 'http://vmpooler.example.com',
+                                                                             'token' => 'krypto-knight'
+                                                                         })
+        allow(service).to receive(:query)
+                              .with(anything, fqdn_hostname)
+                              .and_return(response_body_vmpooler)
+      end
+
+      let(:default_output_first_line) { "- [JobID:#{hostname}] <allocated>" }
+      let(:default_output_second_line) { "  - #{fqdn} (#{template}, 7.67/48 hours, user: bob, role: agent)" }
+      let(:default_output_third_line) { "  - #{fqdn_ns} (#{template_ns})" }
+
+      it 'prints output with job id, host, and template' do
+        expect(STDOUT).to receive(:puts).with(default_output_first_line)
+        expect(STDOUT).to receive(:puts).with(default_output_second_line)
+        expect(STDOUT).to receive(:puts).with(default_output_third_line)
+
+        subject
+      end
+
+      context 'when print_to_stderr option is true' do
+        let(:print_to_stderr) { true }
+
+        it 'outputs to stderr instead of stdout' do
+          expect(STDERR).to receive(:puts).with(default_output_first_line)
+          expect(STDERR).to receive(:puts).with(default_output_second_line)
+          expect(STDERR).to receive(:puts).with(default_output_third_line)
+
+          subject
+        end
+      end
     end
   end
 
