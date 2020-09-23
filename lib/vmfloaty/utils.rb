@@ -254,6 +254,7 @@ class Utils
       'url'   => config['url'],
       'user'  => config['user'],
       'token' => config['token'],
+      'vmpooler_fallback' => config['vmpooler_fallback'],
       'type'  => config['type'] || 'vmpooler',
     }
 
