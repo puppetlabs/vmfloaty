@@ -249,7 +249,6 @@ class ABS
     conn.headers['X-AUTH-TOKEN'] = token if token
 
     saved_job_id = DateTime.now.strftime('%Q')
-    vmpooler_config = Utils.get_vmpooler_service_config(config['vmpooler_fallback'])
     req_obj = {
       :resources => os_types,
       :job       => {
@@ -258,8 +257,13 @@ class ABS
           :user => user,
         },
       },
-      :vm_token => vmpooler_config['token'] # request with this token, on behalf of this user
     }
+
+    if config['vmpooler_fallback']
+      vmpooler_config = Utils.get_vmpooler_service_config(config['vmpooler_fallback'])
+      # request with this token, on behalf of this user
+      req_obj[:vm_token] = vmpooler_config['token']
+    end
 
     if config['priority']
       req_obj[:priority] = if config['priority'] == 'high'
