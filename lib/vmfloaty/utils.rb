@@ -116,7 +116,7 @@ class Utils
 
         output_target.puts "- [JobID:#{host_data['request']['job']['id']}] <#{host_data['state']}>"
         host_data['allocated_resources'].each do |allocated_resources, _i|
-          if allocated_resources['engine'] == "vmpooler"
+          if allocated_resources['engine'] == "vmpooler" && service.config["vmpooler_fallback"]
             vmpooler_service = service.clone
             vmpooler_service.silent = true
             vmpooler_service.maybe_use_vmpooler
