@@ -139,7 +139,7 @@ class Service
 
   # some methods do not exist for ABS, and if possible should target the Pooler service
   def maybe_use_vmpooler
-    if @service_object.is_a?(ABS.class)
+    if @service_object == ABS # this is not an instance
       if !self.silent
         FloatyLogger.info "The service in use is ABS, but the requested method should run against vmpooler directly, using fallback_vmpooler config from ~/.vmfloaty.yml"
         self.silent = true
