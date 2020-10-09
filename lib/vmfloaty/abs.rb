@@ -284,15 +284,20 @@ class ABS
 
     validate_queue_status_response(res.status, res.body, "Initial request", verbose)
 
-    (1..retries).each do |i|
-      queue_place, res_body = check_queue(conn, saved_job_id, req_obj, verbose)
-      return translated(res_body, saved_job_id) if res_body
+    begin
+      (1..retries).each do |i|
+        queue_place, res_body = check_queue(conn, saved_job_id, req_obj, verbose)
+        return translated(res_body, saved_job_id) if res_body
 
-      sleep_seconds = 10 if i >= 10
-      sleep_seconds = i if i < 10
-      FloatyLogger.info "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
+        sleep_seconds = 10 if i >= 10
+        sleep_seconds = i if i < 10
+        FloatyLogger.info "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
 
-      sleep(sleep_seconds)
+        sleep(sleep_seconds)
+      end
+    rescue SystemExit, Interrupt
+      FloatyLogger.info "\n\nFloaty interrupted, you can query the state of your request via\n1) `floaty query #{saved_job_id}` or delete it via\n2) `floaty delete #{saved_job_id}`"
+      exit 1
     end
     nil
   end
