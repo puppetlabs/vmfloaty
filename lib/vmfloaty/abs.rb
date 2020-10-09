@@ -248,7 +248,7 @@ class ABS
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    saved_job_id = DateTime.now.strftime('%Q')
+    saved_job_id = user + "-" + DateTime.now.strftime('%Q')
     vmpooler_config = Utils.get_vmpooler_service_config(config['vmpooler_fallback'])
     req_obj = {
       :resources => os_types,
