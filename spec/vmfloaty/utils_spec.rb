@@ -5,6 +5,11 @@ require 'json'
 require 'commander/command'
 require_relative '../../lib/vmfloaty/utils'
 
+# allow changing config in service for tests
+class Service
+  attr_writer :config
+end
+
 describe Utils do
   describe '#standardize_hostnames' do
     before :each do
@@ -441,9 +446,19 @@ describe Utils do
       end
 
       let(:default_output_first_line) { "- [JobID:#{hostname}] <allocated>" }
-      let(:default_output_second_line) { "  - #{fqdn} (#{template}, 7.67/48 hours, user: bob, role: agent)" }
+      let(:default_output_second_line) { "  - #{fqdn} (#{template})" }
 
       it 'prints output with job id, host, and template' do
+        expect(STDOUT).to receive(:puts).with(default_output_first_line)
+        expect(STDOUT).to receive(:puts).with(default_output_second_line)
+
+        subject
+      end
+
+      it 'prints more information when vmpooler_fallback is set output with job id, host, template, lifetime, user and role' do
+        fallback = {'vmpooler_fallback' => 'vmpooler'}
+        service.config.merge! fallback
+        default_output_second_line="  - #{fqdn} (#{template}, 7.67/48 hours, user: bob, role: agent)"
         expect(STDOUT).to receive(:puts).with(default_output_first_line)
         expect(STDOUT).to receive(:puts).with(default_output_second_line)
 
@@ -529,7 +544,7 @@ describe Utils do
       end
 
       let(:default_output_first_line) { "- [JobID:#{hostname}] <allocated>" }
-      let(:default_output_second_line) { "  - #{fqdn} (#{template}, 7.67/48 hours, user: bob, role: agent)" }
+      let(:default_output_second_line) { "  - #{fqdn} (#{template})" }
       let(:default_output_third_line) { "  - #{fqdn_ns} (#{template_ns})" }
 
       it 'prints output with job id, host, and template' do

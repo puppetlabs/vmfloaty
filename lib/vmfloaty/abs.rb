@@ -248,7 +248,7 @@ class ABS
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    saved_job_id = DateTime.now.strftime('%Q')
+    saved_job_id = user + "-" + DateTime.now.strftime('%Q')
     req_obj = {
       :resources => os_types,
       :job       => {
@@ -259,7 +259,7 @@ class ABS
       },
     }
 
-    if config['vmpooler_fallback']
+    if config['vmpooler_fallback'] # optional and not available as cli flag
       vmpooler_config = Utils.get_vmpooler_service_config(config['vmpooler_fallback'])
       # request with this token, on behalf of this user
       req_obj[:vm_token] = vmpooler_config['token']
@@ -288,15 +288,20 @@ class ABS
 
     validate_queue_status_response(res.status, res.body, "Initial request", verbose)
 
-    (1..retries).each do |i|
-      queue_place, res_body = check_queue(conn, saved_job_id, req_obj, verbose)
-      return translated(res_body, saved_job_id) if res_body
+    begin
+      (1..retries).each do |i|
+        queue_place, res_body = check_queue(conn, saved_job_id, req_obj, verbose)
+        return translated(res_body, saved_job_id) if res_body
 
-      sleep_seconds = 10 if i >= 10
-      sleep_seconds = i if i < 10
-      FloatyLogger.info "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
+        sleep_seconds = 10 if i >= 10
+        sleep_seconds = i if i < 10
+        FloatyLogger.info "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
 
-      sleep(sleep_seconds)
+        sleep(sleep_seconds)
+      end
+    rescue SystemExit, Interrupt
+      FloatyLogger.info "\n\nFloaty interrupted, you can query the state of your request via\n1) `floaty query #{saved_job_id}` or delete it via\n2) `floaty delete #{saved_job_id}`"
+      exit 1
     end
     nil
   end
