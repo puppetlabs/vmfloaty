@@ -27,4 +27,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'colorize', '~> 0.8.1'
   s.add_dependency 'commander', '>= 4.4.3', '< 4.6.0'
   s.add_dependency 'faraday', '~> 0.17.0'
+  s.add_dependency 'opentelemetry-api', '0.7.0'
+  s.add_dependency 'opentelemetry-exporter-jaeger', '~> 0.7.0'
+  s.add_dependency 'opentelemetry-instrumentation-faraday', '~> 0.7.0'
+  s.add_dependency 'opentelemetry-sdk', '0.7.0'
 end
