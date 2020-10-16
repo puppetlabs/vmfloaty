@@ -11,11 +11,11 @@ describe ABS do
 
   describe '#list' do
     it 'skips empty platforms and lists aws' do
-      stub_request(:get, "http://foo/status/platforms/vmpooler").
+      stub_request(:get, "http://foo/api/v2/status/platforms/vmpooler").
           to_return(:status => 200, :body => "", :headers => {})
-      stub_request(:get, "http://foo/status/platforms/ondemand_vmpooler").
+      stub_request(:get, "http://foo/api/v2/status/platforms/ondemand_vmpooler").
           to_return(:status => 200, :body => "", :headers => {})
-      stub_request(:get, "http://foo/status/platforms/nspooler").
+      stub_request(:get, "http://foo/api/v2/status/platforms/nspooler").
           to_return(:status => 200, :body => "", :headers => {})
       body = '{
                 "aws_platforms": [
@@ -26,7 +26,7 @@ describe ABS do
                   "redhat-8-arm64"
                 ]
               }'
-      stub_request(:get, "http://foo/status/platforms/aws").
+      stub_request(:get, "http://foo/api/v2/status/platforms/aws").
           to_return(:status => 200, :body => body, :headers => {})
 
 
@@ -35,16 +35,16 @@ describe ABS do
       expect(results).to include("amazon-6-x86_64", "amazon-7-x86_64", "amazon-7-arm64", "centos-7-x86-64-west", "redhat-8-arm64")
     end
     it 'legacy JSON string, prior to PR 306' do
-      stub_request(:get, "http://foo/status/platforms/vmpooler").
+      stub_request(:get, "http://foo/api/v2/status/platforms/vmpooler").
           to_return(:status => 200, :body => "", :headers => {})
-      stub_request(:get, "http://foo/status/platforms/ondemand_vmpooler").
+      stub_request(:get, "http://foo/api/v2/status/platforms/ondemand_vmpooler").
           to_return(:status => 200, :body => "", :headers => {})
-      stub_request(:get, "http://foo/status/platforms/nspooler").
+      stub_request(:get, "http://foo/api/v2/status/platforms/nspooler").
           to_return(:status => 200, :body => "", :headers => {})
       body = '{
           "aws_platforms": "[\"amazon-6-x86_64\",\"amazon-7-x86_64\",\"amazon-7-arm64\",\"centos-7-x86-64-west\",\"redhat-8-arm64\"]"
       }'
-      stub_request(:get, "http://foo/status/platforms/aws").
+      stub_request(:get, "http://foo/api/v2/status/platforms/aws").
           to_return(:status => 200, :body => body, :headers => {})
 
       results = ABS.list(false, "http://foo")
@@ -125,7 +125,7 @@ describe ABS do
       end
 
       it 'will skip a line with a null value returned from abs' do
-        stub_request(:get, 'https://abs.example.com/status/queue')
+        stub_request(:get, 'https://abs.example.com/api/v2/status/queue')
           .to_return(:status => 200, :body => @active_requests_response, :headers => {})
 
         ret = ABS.get_active_requests(false, @abs_url, @test_user)
@@ -156,9 +156,9 @@ describe ABS do
       end
 
       it 'will delete the whole job' do
-        stub_request(:get, 'https://abs.example.com/status/queue')
+        stub_request(:get, 'https://abs.example.com/api/v2/status/queue')
           .to_return(:status => 200, :body => @active_requests_response, :headers => {})
-        stub_request(:post, 'https://abs.example.com/return')
+        stub_request(:post, 'https://abs.example.com/api/v2/return')
           .with(:body => @return_request)
           .to_return(:status => 200, :body => 'OK', :headers => {})
 

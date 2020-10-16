@@ -64,7 +64,7 @@ class ABS
   end
 
   def self.get_active_requests(verbose, url, user)
-    conn = Http.get_conn(verbose, url)
+    conn = Http.get_conn(verbose, supported_abs_url(url))
     res = conn.get 'status/queue'
     if valid_json?(res.body)
       requests = JSON.parse(res.body)
@@ -105,7 +105,7 @@ class ABS
 
   def self.delete(verbose, url, hosts, token, user)
     # In ABS terms, this is a "returned" host.
-    conn = Http.get_conn(verbose, url)
+    conn = Http.get_conn(verbose, supported_abs_url(url))
     conn.headers['X-AUTH-TOKEN'] = token if token
 
     FloatyLogger.info "Trying to delete hosts #{hosts}" if verbose
@@ -163,7 +163,7 @@ class ABS
 
   # List available VMs in ABS
   def self.list(verbose, url, os_filter = nil)
-    conn = Http.get_conn(verbose, url)
+    conn = Http.get_conn(verbose, supported_abs_url(url))
 
     os_list = []
 
@@ -245,7 +245,7 @@ class ABS
     #   }
     # }
 
-    conn = Http.get_conn(verbose, url)
+    conn = Http.get_conn(verbose, supported_abs_url(url))
     conn.headers['X-AUTH-TOKEN'] = token if token
 
     saved_job_id = user + "-" + DateTime.now.strftime('%Q')
@@ -348,7 +348,7 @@ class ABS
   end
 
   def self.status(verbose, url)
-    conn = Http.get_conn(verbose, url)
+    conn = Http.get_conn(verbose, supported_abs_url(url))
 
     res = conn.get 'status'
 
@@ -366,7 +366,7 @@ class ABS
     return @active_hostnames if @active_hostnames && !@active_hostnames.empty?
 
     # If using the cli query job_id
-    conn = Http.get_conn(verbose, url)
+    conn = Http.get_conn(verbose, supported_abs_url(url))
     queue_info_res = conn.get "status/queue/info/#{job_id}"
     if valid_json?(queue_info_res.body)
       queue_info = JSON.parse(queue_info_res.body)
@@ -410,5 +410,16 @@ class ABS
     return true
   rescue TypeError, JSON::ParserError => e
     return false
+  end
+
+  # when missing, adds the required api/v2 in the url
+  def self.supported_abs_url(url)
+    expected_ending = "api/v2"
+    if !url.include?(expected_ending)
+      # add a slash if missing
+      expected_ending = "/#{expected_ending}" if url[-1] != "/"
+      url = "#{url}#{expected_ending}"
+    end
+    url
   end
 end
