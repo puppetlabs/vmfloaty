@@ -77,10 +77,10 @@ class Service
     @service_object.list_active verbose, url, token, user
   end
 
-  def retrieve(verbose, os_types, use_token = true, ondemand = nil)
+  def retrieve(verbose, os_types, use_token = true, ondemand = nil, continue = nil)
     FloatyLogger.info 'Requesting a vm without a token...' unless use_token
     token_value = use_token ? token : nil
-    @service_object.retrieve verbose, os_types, token_value, url, user, @config, ondemand
+    @service_object.retrieve verbose, os_types, token_value, url, user, @config, ondemand, continue
   end
 
   def wait_for_request(verbose, requestid)

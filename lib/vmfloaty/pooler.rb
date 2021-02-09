@@ -28,7 +28,7 @@ class Pooler
     vms
   end
 
-  def self.retrieve(verbose, os_type, token, url, _user, _options, ondemand = nil)
+  def self.retrieve(verbose, os_type, token, url, _user, _options, ondemand = nil, _continue = nil)
     # NOTE:
     #   Developers can use `Utils.generate_os_hash` to
     #   generate the os_type param.

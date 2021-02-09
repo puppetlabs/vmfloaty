@@ -39,6 +39,7 @@ class Vmfloaty
       c.option '--force', 'Forces vmfloaty to get requested vms'
       c.option '--json', 'Prints retrieved vms in JSON format'
       c.option '--ondemand', 'Requested vms are provisioned upon receival of the request, tracked by a request ID'
+      c.option '--continue STRING', String, 'resume polling ABS for job_id, for use when the cli was interrupted'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
@@ -52,6 +53,11 @@ class Vmfloaty
 
         os_types = Utils.generate_os_hash(args)
 
+        if os_types.empty?
+          FloatyLogger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
+          exit 1
+        end
+
         max_pool_request = 5
         large_pool_requests = os_types.select { |_, v| v > max_pool_request }
         if !large_pool_requests.empty? && !force
@@ -60,12 +66,7 @@ class Vmfloaty
           exit 1
         end
 
-        if os_types.empty?
-          FloatyLogger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
-          exit 1
-        end
-
-        response = service.retrieve(verbose, os_types, use_token, options.ondemand)
+        response = service.retrieve(verbose, os_types, use_token, options.ondemand, options.continue)
         request_id = response['request_id'] if options.ondemand
         response = service.wait_for_request(verbose, request_id) if options.ondemand
 
