@@ -40,8 +40,12 @@ class Vmfloaty
       c.option '--json', 'Prints retrieved vms in JSON format'
       c.option '--ondemand', 'Requested vms are provisioned upon receival of the request, tracked by a request ID'
       c.option '--continue STRING', String, 'resume polling ABS for job_id, for use when the cli was interrupted'
+      c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
+        if options.loglevel
+          FloatyLogger.setlevel = options.loglevel
+        end
         service = Service.new(options, config)
         use_token = !options.notoken
         force = options.force
@@ -93,8 +97,12 @@ class Vmfloaty
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--url STRING', String, 'URL of pooler service'
       c.option '--user STRING', String, 'User to authenticate with'
+      c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
+        if options.loglevel
+          FloatyLogger.setlevel = options.loglevel
+        end
 
         service = Service.new(options, config)
         filter = args[0]
@@ -230,8 +238,13 @@ class Vmfloaty
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--url STRING', String, 'URL of pooler service'
       c.option '--user STRING', String, 'User to authenticate with'
+      c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
+        if options.loglevel
+          FloatyLogger.setlevel = options.loglevel
+        end
+
         service = Service.new(options, config)
         hostnames = args[0]
         delete_all = options.all
@@ -375,8 +388,12 @@ class Vmfloaty
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--url STRING', String, 'URL of pooler service'
       c.option '--json', 'Prints status in JSON format'
+      c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |_, options|
         verbose = options.verbose || config['verbose']
+        if options.loglevel
+          FloatyLogger.setlevel = options.loglevel
+        end
         service = Service.new(options, config)
         if options.json
           pp service.status(verbose)
