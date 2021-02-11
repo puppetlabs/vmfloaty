@@ -228,7 +228,7 @@ class ABS
   end
 
   # Retrieve an OS from ABS.
-  def self.retrieve(verbose, os_types, token, url, user, config, _ondemand = nil)
+  def self.retrieve(verbose, os_types, token, url, user, config, _ondemand = nil, continue = nil)
     #
     # Contents of post must be like:
     #
@@ -248,7 +248,12 @@ class ABS
     conn = Http.get_conn(verbose, supported_abs_url(url))
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    saved_job_id = user + "-" + DateTime.now.strftime('%Q')
+    if continue.nil?
+      saved_job_id = user + "-" + DateTime.now.strftime('%Q')
+    else
+      saved_job_id = continue
+    end
+
     req_obj = {
       :resources => os_types,
       :job       => {
@@ -281,26 +286,28 @@ class ABS
 
     # os_string = os_type.map { |os, num| Array(os) * num }.flatten.join('+')
     # raise MissingParamError, 'No operating systems provided to obtain.' if os_string.empty?
-    FloatyLogger.info "Requesting VMs with job_id: #{saved_job_id}.  Will retry for up to an hour."
+    FloatyLogger.info "Requesting VMs with job_id: #{saved_job_id} Will retry for up to an hour."
     res = conn.post 'request', req_obj.to_json
 
     retries = 360
 
-    validate_queue_status_response(res.status, res.body, "Initial request", verbose)
+    status = validate_queue_status_response(res.status, res.body, "Initial request", verbose)
 
     begin
       (1..retries).each do |i|
-        queue_place, res_body = check_queue(conn, saved_job_id, req_obj, verbose)
-        return translated(res_body, saved_job_id) if res_body
+        res_body = check_queue(conn, saved_job_id, req_obj, verbose)
+        if res_body && res_body.is_a?(Array) # when we get a response with hostnames
+          return translated(res_body, saved_job_id)
+        end
 
         sleep_seconds = 10 if i >= 10
         sleep_seconds = i if i < 10
-        FloatyLogger.info "Waiting #{sleep_seconds} seconds to check if ABS request has been filled.  Queue Position: #{queue_place}... (x#{i})"
+        FloatyLogger.info "Waiting #{sleep_seconds}s (x#{i}) #{res_body.strip}"
 
         sleep(sleep_seconds)
       end
     rescue SystemExit, Interrupt
-      FloatyLogger.info "\n\nFloaty interrupted, you can query the state of your request via\n1) `floaty query #{saved_job_id}` or delete it via\n2) `floaty delete #{saved_job_id}`"
+      FloatyLogger.info "\n\nFloaty interrupted, you can resume polling with\n1) `floaty get [same arguments] and adding the flag --continue #{saved_job_id}` or query the state of the queue via\n2) `floaty query #{saved_job_id}` or delete it via\n3) `floaty delete #{saved_job_id}`"
       exit 1
     end
     nil
@@ -325,22 +332,13 @@ class ABS
   end
 
   def self.check_queue(conn, job_id, req_obj, verbose)
-    queue_info_res = conn.get "status/queue/info/#{job_id}"
-    if valid_json?(queue_info_res.body)
-      queue_info = JSON.parse(queue_info_res.body)
-    else
-      FloatyLogger.warn "Could not parse the status/queue/info/#{job_id}"
-      return [nil, nil]
-    end
-
     res = conn.post 'request', req_obj.to_json
-    validate_queue_status_response(res.status, res.body, "Check queue request", verbose)
-
+    status = validate_queue_status_response(res.status, res.body, "Check queue request", verbose)
     unless res.body.empty? || !valid_json?(res.body)
       res_body = JSON.parse(res.body)
-      return queue_info['queue_place'], res_body
+      return res_body
     end
-    [queue_info['queue_place'], nil]
+    res.body
   end
 
   def self.snapshot(_verbose, _url, _hostname, _token)
