@@ -283,7 +283,7 @@ describe Utils do
         }
       end
 
-      let(:default_output) { "- #{fqdn} (ubuntu-1604-x86_64, 9.66/12 hours)" }
+      let(:default_output) { "- #{fqdn} (running, ubuntu-1604-x86_64, 9.66/12 hours)" }
 
       it 'prints output with host fqdn, template and duration info' do
         expect(STDOUT).to receive(:puts).with(default_output)
@@ -311,7 +311,7 @@ describe Utils do
         end
 
         it 'prints output with host fqdn, template, duration info, and tags' do
-          output = "- #{fqdn} (redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)"
+          output = "- #{fqdn} (running, redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)"
 
           expect(STDOUT).to receive(:puts).with(output)
 
@@ -458,9 +458,20 @@ describe Utils do
       it 'prints more information when vmpooler_fallback is set output with job id, host, template, lifetime, user and role' do
         fallback = {'vmpooler_fallback' => 'vmpooler'}
         service.config.merge! fallback
-        default_output_second_line="  - #{fqdn} (#{template}, 7.67/48 hours, user: bob, role: agent)"
+        default_output_second_line="  - #{fqdn} (running, #{template}, 7.67/48 hours, user: bob, role: agent)"
         expect(STDOUT).to receive(:puts).with(default_output_first_line)
         expect(STDOUT).to receive(:puts).with(default_output_second_line)
+
+        subject
+      end
+
+      it 'prints in red when destroyed' do
+        fallback = {'vmpooler_fallback' => 'vmpooler'}
+        service.config.merge! fallback
+        response_body_vmpooler[fqdn_hostname]['state'] = "destroyed"
+        default_output_second_line_red="  - #{fqdn} (destroyed, #{template}, 7.67/48 hours, user: bob, role: agent)".red
+        expect(STDOUT).to receive(:puts).with(default_output_first_line)
+        expect(STDOUT).to receive(:puts).with(default_output_second_line_red)
 
         subject
       end
