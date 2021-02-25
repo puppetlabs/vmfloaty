@@ -130,8 +130,13 @@ class Utils
         tag_pairs = []
         tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
         duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
-        metadata = [host_data['template'], duration, *tag_pairs]
-        output_target.puts "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
+        metadata = [host_data['state'], host_data['template'], duration, *tag_pairs]
+        message = "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
+        if host_data['state'] && host_data['state'] == "destroyed"
+          output_target.puts message.colorize(:red)
+        else
+          output_target.puts message
+        end
       when 'NonstandardPooler'
         line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
         line += ", #{host_data['hours_left_on_reservation']}h remaining"
