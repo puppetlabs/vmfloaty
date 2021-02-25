@@ -20,7 +20,8 @@ class Vmfloaty
 
   def run # rubocop:disable Metrics/AbcSize
     program :version, Vmfloaty::VERSION
-    program :description, "A CLI helper tool for Puppet's vmpooler to help you stay afloat.\n\nConfiguration may be placed in a ~/.vmfloaty.yml file."
+    program :description,
+            "A CLI helper tool for Puppet's vmpooler to help you stay afloat.\n\nConfiguration may be placed in a ~/.vmfloaty.yml file."
 
     config = Conf.read_config
 
@@ -43,9 +44,7 @@ class Vmfloaty
       c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
-        if options.loglevel
-          FloatyLogger.setlevel = options.loglevel
-        end
+        FloatyLogger.setlevel = options.loglevel if options.loglevel
         service = Service.new(options, config)
         use_token = !options.notoken
         force = options.force
@@ -100,21 +99,19 @@ class Vmfloaty
       c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
-        if options.loglevel
-          FloatyLogger.setlevel = options.loglevel
-        end
+        FloatyLogger.setlevel = options.loglevel if options.loglevel
 
         service = Service.new(options, config)
         filter = args[0]
 
         if options.active
           # list active vms
-          if service.type == "ABS"
-            # this is actually job_ids
-            running_vms = service.list_active_job_ids(verbose, service.url, service.user)
-          else
-            running_vms = service.list_active(verbose)
-          end
+          running_vms = if service.type == 'ABS'
+                          # this is actually job_ids
+                          service.list_active_job_ids(verbose, service.url, service.user)
+                        else
+                          service.list_active(verbose)
+                        end
           host = URI.parse(service.url).host
           if running_vms.empty?
             if options.json
@@ -122,17 +119,15 @@ class Vmfloaty
             else
               FloatyLogger.info "You have no running VMs on #{host}"
             end
-          else
-            if options.json
-              puts Utils.get_host_data(verbose, service, running_vms).to_json
-            elsif options.hostnameonly
-              Utils.get_host_data(verbose, service, running_vms).each do |hostname, host_data|
-                Utils.print_fqdn_for_host(service, hostname, host_data)
-              end
-            else
-              puts "Your VMs on #{host}:"
-              Utils.pretty_print_hosts(verbose, service, running_vms)
+          elsif options.json
+            puts Utils.get_host_data(verbose, service, running_vms).to_json
+          elsif options.hostnameonly
+            Utils.get_host_data(verbose, service, running_vms).each do |hostname, host_data|
+              Utils.print_fqdn_for_host(service, hostname, host_data)
             end
+          else
+            puts "Your VMs on #{host}:"
+            Utils.pretty_print_hosts(verbose, service, running_vms)
           end
         else
           # list available vms from pooler
@@ -164,7 +159,8 @@ class Vmfloaty
       c.syntax = 'floaty modify hostname [options]'
       c.summary = 'Modify a VM\'s tags, time to live, disk space, or reservation reason'
       c.description = 'This command makes modifications to the virtual machines state in the pooler service. You can either append tags to the vm, increase how long it stays active for, or increase the amount of disk space.'
-      c.example 'Modifies myhost1 to have a TTL of 12 hours and adds a custom tag', 'floaty modify myhost1 --lifetime 12 --url https://myurl --token mytokenstring --tags \'{"tag":"myvalue"}\''
+      c.example 'Modifies myhost1 to have a TTL of 12 hours and adds a custom tag',
+                'floaty modify myhost1 --lifetime 12 --url https://myurl --token mytokenstring --tags \'{"tag":"myvalue"}\''
       c.option '--verbose', 'Enables verbose output'
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--url STRING', String, 'URL of pooler service'
@@ -185,18 +181,18 @@ class Vmfloaty
           exit 1
         end
         running_vms =
-            if modify_all
-              service.list_active(verbose)
-            else
-              hostname.split(',')
-            end
+          if modify_all
+            service.list_active(verbose)
+          else
+            hostname.split(',')
+          end
 
         tags = options.tags ? JSON.parse(options.tags) : nil
         modify_hash = {
-          :lifetime => options.lifetime,
-          :disk     => options.disk,
-          :tags     => tags,
-          :reason   => options.reason,
+          lifetime: options.lifetime,
+          disk: options.disk,
+          tags: tags,
+          reason: options.reason
         }
         modify_hash.delete_if { |_, value| value.nil? }
 
@@ -204,12 +200,10 @@ class Vmfloaty
           ok = true
           modified_hash = {}
           running_vms.each do |vm|
-            begin
-              modified_hash[vm] = service.modify(verbose, vm, modify_hash)
-            rescue ModifyError => e
-              FloatyLogger.error e
-              ok = false
-            end
+            modified_hash[vm] = service.modify(verbose, vm, modify_hash)
+          rescue ModifyError => e
+            FloatyLogger.error e
+            ok = false
           end
           if ok
             if modify_all
@@ -241,9 +235,7 @@ class Vmfloaty
       c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
-        if options.loglevel
-          FloatyLogger.setlevel = options.loglevel
-        end
+        FloatyLogger.setlevel = options.loglevel if options.loglevel
 
         service = Service.new(options, config)
         hostnames = args[0]
@@ -254,17 +246,17 @@ class Vmfloaty
         successes = []
 
         if delete_all
-          if service.type == "ABS"
-            # this is actually job_ids
-            running_vms = service.list_active_job_ids(verbose, service.url, service.user)
-          else
-            running_vms = service.list_active(verbose)
-          end
+          running_vms = if service.type == 'ABS'
+                          # this is actually job_ids
+                          service.list_active_job_ids(verbose, service.url, service.user)
+                        else
+                          service.list_active(verbose)
+                        end
           if running_vms.empty?
             if options.json
               puts {}.to_json
             else
-              FloatyLogger.info "You have no running VMs."
+              FloatyLogger.info 'You have no running VMs.'
             end
           else
             confirmed = true
@@ -328,7 +320,8 @@ class Vmfloaty
       c.syntax = 'floaty snapshot hostname [options]'
       c.summary = 'Takes a snapshot of a given vm'
       c.description = 'Will request a snapshot be taken of the given hostname in the pooler service. This command is known to take a while depending on how much load is on the pooler service.'
-      c.example 'Takes a snapshot for a given host', 'floaty snapshot myvm.example.com --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
+      c.example 'Takes a snapshot for a given host',
+                'floaty snapshot myvm.example.com --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
       c.option '--verbose', 'Enables verbose output'
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--url STRING', String, 'URL of pooler service'
@@ -354,7 +347,8 @@ class Vmfloaty
       c.syntax = 'floaty revert hostname snapshot [options]'
       c.summary = 'Reverts a vm to a specified snapshot'
       c.description = 'Given a snapshot SHA, vmfloaty will request a revert to the pooler service to go back to a previous snapshot.'
-      c.example 'Reverts to a snapshot for a given host', 'floaty revert myvm.example.com n4eb4kdtp7rwv4x158366vd9jhac8btq --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
+      c.example 'Reverts to a snapshot for a given host',
+                'floaty revert myvm.example.com n4eb4kdtp7rwv4x158366vd9jhac8btq --url http://vmpooler.example.com --token a9znth9dn01t416hrguu56ze37t790bl'
       c.option '--verbose', 'Enables verbose output'
       c.option '--service STRING', String, 'Configured pooler service name'
       c.option '--url STRING', String, 'URL of pooler service'
@@ -366,7 +360,9 @@ class Vmfloaty
         hostname = args[0]
         snapshot_sha = args[1] || options.snapshot
 
-        FloatyLogger.info "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
+        if args[1] && options.snapshot
+          FloatyLogger.info "Two snapshot arguments were given....using snapshot #{snapshot_sha}"
+        end
 
         begin
           revert_req = service.revert(verbose, hostname, snapshot_sha)
@@ -391,9 +387,7 @@ class Vmfloaty
       c.option '--loglevel STRING', String, 'the log level to use (debug, info, error)'
       c.action do |_, options|
         verbose = options.verbose || config['verbose']
-        if options.loglevel
-          FloatyLogger.setlevel = options.loglevel
-        end
+        FloatyLogger.setlevel = options.loglevel if options.loglevel
         service = Service.new(options, config)
         if options.json
           pp service.status(verbose)
@@ -527,7 +521,7 @@ class Vmfloaty
       c.example 'Print a list of the valid service types', 'floaty service types'
       c.example 'Print a sample config file with multiple services', 'floaty service examples'
       c.example 'list vms from the service named "nspooler-prod"', 'floaty list --service nspooler-prod'
-      c.action do |args, options|
+      c.action do |args, _options|
         action = args.first
 
         example_config = Utils.strip_heredoc(<<-CONFIG)

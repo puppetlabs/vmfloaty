@@ -22,7 +22,7 @@ class NonstandardPooler
     status['reserved_hosts'] || []
   end
 
-  def self.retrieve(verbose, os_type, token, url, _user, _options, ondemand = nil, _continue = nil)
+  def self.retrieve(verbose, os_type, token, url, _user, _options, _ondemand = nil, _continue = nil)
     conn = Http.get_conn(verbose, url)
     conn.headers['X-AUTH-TOKEN'] = token if token
 
@@ -46,7 +46,8 @@ class NonstandardPooler
     raise TokenError, 'Token provided was nil; Request cannot be made to modify VM' if token.nil?
 
     modify_hash.each do |key, _value|
-      raise ModifyError, "Configured service type does not support modification of #{key}" unless %i[reason reserved_for_reason].include? key
+      raise ModifyError, "Configured service type does not support modification of #{key}" unless %i[reason
+                                                                                                     reserved_for_reason].include? key
     end
 
     if modify_hash[:reason]

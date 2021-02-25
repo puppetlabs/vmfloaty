@@ -8,14 +8,14 @@ class ServiceStub
     if os_types.keys[0] == 'abs_host_string'
       return {
         os_types.keys[0] => { 'hostname' => ['abs-hostname.delivery.puppetlabs.net'] },
-        'ok'             => true,
+        'ok' => true
       }
     end
 
     {
       os_types.keys[0] => { 'hostname' => 'vmpooler-hostname' },
-      'domain'         => 'delivery.puppetlabs.net',
-      'ok'             => true,
+      'domain' => 'delivery.puppetlabs.net',
+      'ok' => true
     }
   end
 

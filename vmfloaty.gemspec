@@ -8,11 +8,11 @@ Gem::Specification.new do |s|
   s.version = Vmfloaty::VERSION
   s.authors = [
     'Brian Cain',
-    'Puppet',
+    'Puppet'
   ]
   s.email = [
     'brianccain@gmail.com',
-    'dio-gems@puppet.com',
+    'dio-gems@puppet.com'
   ]
   s.license = 'Apache-2.0'
   s.homepage = 'https://github.com/puppetlabs/vmfloaty'

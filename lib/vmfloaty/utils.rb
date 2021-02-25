@@ -39,7 +39,10 @@ class Utils
     #   "engine"=>"vmpooler"
     # }
 
-    raise ArgumentError, "Bad GET response passed to format_hosts: #{response_body.to_json}" unless response_body.delete('ok')
+    unless response_body.delete('ok')
+      raise ArgumentError,
+            "Bad GET response passed to format_hosts: #{response_body.to_json}"
+    end
 
     # vmpooler reports the domain separately from the hostname
     domain = response_body.delete('domain')
@@ -50,7 +53,7 @@ class Utils
     abs_job_id = response_body.delete('job_id')
     result['job_id'] = abs_job_id unless abs_job_id.nil?
 
-    filtered_response_body = response_body.reject { |key, _| key == 'request_id' || key == 'ready' }
+    filtered_response_body = response_body.reject { |key, _| %w[request_id ready].include?(key) }
     filtered_response_body.each do |os, value|
       hostnames = Array(value['hostname'])
       hostnames.map! { |host| "#{host}.#{domain}" } if domain
@@ -106,7 +109,7 @@ class Utils
   def self.pretty_print_hosts(verbose, service, hostnames = [], print_to_stderr = false, indent = 0)
     output_target = print_to_stderr ? $stderr : $stdout
 
-    fetched_data = self.get_host_data(verbose, service, hostnames)
+    fetched_data = get_host_data(verbose, service, hostnames)
     fetched_data.each do |hostname, host_data|
       case service.type
       when 'ABS'
@@ -116,13 +119,14 @@ class Utils
 
         output_target.puts "- [JobID:#{host_data['request']['job']['id']}] <#{host_data['state']}>"
         host_data['allocated_resources'].each do |allocated_resources, _i|
-          if (allocated_resources['engine'] == "vmpooler" || allocated_resources['engine'] == 'ondemand') && service.config["vmpooler_fallback"]
+          if (allocated_resources['engine'] == 'vmpooler' || allocated_resources['engine'] == 'ondemand') && service.config['vmpooler_fallback']
             vmpooler_service = service.clone
             vmpooler_service.silent = true
             vmpooler_service.maybe_use_vmpooler
-            self.pretty_print_hosts(verbose, vmpooler_service, allocated_resources['hostname'].split('.')[0], print_to_stderr, indent+2)
+            pretty_print_hosts(verbose, vmpooler_service, allocated_resources['hostname'].split('.')[0],
+                               print_to_stderr, indent + 2)
           else
-            #TODO we could add more specific metadata for the other services, nspooler and aws
+            # TODO: we could add more specific metadata for the other services, nspooler and aws
             output_target.puts "  - #{allocated_resources['hostname']} (#{allocated_resources['type']})"
           end
         end
@@ -132,7 +136,7 @@ class Utils
         duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
         metadata = [host_data['state'], host_data['template'], duration, *tag_pairs]
         message = "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
-        if host_data['state'] && host_data['state'] == "destroyed"
+        if host_data['state'] && host_data['state'] == 'destroyed'
           output_target.puts message.colorize(:red)
         else
           output_target.puts message
@@ -153,30 +157,26 @@ class Utils
     result = {}
     hostnames = [hostnames] unless hostnames.is_a? Array
     hostnames.each do |hostname|
-      begin
-        response = service.query(verbose, hostname)
-        host_data = response[hostname]
-        if block_given?
-          yield host_data result
+      response = service.query(verbose, hostname)
+      host_data = response[hostname]
+      if block_given?
+        yield host_data result
+      else
+        case service.type
+        when 'ABS'
+          # For ABS, 'hostname' variable is the jobID
+          result[hostname] = host_data if host_data['state'] == 'allocated' || host_data['state'] == 'filled'
+        when 'Pooler'
+          result[hostname] = host_data
+        when 'NonstandardPooler'
+          result[hostname] = host_data
         else
-          case service.type
-          when 'ABS'
-            # For ABS, 'hostname' variable is the jobID
-            if host_data['state'] == 'allocated' || host_data['state'] == 'filled'
-              result[hostname] = host_data
-            end
-          when 'Pooler'
-            result[hostname] = host_data
-          when 'NonstandardPooler'
-            result[hostname] = host_data
-          else
-            raise "Invalid service type #{service.type}"
-          end
+          raise "Invalid service type #{service.type}"
         end
-      rescue StandardError => e
-        FloatyLogger.error("Something went wrong while trying to gather information on #{hostname}:")
-        FloatyLogger.error(e)
       end
+    rescue StandardError => e
+      FloatyLogger.error("Something went wrong while trying to gather information on #{hostname}:")
+      FloatyLogger.error(e)
     end
     result
   end
@@ -192,16 +192,14 @@ class Utils
 
       width = pools.keys.map(&:length).max
       pools.each do |name, pool|
-        begin
-          max = pool['max']
-          ready = pool['ready']
-          pending = pool['pending']
-          missing = max - ready - pending
-          char = 'o'
-          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
-        rescue StandardError => e
-          FloatyLogger.error "#{name.ljust(width)} #{e.red}"
-        end
+        max = pool['max']
+        ready = pool['ready']
+        pending = pool['pending']
+        missing = max - ready - pending
+        char = 'o'
+        puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+      rescue StandardError => e
+        FloatyLogger.error "#{name.ljust(width)} #{e.red}"
       end
       puts message.colorize(status_response['status']['ok'] ? :default : :red)
     when 'NonstandardPooler'
@@ -211,16 +209,14 @@ class Utils
 
       width = pools.keys.map(&:length).max
       pools.each do |name, pool|
-        begin
-          max = pool['total_hosts']
-          ready = pool['available_hosts']
-          pending = pool['pending'] || 0 # not available for nspooler
-          missing = max - ready - pending
-          char = 'o'
-          puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
-        rescue StandardError => e
-          FloatyLogger.error "#{name.ljust(width)} #{e.red}"
-        end
+        max = pool['total_hosts']
+        ready = pool['available_hosts']
+        pending = pool['pending'] || 0 # not available for nspooler
+        missing = max - ready - pending
+        char = 'o'
+        puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+      rescue StandardError => e
+        FloatyLogger.error "#{name.ljust(width)} #{e.red}"
       end
     when 'ABS'
       FloatyLogger.error 'ABS Not OK' unless status_response
@@ -256,11 +252,11 @@ class Utils
   def self.get_service_config(config, options)
     # The top-level url, user, and token values in the config file are treated as defaults
     service_config = {
-      'url'   => config['url'],
-      'user'  => config['user'],
+      'url' => config['url'],
+      'user' => config['user'],
       'token' => config['token'],
       'vmpooler_fallback' => config['vmpooler_fallback'],
-      'type'  => config['type'] || 'vmpooler',
+      'type' => config['type'] || 'vmpooler'
     }
 
     if config['services']
@@ -271,7 +267,10 @@ class Utils
         service_config.merge! values
       else
         # If the user provided a service name at the command line, use that service if posible, or fail
-        raise ArgumentError, "Could not find a configured service named '#{options.service}' in ~/.vmfloaty.yml" unless config['services'][options.service]
+        unless config['services'][options.service]
+          raise ArgumentError,
+                "Could not find a configured service named '#{options.service}' in ~/.vmfloaty.yml"
+        end
 
         # If the service is configured but some values are missing, use the top-level defaults to fill them in
         service_config.merge! config['services'][options.service]
@@ -295,22 +294,22 @@ class Utils
     config = Conf.read_config
     # The top-level url, user, and token values in the config file are treated as defaults
     service_config = {
-        'url'   => config['url'],
-        'user'  => config['user'],
-        'token' => config['token'],
-        'type'  => 'vmpooler',
+      'url' => config['url'],
+      'user' => config['user'],
+      'token' => config['token'],
+      'type' => 'vmpooler'
     }
 
     # at a minimum, the url needs to be configured
     if config['services'] && config['services'][vmpooler_fallback] && config['services'][vmpooler_fallback]['url']
       # If the service is configured but some values are missing, use the top-level defaults to fill them in
       service_config.merge! config['services'][vmpooler_fallback]
+    elsif vmpooler_fallback.nil?
+      raise ArgumentError,
+            "The abs service should have a key named 'vmpooler_fallback' in ~/.vmfloaty.yml with a value that points to a vmpooler service name use this format:\nservices:\n  myabs:\n    url: 'http://abs.com'\n    user: 'superman'\n    token: 'kryptonite'\n    vmpooler_fallback: 'myvmpooler'\n  myvmpooler:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
     else
-      if vmpooler_fallback.nil?
-        raise ArgumentError, "The abs service should have a key named 'vmpooler_fallback' in ~/.vmfloaty.yml with a value that points to a vmpooler service name use this format:\nservices:\n  myabs:\n    url: 'http://abs.com'\n    user: 'superman'\n    token: 'kryptonite'\n    vmpooler_fallback: 'myvmpooler'\n  myvmpooler:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
-      else
-        raise ArgumentError, "Could not find a configured service named '#{vmpooler_fallback}' in ~/.vmfloaty.yml use this format:\nservices:\n  #{vmpooler_fallback}:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
-      end
+      raise ArgumentError,
+            "Could not find a configured service named '#{vmpooler_fallback}' in ~/.vmfloaty.yml use this format:\nservices:\n  #{vmpooler_fallback}:\n    url: 'http://vmpooler.com'\n    user: 'superman'\n    token: 'kryptonite'"
     end
 
     service_config

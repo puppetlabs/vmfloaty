@@ -16,7 +16,7 @@ describe Service do
     it 'prompts the user for their password and retrieves a token' do
       config = { 'user' => 'first.last', 'url' => 'http://default.url' }
       service = Service.new(MockOptions.new, config)
-      allow(STDOUT).to receive(:puts).with('Enter your http://default.url service password:')
+      allow($stdout).to receive(:puts).with('Enter your http://default.url service password:')
       allow(Commander::UI).to(receive(:password)
                                   .with('Enter your http://default.url service password:', '*')
                                   .and_return('hunter2'))
@@ -29,9 +29,9 @@ describe Service do
     it 'prompts the user for their username and password if the username is unknown' do
       config = { 'url' => 'http://default.url' }
       service = Service.new(MockOptions.new({}), config)
-      allow(STDOUT).to receive(:puts).with 'Enter your http://default.url service username:'
-      allow(STDOUT).to receive(:puts).with "\n"
-      allow(STDIN).to receive(:gets).and_return('first.last')
+      allow($stdout).to receive(:puts).with 'Enter your http://default.url service username:'
+      allow($stdout).to receive(:puts).with "\n"
+      allow($stdin).to receive(:gets).and_return('first.last')
       allow(Commander::UI).to(receive(:password)
                                   .with('Enter your http://default.url service password:', '*')
                                   .and_return('hunter2'))
@@ -59,16 +59,16 @@ describe Service do
     it 'reports the status of a token' do
       config = {
         'user' => 'first.last',
-        'url'  => 'http://default.url',
+        'url' => 'http://default.url'
       }
       options = MockOptions.new('token' => 'token-value')
       service = Service.new(options, config)
       status = {
-        'ok'             => true,
-        'user'           => config['user'],
-        'created'        => '2017-09-22 02:04:18 +0000',
-        'last_accessed'  => '2017-09-22 02:04:28 +0000',
-        'reserved_hosts' => [],
+        'ok' => true,
+        'user' => config['user'],
+        'created' => '2017-09-22 02:04:18 +0000',
+        'last_accessed' => '2017-09-22 02:04:28 +0000',
+        'reserved_hosts' => []
       }
       allow(Auth).to(receive(:token_status)
                          .with(nil, config['url'], 'token-value')
