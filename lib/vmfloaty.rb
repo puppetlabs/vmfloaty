@@ -14,6 +14,7 @@ require 'vmfloaty/utils'
 require 'vmfloaty/service'
 require 'vmfloaty/ssh'
 require 'vmfloaty/logger'
+require 'vmfloaty/otel'
 
 class Vmfloaty
   include Commander::Methods
@@ -49,6 +50,8 @@ class Vmfloaty
         service = Service.new(options, config)
         use_token = !options.notoken
         force = options.force
+
+        Otel.configure_tracing(service)
 
         if args.empty?
           FloatyLogger.error 'No operating systems provided to obtain. See `floaty get --help` for more information on how to get VMs.'
@@ -107,6 +110,8 @@ class Vmfloaty
         service = Service.new(options, config)
         filter = args[0]
 
+        Otel.configure_tracing(service)
+
         if options.active
           # list active vms
           if service.type == "ABS"
@@ -155,6 +160,8 @@ class Vmfloaty
         service = Service.new(options, config)
         hostname = args[0]
 
+        Otel.configure_tracing(service)
+
         query_req = service.query(verbose, hostname)
         pp query_req
       end
@@ -179,6 +186,8 @@ class Vmfloaty
         service = Service.new(options, config)
         hostname = args[0]
         modify_all = options.all
+
+        Otel.configure_tracing(service)
 
         if hostname.nil? && !modify_all
           FloatyLogger.error 'ERROR: Provide a hostname or specify --all.'
@@ -249,6 +258,8 @@ class Vmfloaty
         hostnames = args[0]
         delete_all = options.all
         force = options.f
+
+        Otel.configure_tracing(service)
 
         failures = []
         successes = []
@@ -338,6 +349,8 @@ class Vmfloaty
         service = Service.new(options, config)
         hostname = args[0]
 
+        Otel.configure_tracing(service)
+
         begin
           snapshot_req = service.snapshot(verbose, hostname)
         rescue TokenError, ModifyError => e
@@ -365,6 +378,8 @@ class Vmfloaty
         service = Service.new(options, config)
         hostname = args[0]
         snapshot_sha = args[1] || options.snapshot
+
+        Otel.configure_tracing(service)
 
         FloatyLogger.info "Two snapshot arguments were given....using snapshot #{snapshot_sha}" if args[1] && options.snapshot
 
@@ -395,6 +410,9 @@ class Vmfloaty
           FloatyLogger.setlevel = options.loglevel
         end
         service = Service.new(options, config)
+
+        Otel.configure_tracing(service)
+
         if options.json
           pp service.status(verbose)
         else
@@ -414,6 +432,8 @@ class Vmfloaty
       c.action do |_, options|
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
+
+        Otel.configure_tracing(service)
 
         summary = service.summary(verbose)
         pp summary
@@ -435,6 +455,8 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
         action = args.first
+
+        Otel.configure_tracing(service)
 
         begin
           case action
@@ -479,6 +501,8 @@ class Vmfloaty
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
         use_token = !options.notoken
+
+        Otel.configure_tracing(service)
 
         if args.empty?
           FloatyLogger.error 'No operating systems provided to obtain. See `floaty ssh --help` for more information on how to get VMs.'
