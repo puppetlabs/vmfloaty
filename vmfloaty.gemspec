@@ -25,6 +25,6 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
 
   s.add_dependency 'colorize', '~> 0.8.1'
-  s.add_dependency 'commander', '>= 4.4.3', '< 4.6.0'
+  s.add_dependency 'commander', '>= 4.4.3', '< 4.7.0'
   s.add_dependency 'faraday', '~> 0.17.0'
 end
