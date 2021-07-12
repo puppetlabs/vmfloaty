@@ -152,7 +152,11 @@ describe ABS do
         [
           { "state":"allocated", "last_processed":"2020-01-17 22:29:13 +0000", "allocated_resources":[{"hostname":"craggy-chord.delivery.puppetlabs.net", "type":"centos-7-x86_64", "engine":"vmpooler"}, {"hostname":"visible-revival.delivery.puppetlabs.net", "type":"centos-7-x86_64", "engine":"vmpooler"}], "audit_log":{"2020-01-17 22:28:45 +0000":"Allocated craggy-chord.delivery.puppetlabs.net, visible-revival.delivery.puppetlabs.net for job 1579300120799"}, "request":{"resources":{"centos-7-x86_64":2}, "job":{"id":"1579300120799", "tags":{"user":"test-user"}, "user":"test-user", "time-received":1579300120}, "priority":3}}
         ]'
-        @return_request = { '{"job_id":"1579300120799","hosts":{"hostname":"craggy-chord.delivery.puppetlabs.net","type":"centos-7-x86_64","engine":"vmpooler"},{"hostname":"visible-revival.delivery.puppetlabs.net","type":"centos-7-x86_64","engine":"vmpooler"}}' => true }
+        @return_request = {
+          "job_id" => "1579300120799",
+          "hosts" => [{"hostname"=>"craggy-chord.delivery.puppetlabs.net","type"=>"centos-7-x86_64","engine"=>"vmpooler"},
+                      {"hostname"=>"visible-revival.delivery.puppetlabs.net","type"=>"centos-7-x86_64","engine"=>"vmpooler"}]
+        }
         # rubocop:enable Layout/LineLength
         @token = 'utpg2i2xswor6h8ttjhu3d47z53yy47y'
         @test_user = 'test-user'
@@ -164,7 +168,7 @@ describe ABS do
         stub_request(:get, 'https://abs.example.com/api/v2/status/queue')
           .to_return(status: 200, body: @active_requests_response, headers: {})
         stub_request(:post, 'https://abs.example.com/api/v2/return')
-          .with(body: @return_request)
+          .with(headers: get_headers(content_type: 'application/x-www-form-urlencoded', token: @token), body: @return_request.to_json)
           .to_return(status: 200, body: 'OK', headers: {})
 
         ret = ABS.delete(false, @abs_url, @hosts, @token, @test_user)

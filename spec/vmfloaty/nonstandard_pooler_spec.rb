@@ -8,9 +8,7 @@ require 'vmfloaty/nonstandard_pooler'
 describe NonstandardPooler do
   before :each do
     @nspooler_url = 'https://nspooler.example.com'
-    @auth_token_headers = {
-      'X-Auth-Token' => 'token-value'
-    }
+    @auth_token_headers = get_headers(token: 'token-value')
   end
 
   describe '#list' do
@@ -121,7 +119,7 @@ describe NonstandardPooler do
 
     it 'raises an AuthError if the token is invalid' do
       stub_request(:post, "#{@nspooler_url}/host/solaris-11-sparc")
-        .with(headers: @auth_token_headers)
+        .with(headers: get_headers(token: 'token-value'))
         .to_return(status: 401, body: '{"ok":false,"reason": "token: token-value does not exist"}', headers: {})
 
       vm_hash = { 'solaris-11-sparc' => 1 }
@@ -174,7 +172,7 @@ describe NonstandardPooler do
     end
 
     it 'modifies the reason of a vm' do
-      modify_request_body = { '{"reserved_for_reason":"testing"}' => true }
+      modify_request_body = { '{"reserved_for_reason":"testing"}' => nil }
       stub_request(:put, "#{@nspooler_url}/host/myfakehost")
         .with(body: modify_request_body,
               headers: @auth_token_headers)
