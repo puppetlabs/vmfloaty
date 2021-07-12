@@ -3,6 +3,9 @@
 require 'spec_helper'
 require_relative '../../lib/vmfloaty/auth'
 
+user = 'first.last'
+pass = 'password'
+
 describe Pooler do
   before :each do
     @vmpooler_url = 'https://vmpooler.example.com'
@@ -15,18 +18,20 @@ describe Pooler do
     end
 
     it 'returns a token from vmpooler' do
-      stub_request(:post, 'https://first.last:password@vmpooler.example.com/token')
+      stub_request(:post, 'https://vmpooler.example.com/token')
+        .with(headers: get_headers(username: user, password: pass, content_length: 0))
         .to_return(status: 200, body: @get_token_response, headers: {})
 
-      token = Auth.get_token(false, @vmpooler_url, 'first.last', 'password')
+      token = Auth.get_token(false, @vmpooler_url, user, pass)
       expect(token).to eq @token
     end
 
     it 'raises a token error if something goes wrong' do
-      stub_request(:post, 'https://first.last:password@vmpooler.example.com/token')
+      stub_request(:post, 'https://vmpooler.example.com/token')
+      .with(headers: get_headers(username: user, password: pass, content_length: 0))
         .to_return(status: 500, body: '{"ok":false}', headers: {})
 
-      expect { Auth.get_token(false, @vmpooler_url, 'first.last', 'password') }.to raise_error(TokenError)
+      expect { Auth.get_token(false, @vmpooler_url, user, pass) }.to raise_error(TokenError)
     end
   end
 
@@ -37,15 +42,17 @@ describe Pooler do
     end
 
     it 'deletes the specified token' do
-      stub_request(:delete, 'https://first.last:password@vmpooler.example.com/token/utpg2i2xswor6h8ttjhu3d47z53yy47y')
+      stub_request(:delete, 'https://vmpooler.example.com/token/utpg2i2xswor6h8ttjhu3d47z53yy47y')
+        .with(headers: get_headers(username: user, password: pass))
         .to_return(status: 200, body: @delete_token_response, headers: {})
 
-      expect(Auth.delete_token(false, @vmpooler_url, 'first.last', 'password',
+      expect(Auth.delete_token(false, @vmpooler_url, user, pass,
                                @token)).to eq JSON.parse(@delete_token_response)
     end
 
     it 'raises a token error if something goes wrong' do
-      stub_request(:delete, 'https://first.last:password@vmpooler.example.com/token/utpg2i2xswor6h8ttjhu3d47z53yy47y')
+      stub_request(:delete, 'https://vmpooler.example.com/token/utpg2i2xswor6h8ttjhu3d47z53yy47y')
+        .with(headers: get_headers(username: user, password: pass))
         .to_return(status: 500, body: '{"ok":false}', headers: {})
 
       expect { Auth.delete_token(false, @vmpooler_url, 'first.last', 'password', @token) }.to raise_error(TokenError)
@@ -64,6 +71,7 @@ describe Pooler do
 
     it 'checks the status of a token' do
       stub_request(:get, "#{@vmpooler_url}/token/utpg2i2xswor6h8ttjhu3d47z53yy47y")
+        .with(headers: get_headers)
         .to_return(status: 200, body: @token_status_response, headers: {})
 
       expect(Auth.token_status(false, @vmpooler_url, @token)).to eq JSON.parse(@token_status_response)
@@ -71,6 +79,7 @@ describe Pooler do
 
     it 'raises a token error if something goes wrong' do
       stub_request(:get, "#{@vmpooler_url}/token/utpg2i2xswor6h8ttjhu3d47z53yy47y")
+        .with(headers: get_headers)
         .to_return(status: 500, body: '{"ok":false}', headers: {})
 
       expect { Auth.token_status(false, @vmpooler_url, @token) }.to raise_error(TokenError)

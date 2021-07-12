@@ -119,8 +119,8 @@ describe Pooler do
     it 'modifies the TTL of a vm' do
       modify_hash = { lifetime: 12 }
       stub_request(:put, "#{@vmpooler_url}/vm/fq6qlpjlsskycq6")
-        .with(body: { '{"lifetime":12}' => true },
-              headers: { 'Content-Type' => 'application/x-www-form-urlencoded', 'X-Auth-Token' => 'mytokenfile' })
+        .with(body: { '{"lifetime":12}' => nil },
+              headers: get_headers(content_type: 'application/x-www-form-urlencoded', token: 'mytokenfile'))
         .to_return(status: 200, body: @modify_response_body_success, headers: {})
 
       modify_req = Pooler.modify(false, @vmpooler_url, 'fq6qlpjlsskycq6', 'mytokenfile', modify_hash)
