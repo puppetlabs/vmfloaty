@@ -12,13 +12,11 @@ class Pooler
     response = conn.get 'vm'
     response_body = JSON.parse(response.body)
 
-    hosts = if os_filter
-              response_body.select { |i| i[/#{os_filter}/] }
-            else
-              response_body
-            end
-
-    hosts
+    if os_filter
+      response_body.select { |i| i[/#{os_filter}/] }
+    else
+      response_body
+    end
   end
 
   def self.list_active(verbose, url, token, _user)
@@ -50,7 +48,10 @@ class Pooler
     elsif response.status == 403
       raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. Request exceeds the configured per pool maximum. #{res_body}"
     else
-      raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. #{res_body}" unless ondemand
+      unless ondemand
+        raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/vm/#{os_string}. #{res_body}"
+      end
+
       raise "HTTP #{response.status}: Failed to obtain VMs from the pooler at #{url}/ondemandvm/#{os_string}. #{res_body}"
     end
   end
@@ -63,7 +64,7 @@ class Pooler
       FloatyLogger.info "waiting for request #{request_id} to be fulfilled"
       sleep 5
     end
-    FloatyLogger.info "The request has been fulfilled"
+    FloatyLogger.info 'The request has been fulfilled'
     check_ondemandvm(verbose, request_id, url)
   end
 
@@ -84,8 +85,9 @@ class Pooler
   def self.modify(verbose, url, hostname, token, modify_hash)
     raise TokenError, 'Token provided was nil. Request cannot be made to modify vm' if token.nil?
 
-    modify_hash.keys.each do |key|
-      raise ModifyError, "Configured service type does not support modification of #{key}." unless %i[tags lifetime disk].include? key
+    modify_hash.each_key do |key|
+      raise ModifyError, "Configured service type does not support modification of #{key}." unless %i[tags lifetime
+                                                                                                      disk].include? key
     end
 
     conn = Http.get_conn(verbose, url)
@@ -120,8 +122,7 @@ class Pooler
 
     response = conn.post "vm/#{hostname}/disk/#{disk}"
 
-    res_body = JSON.parse(response.body)
-    res_body
+    JSON.parse(response.body)
   end
 
   def self.delete(verbose, url, hosts, token, _user)
@@ -146,25 +147,21 @@ class Pooler
     conn = Http.get_conn(verbose, url)
 
     response = conn.get '/status'
-    res_body = JSON.parse(response.body)
-    res_body
+    JSON.parse(response.body)
   end
 
   def self.summary(verbose, url)
     conn = Http.get_conn(verbose, url)
 
     response = conn.get '/summary'
-    res_body = JSON.parse(response.body)
-    res_body
+    JSON.parse(response.body)
   end
 
   def self.query(verbose, url, hostname)
     conn = Http.get_conn(verbose, url)
 
     response = conn.get "vm/#{hostname}"
-    res_body = JSON.parse(response.body)
-
-    res_body
+    JSON.parse(response.body)
   end
 
   def self.snapshot(verbose, url, hostname, token)
@@ -174,8 +171,7 @@ class Pooler
     conn.headers['X-AUTH-TOKEN'] = token
 
     response = conn.post "vm/#{hostname}/snapshot"
-    res_body = JSON.parse(response.body)
-    res_body
+    JSON.parse(response.body)
   end
 
   def self.revert(verbose, url, hostname, token, snapshot_sha)
@@ -187,7 +183,6 @@ class Pooler
     raise "Snapshot SHA provided was nil, could not revert #{hostname}" if snapshot_sha.nil?
 
     response = conn.post "vm/#{hostname}/snapshot/#{snapshot_sha}"
-    res_body = JSON.parse(response.body)
-    res_body
+    JSON.parse(response.body)
   end
 end

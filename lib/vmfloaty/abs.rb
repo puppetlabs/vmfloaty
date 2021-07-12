@@ -53,10 +53,10 @@ class ABS
   def self.list_active(verbose, url, _token, user)
     hosts = []
     get_active_requests(verbose, url, user).each do |req_hash|
-      if req_hash.key?('allocated_resources')
-        req_hash['allocated_resources'].each do |onehost|
-          hosts.push(onehost['hostname'])
-        end
+      next unless req_hash.key?('allocated_resources')
+
+      req_hash['allocated_resources'].each do |onehost|
+        hosts.push(onehost['hostname'])
       end
     end
 
@@ -116,7 +116,7 @@ class ABS
     ret_status = {}
     hosts.each do |host|
       ret_status[host] = {
-        'ok' => false,
+        'ok' => false
       }
     end
 
@@ -132,7 +132,7 @@ class ABS
         if hosts.include? vm_name['hostname']
           if all_job_resources_accounted_for(req_hash['allocated_resources'], hosts)
             ret_status[vm_name['hostname']] = {
-              'ok' => true,
+              'ok' => true
             }
             jobs_to_delete.push(req_hash)
           else
@@ -147,7 +147,7 @@ class ABS
     jobs_to_delete.each do |job|
       req_obj = {
         'job_id' => job['request']['job']['id'],
-        'hosts'  => job['allocated_resources'],
+        'hosts' => job['allocated_resources']
       }
 
       FloatyLogger.info "Deleting #{req_obj}" if verbose
@@ -172,11 +172,11 @@ class ABS
       res_body = JSON.parse(res.body)
       if res_body.key?('vmpooler_platforms')
         os_list << '*** VMPOOLER Pools ***'
-        if res_body['vmpooler_platforms'].is_a?(String)
-          os_list += JSON.parse(res_body['vmpooler_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
-        else
-          os_list += res_body['vmpooler_platforms']
-        end
+        os_list += if res_body['vmpooler_platforms'].is_a?(String)
+                     JSON.parse(res_body['vmpooler_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
+                   else
+                     res_body['vmpooler_platforms']
+                   end
       end
     end
 
@@ -200,11 +200,11 @@ class ABS
       if res_body.key?('nspooler_platforms')
         os_list << ''
         os_list << '*** NSPOOLER Pools ***'
-        if res_body['nspooler_platforms'].is_a?(String)
-          os_list += JSON.parse(res_body['nspooler_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
-        else
-          os_list += res_body['nspooler_platforms']
-        end
+        os_list += if res_body['nspooler_platforms'].is_a?(String)
+                     JSON.parse(res_body['nspooler_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
+                   else
+                     res_body['nspooler_platforms']
+                   end
       end
     end
 
@@ -214,11 +214,11 @@ class ABS
       if res_body.key?('aws_platforms')
         os_list << ''
         os_list << '*** AWS Pools ***'
-        if res_body['aws_platforms'].is_a?(String)
-          os_list += JSON.parse(res_body['aws_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
-        else
-          os_list += res_body['aws_platforms']
-        end
+        os_list += if res_body['aws_platforms'].is_a?(String)
+                     JSON.parse(res_body['aws_platforms']) # legacy ABS had another JSON string always-be-scheduling/pull/306
+                   else
+                     res_body['aws_platforms']
+                   end
       end
     end
 
@@ -248,20 +248,20 @@ class ABS
     conn = Http.get_conn(verbose, supported_abs_url(url))
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    if continue.nil?
-      saved_job_id = user + "-" + DateTime.now.strftime('%Q')
-    else
-      saved_job_id = continue
-    end
+    saved_job_id = if continue.nil?
+                     "#{user}-#{DateTime.now.strftime('%Q')}"
+                   else
+                     continue
+                   end
 
     req_obj = {
-      :resources => os_types,
-      :job       => {
-        :id   => saved_job_id,
-        :tags => {
-          :user => user,
-        },
-      },
+      resources: os_types,
+      job: {
+        id: saved_job_id,
+        tags: {
+          user: user
+        }
+      }
     }
 
     if config['vmpooler_fallback'] # optional and not available as cli flag
@@ -271,11 +271,12 @@ class ABS
     end
 
     if config['priority']
-      req_obj[:priority] = if config['priority'] == 'high'
+      req_obj[:priority] = case config['priority']
+                           when 'high'
                              1
-                           elsif config['priority'] == 'medium'
+                           when 'medium'
                              2
-                           elsif config['priority'] == 'low'
+                           when 'low'
                              3
                            else
                              config['priority'].to_i
@@ -291,14 +292,12 @@ class ABS
 
     retries = 360
 
-    status = validate_queue_status_response(res.status, res.body, "Initial request", verbose)
+    status = validate_queue_status_response(res.status, res.body, 'Initial request', verbose)
 
     begin
       (1..retries).each do |i|
         res_body = check_queue(conn, saved_job_id, req_obj, verbose)
-        if res_body && res_body.is_a?(Array) # when we get a response with hostnames
-          return translated(res_body, saved_job_id)
-        end
+        return translated(res_body, saved_job_id) if res_body.is_a?(Array) # when we get a response with hostnames
 
         sleep_seconds = 10 if i >= 10
         sleep_seconds = i if i < 10
@@ -317,10 +316,10 @@ class ABS
   # We should fix the ABS API to be more like the vmpooler or nspooler api, but for now
   #
   def self.translated(res_body, job_id)
-    vmpooler_formatted_body = {'job_id' => job_id}
+    vmpooler_formatted_body = { 'job_id' => job_id }
 
     res_body.each do |host|
-      if vmpooler_formatted_body[host['type']] && vmpooler_formatted_body[host['type']]['hostname'].class == Array
+      if vmpooler_formatted_body[host['type']] && vmpooler_formatted_body[host['type']]['hostname'].instance_of?(Array)
         vmpooler_formatted_body[host['type']]['hostname'] << host['hostname']
       else
         vmpooler_formatted_body[host['type']] = { 'hostname' => [host['hostname']] }
@@ -331,9 +330,9 @@ class ABS
     vmpooler_formatted_body
   end
 
-  def self.check_queue(conn, job_id, req_obj, verbose)
+  def self.check_queue(conn, _job_id, req_obj, verbose)
     res = conn.post 'request', req_obj.to_json
-    status = validate_queue_status_response(res.status, res.body, "Check queue request", verbose)
+    status = validate_queue_status_response(res.status, res.body, 'Check queue request', verbose)
     unless res.body.empty? || !valid_json?(res.body)
       res_body = JSON.parse(res.body)
       return res_body
@@ -353,7 +352,7 @@ class ABS
     res.body == 'OK'
   end
 
-  def self.summary(verbose, url)
+  def self.summary(_verbose, _url)
     raise NoMethodError, 'summary is not defined for ABS'
   end
 
@@ -405,17 +404,17 @@ class ABS
 
   def self.valid_json?(json)
     JSON.parse(json)
-    return true
+    true
   rescue TypeError, JSON::ParserError => e
-    return false
+    false
   end
 
   # when missing, adds the required api/v2 in the url
   def self.supported_abs_url(url)
-    expected_ending = "api/v2"
-    if !url.include?(expected_ending)
+    expected_ending = 'api/v2'
+    unless url.include?(expected_ending)
       # add a slash if missing
-      expected_ending = "/#{expected_ending}" if url[-1] != "/"
+      expected_ending = "/#{expected_ending}" if url[-1] != '/'
       url = "#{url}#{expected_ending}"
     end
     url

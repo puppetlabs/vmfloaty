@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 class FloatyLogger < ::Logger
@@ -19,22 +21,23 @@ class FloatyLogger < ::Logger
 
   def self.setlevel=(level)
     level = level.downcase
-    if level == "debug"
-      self.logger.level = ::Logger::DEBUG
-    elsif level == "info"
-      self.logger.level = ::Logger::INFO
-    elsif level == "error"
-      self.logger.level = ::Logger::ERROR
+    case level
+    when 'debug'
+      logger.level = ::Logger::DEBUG
+    when 'info'
+      logger.level = ::Logger::INFO
+    when 'error'
+      logger.level = ::Logger::ERROR
     else
-      error("set loglevel to debug, info or error")
+      error('set loglevel to debug, info or error')
     end
   end
 
   def initialize
-    super(STDERR)
+    super($stderr)
     self.level = ::Logger::INFO
-    self.formatter = proc do |severity, datetime, progname, msg|
-        "#{msg}\n"
+    self.formatter = proc do |_severity, _datetime, _progname, msg|
+      "#{msg}\n"
     end
   end
 end

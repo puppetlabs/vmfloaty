@@ -28,4 +28,4 @@ RuboCop::RakeTask.new(:rubocop) do |task|
 end
 
 # Default task is to run the unit tests
-task :default => :spec
+task default: :spec
