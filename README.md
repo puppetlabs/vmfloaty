@@ -1,8 +1,8 @@
 # vmfloaty
 
 [![Gem Version](https://badge.fury.io/rb/vmfloaty.svg)](https://badge.fury.io/rb/vmfloaty)
-[![Build Status](https://travis-ci.com/puppetlabs/vmfloaty.svg?branch=master)](https://travis-ci.com/puppetlabs/vmfloaty)
-[![Coverage Status](https://coveralls.io/repos/github/puppetlabs/vmfloaty/badge.svg?branch=master)](https://coveralls.io/github/puppetlabs/vmfloaty?branch=master)
+[![Build Status](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml)
+[![Coverage Status](https://github.com/puppetlabs/vmfloaty/badge.svg?branch=main)](https://coveralls.io/github/puppetlabs/vmfloaty?branch=main)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=puppetlabs/vmfloaty)](https://dependabot.com)
 
 A CLI helper tool for [Puppet's vmpooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.

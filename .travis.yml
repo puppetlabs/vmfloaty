@@ -1,7 +1,0 @@
-language: ruby
-dist: xenial
-os:
-  - linux
-rvm:
-  - 2.6.5
-script: bundle exec rake spec
