@@ -469,6 +469,7 @@ class Vmfloaty
       c.option '--user STRING', String, 'User to authenticate with'
       c.option '--token STRING', String, 'Token for pooler service'
       c.option '--notoken', 'Makes a request without a token'
+      c.option '--priority STRING', 'Priority for supported backends(ABS) (High(1), Medium(2), Low(3))'
       c.action do |args, options|
         verbose = options.verbose || config['verbose']
         service = Service.new(options, config)
