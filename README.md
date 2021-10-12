@@ -1,11 +1,9 @@
 # vmfloaty
 
 [![Gem Version](https://badge.fury.io/rb/vmfloaty.svg)](https://badge.fury.io/rb/vmfloaty)
-[![Build Status](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml)
-[![Coverage Status](https://github.com/puppetlabs/vmfloaty/badge.svg?branch=main)](https://coveralls.io/github/puppetlabs/vmfloaty?branch=main)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=puppetlabs/vmfloaty)](https://dependabot.com)
+[![CI](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml/badge.svg)](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml)
 
-A CLI helper tool for [Puppet's vmpooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.
+A CLI helper tool for [Puppet's VMPooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.
 
 ![float image](float.jpg)
 
@@ -18,7 +16,7 @@ A CLI helper tool for [Puppet's vmpooler](https://github.com/puppetlabs/vmpooler
     - [Using backends besides VMPooler](#using-backends-besides-vmpooler)
     - [Valid config keys](#valid-config-keys)
   - [Tab Completion](#tab-completion)
-- [vmpooler API](#vmpooler-api)
+- [VMPooler API](#vmpooler-api)
 - [Using the Pooler class](#using-the-pooler-class)
   - [Example Projects](#example-projects)
 - [Special thanks](#special-thanks)
@@ -41,7 +39,7 @@ $ floaty --help
 
   DESCRIPTION:
 
-    A CLI helper tool for Puppet's vmpooler to help you stay afloat
+    A CLI helper tool for Puppet's VMPooler to help you stay afloat
 
   COMMANDS:
 
@@ -151,13 +149,13 @@ There is also tab completion for zsh:
 source $(floaty completion --shell zsh)
 ```
 
-## vmpooler API
+## VMPooler API
 
-This cli tool uses the [vmpooler API](https://github.com/puppetlabs/vmpooler/blob/master/API.md).
+This cli tool uses the [VMPooler API](https://github.com/puppetlabs/vmpooler/blob/master/API.md).
 
 ## Using the Pooler class
 
-vmfloaty providers a `Pooler` class that gives users the ability to make requests to vmpooler without having to write their own requests. It also provides an `Auth` class for managing vmpooler tokens within your application.
+vmfloaty providers a `Pooler` class that gives users the ability to make requests to VMPooler without having to write their own requests. It also provides an `Auth` class for managing VMPooler tokens within your application.
 
 ### Example Projects
 
