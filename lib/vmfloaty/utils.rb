@@ -144,7 +144,7 @@ class Utils
       when 'NonstandardPooler'
         line = "- #{host_data['fqdn']} (#{host_data['os_triple']}"
         line += ", #{host_data['hours_left_on_reservation']}h remaining"
-        line += ", reason: #{host_data['reserved_for_reason']}" unless host_data['reserved_for_reason'].empty?
+        line += ", reason: #{host_data['reserved_for_reason']}" unless  host_data['reserved_for_reason'].nil? || host_data['reserved_for_reason'].empty?
         line += ')'
         output_target.puts line
       else
