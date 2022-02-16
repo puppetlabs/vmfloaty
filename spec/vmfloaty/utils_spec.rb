@@ -466,13 +466,13 @@ describe Utils do
         subject
       end
 
-      it 'prints in red when destroyed' do
+      it 'prints DESTROYED and hostname when destroyed' do
         fallback = { 'vmpooler_fallback' => 'vmpooler' }
         service.config.merge! fallback
         response_body_vmpooler[fqdn_hostname]['state'] = 'destroyed'
-        default_output_second_line_red = "  - #{fqdn} (destroyed, #{template}, 7.67/48 hours, user: bob, role: agent)".red
+        default_output_second_line = "  - DESTROYED #{fqdn}"
         expect($stdout).to receive(:puts).with(default_output_first_line)
-        expect($stdout).to receive(:puts).with(default_output_second_line_red)
+        expect($stdout).to receive(:puts).with(default_output_second_line)
 
         subject
       end

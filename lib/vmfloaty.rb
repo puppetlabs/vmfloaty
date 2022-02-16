@@ -2,7 +2,6 @@
 
 require 'rubygems'
 require 'commander'
-require 'colorize'
 require 'json'
 require 'pp'
 require 'uri'

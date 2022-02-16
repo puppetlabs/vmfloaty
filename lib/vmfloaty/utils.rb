@@ -137,7 +137,7 @@ class Utils
         metadata = [host_data['state'], host_data['template'], duration, *tag_pairs]
         message = "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
         if host_data['state'] && host_data['state'] == 'destroyed'
-          output_target.puts message.colorize(:red)
+          output_target.puts "- DESTROYED #{hostname}.#{host_data['domain']}".gsub(/^/, ' ' * indent)
         else
           output_target.puts message
         end
@@ -201,7 +201,7 @@ class Utils
       rescue StandardError => e
         FloatyLogger.error "#{name.ljust(width)} #{e.red}"
       end
-      puts message.colorize(status_response['status']['ok'] ? :default : :red)
+      puts message
     when 'NonstandardPooler'
       pools = status_response
       pools.delete 'ok'
