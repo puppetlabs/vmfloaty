@@ -10,10 +10,7 @@ Gem::Specification.new do |s|
     'Brian Cain',
     'Puppet'
   ]
-  s.email = [
-    'brianccain@gmail.com',
-    'dio-gems@puppet.com'
-  ]
+  s.email = 'dio-gems@puppet.com'
   s.license = 'Apache-2.0'
   s.homepage = 'https://github.com/puppetlabs/vmfloaty'
   s.description = 'A helper tool for vmpooler to help you stay afloat'
