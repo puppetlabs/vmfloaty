@@ -1,4 +1,4 @@
-FROM ruby:3.0.1-slim-buster
+FROM ruby:3.1.1-slim-buster
 
 COPY ./ ./
 
