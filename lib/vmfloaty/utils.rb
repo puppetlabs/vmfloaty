@@ -9,7 +9,7 @@ class Utils
   # TODO: Takes the json response body from an HTTP GET
   # request and "pretty prints" it
   def self.standardize_hostnames(response_body)
-    # vmpooler response body example when `floaty get` arguments are `ubuntu-1610-x86_64=2 centos-7-x86_64`:
+    # vmpooler api v1 response body example when `floaty get` arguments are `ubuntu-1610-x86_64=2 centos-7-x86_64`:
     # {
     #   "ok": true,
     #   "domain": "delivery.mycompany.net",
@@ -18,6 +18,17 @@ class Utils
     #   },
     #   "centos-7-x86_64": {
     #     "hostname": "dlgietfmgeegry2"
+    #   }
+    # }
+
+    # vmpooler api v2 response body example when `floaty get` arguments are `ubuntu-1610-x86_64=2 centos-7-x86_64`:
+    # {
+    #   "ok": true,
+    #   "ubuntu-1610-x86_64": {
+    #     "hostname": ["gdoy8q3nckuob0i.pooler.example.com", "ctnktsd0u11p9tm.pooler.example.com"]
+    #   },
+    #   "centos-7-x86_64": {
+    #     "hostname": "dlgietfmgeegry2.pooler.example.com"
     #   }
     # }
 
@@ -98,7 +109,11 @@ class Utils
 
       puts abs_hostnames.join("\n")
     when 'Pooler'
-      puts "#{hostname}.#{host_data['domain']}"
+      if host_data['domain'].nil?
+        puts hostname
+      else
+        puts "#{hostname}.#{host_data['domain']}"
+      end
     when 'NonstandardPooler'
       puts host_data['fqdn']
     else
