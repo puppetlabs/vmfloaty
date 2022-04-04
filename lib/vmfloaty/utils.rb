@@ -197,9 +197,9 @@ class Utils
         pending = pool['pending']
         missing = max - ready - pending
         char = 'o'
-        puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+        puts "#{name.ljust(width)} #{(char * ready)}#{(char * pending)}#{(char * missing)}"
       rescue StandardError => e
-        FloatyLogger.error "#{name.ljust(width)} #{e.red}"
+        FloatyLogger.error "#{name.ljust(width)} #{e}"
       end
       puts message
     when 'NonstandardPooler'
@@ -214,13 +214,13 @@ class Utils
         pending = pool['pending'] || 0 # not available for nspooler
         missing = max - ready - pending
         char = 'o'
-        puts "#{name.ljust(width)} #{(char * ready).green}#{(char * pending).yellow}#{(char * missing).red}"
+        puts "#{name.ljust(width)} #{(char * ready)}#{(char * pending)}#{(char * missing)}"
       rescue StandardError => e
-        FloatyLogger.error "#{name.ljust(width)} #{e.red}"
+        FloatyLogger.error "#{name.ljust(width)} #{e}"
       end
     when 'ABS'
       FloatyLogger.error 'ABS Not OK' unless status_response
-      puts 'ABS is OK'.green if status_response
+      puts 'ABS is OK' if status_response
     else
       raise "Invalid service type #{service.type}"
     end
