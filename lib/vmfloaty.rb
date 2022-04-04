@@ -484,7 +484,7 @@ class Vmfloaty
 
         FloatyLogger.info "Can't ssh to multiple hosts; Using #{host_os} only..." if args.length > 1
 
-        service.ssh(verbose, host_os, use_token)
+        service.ssh(verbose, host_os, use_token, options.ondemand)
         exit 0
       end
     end
