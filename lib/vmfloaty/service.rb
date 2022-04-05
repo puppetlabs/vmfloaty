@@ -87,7 +87,7 @@ class Service
     @service_object.wait_for_request verbose, requestid, url
   end
 
-  def ssh(verbose, host_os, use_token = true)
+  def ssh(verbose, host_os, use_token = true, ondemand = nil)
     token_value = nil
     if use_token
       begin
@@ -97,7 +97,7 @@ class Service
         FloatyLogger.info 'Could not get token... requesting vm without a token anyway...'
       end
     end
-    Ssh.ssh(verbose, self, host_os, token_value)
+    Ssh.ssh(verbose, self, host_os, token_value, ondemand)
   end
 
   def query(verbose, hostname)

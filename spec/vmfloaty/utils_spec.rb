@@ -13,7 +13,7 @@ end
 describe Utils do
   describe '#standardize_hostnames' do
     before :each do
-      @vmpooler_response_body = '{
+      @vmpooler_api_v1_response_body = '{
          "ok": true,
          "domain": "delivery.mycompany.net",
          "ubuntu-1610-x86_64": {
@@ -21,6 +21,15 @@ describe Utils do
          },
          "centos-7-x86_64": {
            "hostname": "dlgietfmgeegry2"
+         }
+       }'
+       @vmpooler_api_v2_response_body = '{
+         "ok": true,
+         "ubuntu-1610-x86_64": {
+           "hostname": ["gdoy8q3nckuob0i.delivery.mycompany.net", "ctnktsd0u11p9tm.delivery.mycompany.net"]
+         },
+         "centos-7-x86_64": {
+           "hostname": "dlgietfmgeegry2.delivery.mycompany.net"
          }
        }'
       @nonstandard_response_body = '{
@@ -34,8 +43,15 @@ describe Utils do
        }'
     end
 
-    it 'formats a result from vmpooler into a hash of os to hostnames' do
-      result = Utils.standardize_hostnames(JSON.parse(@vmpooler_response_body))
+    it 'formats a result from vmpooler v1 api into a hash of os to hostnames' do
+      result = Utils.standardize_hostnames(JSON.parse(@vmpooler_api_v1_response_body))
+      expect(result).to eq('centos-7-x86_64' => ['dlgietfmgeegry2.delivery.mycompany.net'],
+                           'ubuntu-1610-x86_64' => ['gdoy8q3nckuob0i.delivery.mycompany.net',
+                                                    'ctnktsd0u11p9tm.delivery.mycompany.net'])
+    end
+
+    it 'formats a result from vmpooler v2 api into a hash of os to hostnames' do
+      result = Utils.standardize_hostnames(JSON.parse(@vmpooler_api_v2_response_body))
       expect(result).to eq('centos-7-x86_64' => ['dlgietfmgeegry2.delivery.mycompany.net'],
                            'ubuntu-1610-x86_64' => ['gdoy8q3nckuob0i.delivery.mycompany.net',
                                                     'ctnktsd0u11p9tm.delivery.mycompany.net'])
