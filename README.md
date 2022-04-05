@@ -19,6 +19,9 @@ A CLI helper tool for [Puppet's VMPooler](https://github.com/puppetlabs/vmpooler
 - [VMPooler API](#vmpooler-api)
 - [Using the Pooler class](#using-the-pooler-class)
   - [Example Projects](#example-projects)
+- [Contributing](#contributing)
+  - [Code Reviews](#code-reviews)
+- [Releasing](#releasing)
 - [Special thanks](#special-thanks)
 
 ## Install
@@ -163,6 +166,21 @@ vmfloaty providers a `Pooler` class that gives users the ability to make request
   - vmpooler status and management in your menubar with bitbar
 - [Brian Cain: vagrant-vmpooler](https://github.com/briancain/vagrant-vmpooler)
   - Use Vagrant to manage your vmpooler instances
+
+## Contributing
+
+PR's are welcome! We always love to see how others think this tool can be made better.
+
+### Code Reviews
+
+Please wait for multiple code owners to sign off on any notable change.
+
+## Releasing
+
+Releasing is a two step process:
+
+1. Submit a release prep PR that updates `lib/vmfloaty/version.rb` to the desired new version and get that merged
+2. Navigate to <https://github.com/puppetlabs/vmfloaty/actions/workflows/release.yml> --> Run workflow --> select "main" branch --> Run workflow. This will publish a GitHub release, build, and push the gem to RubyGems.
 
 ## Special thanks
 
