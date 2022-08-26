@@ -1,0 +1,25 @@
+name: Snyk Scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - name: Bundle Install
+        run: bundle install
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/ruby@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_RE_KEY }}
+        with:
+          command: monitor
