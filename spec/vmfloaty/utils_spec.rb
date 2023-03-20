@@ -280,7 +280,73 @@ describe Utils do
 
     subject { Utils.pretty_print_hosts(verbose, service, hostname, print_to_stderr) }
 
-    describe 'with vmpooler service' do
+    describe 'with vmpooler api v2 service' do
+      let(:service) { Service.new(MockOptions.new, 'url' => url) }
+
+      let(:hostname) { 'mcpy42eqjxli9g2' }
+      let(:fqdn) { [hostname, 'delivery.puppetlabs.net'].join('.') }
+
+      let(:response_body) do
+        {
+          hostname => {
+            'template' => 'ubuntu-1604-x86_64',
+            'lifetime' => 12,
+            'running' => 9.66,
+            'state' => 'running',
+            'ip' => '127.0.0.1',
+            'fqdn' => fqdn
+          }
+        }
+      end
+
+      let(:default_output) { "- #{fqdn} (running, ubuntu-1604-x86_64, 9.66/12 hours)" }
+
+      it 'prints output with host fqdn, template and duration info' do
+        expect($stdout).to receive(:puts).with(default_output)
+
+        subject
+      end
+
+      context 'when tags are supplied' do
+        let(:hostname) { 'aiydvzpg23r415q' }
+        let(:response_body) do
+          {
+            hostname => {
+              'template' => 'redhat-7-x86_64',
+              'lifetime' => 48,
+              'running' => 7.67,
+              'state' => 'running',
+              'tags' => {
+                'user' => 'bob',
+                'role' => 'agent'
+              },
+              'ip' => '127.0.0.1',
+              'fqdn' => fqdn
+            }
+          }
+        end
+
+        it 'prints output with host fqdn, template, duration info, and tags' do
+          output = "- #{fqdn} (running, redhat-7-x86_64, 7.67/48 hours, user: bob, role: agent)"
+
+          expect($stdout).to receive(:puts).with(output)
+
+          subject
+        end
+      end
+
+      context 'when print_to_stderr option is true' do
+        let(:print_to_stderr) { true }
+
+        it 'outputs to stderr instead of stdout' do
+          expect($stderr).to receive(:puts).with(default_output)
+
+          subject
+        end
+      end
+    end
+
+    describe 'with vmpooler api v1 service' do
       let(:service) { Service.new(MockOptions.new, 'url' => url) }
 
       let(:hostname) { 'mcpy42eqjxli9g2' }
