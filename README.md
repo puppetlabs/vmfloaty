@@ -1,36 +1,47 @@
 # vmfloaty
 
 [![Gem Version](https://badge.fury.io/rb/vmfloaty.svg)](https://badge.fury.io/rb/vmfloaty)
-[![CI](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml/badge.svg)](https://github.com/puppetlabs/vmfloaty/actions/workflows/ci.yml)
+[![Test](https://github.com/puppetlabs/vmfloaty/actions/workflows/test.yml/badge.svg)](https://github.com/puppetlabs/vmfloaty/actions/workflows/test.yml)
 
 A CLI helper tool for [Puppet's VMPooler](https://github.com/puppetlabs/vmpooler) to help you stay afloat.
 
 ![float image](float.jpg)
 
-- [Install](#install)
-- [Usage](#usage)
-  - [Example workflow](#example-workflow)
-  - [vmfloaty dotfile](#vmfloaty-dotfile)
-    - [Basic configuration](#basic-configuration)
-    - [Using multiple services](#using-multiple-services)
-    - [Using backends besides VMPooler](#using-backends-besides-vmpooler)
-    - [Valid config keys](#valid-config-keys)
-  - [Tab Completion](#tab-completion)
-- [VMPooler API](#vmpooler-api)
-- [Using the Pooler class](#using-the-pooler-class)
-  - [Example Projects](#example-projects)
-- [Contributing](#contributing)
-  - [Code Reviews](#code-reviews)
-- [Releasing](#releasing)
-- [Special thanks](#special-thanks)
+- [vmfloaty](#vmfloaty)
+  - [Install](#install)
+    - [Ruby](#ruby)
+    - [Docker](#docker)
+  - [Usage](#usage)
+    - [Example workflow](#example-workflow)
+    - [vmfloaty dotfile](#vmfloaty-dotfile)
+      - [Basic configuration](#basic-configuration)
+      - [Using multiple services](#using-multiple-services)
+      - [Using backends besides VMPooler](#using-backends-besides-vmpooler)
+      - [Valid config keys](#valid-config-keys)
+    - [Tab Completion](#tab-completion)
+  - [VMPooler API](#vmpooler-api)
+  - [Using the Pooler class](#using-the-pooler-class)
+    - [Example Projects](#example-projects)
+  - [Contributing](#contributing)
+    - [Code Reviews](#code-reviews)
+  - [Releasing](#releasing)
+  - [Special thanks](#special-thanks)
 
 ## Install
+
+### Ruby
 
 Grab the latest from ruby gems...
 
 ```bash
 gem install vmfloaty
 ```
+
+### Docker
+
+Run the docker image:
+
+`docker run -it --rm -v ~/.vmfloaty.yml:/home/floatyuser/.vmfloaty.yml ghcr.io/puppetlabs/vmfloaty --help`
 
 ## Usage
 
@@ -177,10 +188,12 @@ Please wait for multiple code owners to sign off on any notable change.
 
 ## Releasing
 
-Releasing is a two step process:
+Follow these steps to publish a new GitHub release, build and push the gem to <https://rubygems.org>, and build and push a Docker Image to GitHub Container Registry:
 
-1. Submit a release prep PR that updates `lib/vmfloaty/version.rb` to the desired new version and get that merged
-2. Navigate to <https://github.com/puppetlabs/vmfloaty/actions/workflows/release.yml> --> Run workflow --> select "main" branch --> Run workflow. This will publish a GitHub release, build, and push the gem to RubyGems.
+1. Bump the "VERSION" in `lib/vmpooler/version.rb` appropriately based on changes in `CHANGELOG.md` since the last release.
+2. Run `./release-prep` to update `Gemfile.lock` if necessary and `CHANGELOG.md`.
+3. Commit and push changes to a new branch, then open a pull request against `main` and be sure to add the "maintenance" label.
+4. After the pull request is approved and merged, then navigate to <https://github.com/puppetlabs/vmfloaty/actions/workflows/release.yml> --> Run workflow --> select "main" branch --> Run workflow. This will publish a GitHub release, build and push the gem to RubyGems, and build and push a Docker Image to GitHub Container Registry.
 
 ## Special thanks
 
