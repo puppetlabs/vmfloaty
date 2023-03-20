@@ -150,7 +150,14 @@ class Utils
         tag_pairs = host_data['tags'].map { |key, value| "#{key}: #{value}" } unless host_data['tags'].nil?
         duration = "#{host_data['running']}/#{host_data['lifetime']} hours"
         metadata = [host_data['state'], host_data['template'], duration, *tag_pairs]
-        message = "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
+        # For backwards compatibility with vmpooler api v1
+        message =
+          if host_data['domain']
+            "- #{hostname}.#{host_data['domain']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
+          else
+            "- #{host_data['fqdn']} (#{metadata.join(', ')})".gsub(/^/, ' ' * indent)
+          end
+
         if host_data['state'] && host_data['state'] == 'destroyed'
           output_target.puts "- DESTROYED #{hostname}.#{host_data['domain']}".gsub(/^/, ' ' * indent)
         else
