@@ -1,8 +1,16 @@
 # Changelog
 
-## [Unreleased](https://github.com/puppetlabs/vmfloaty/tree/HEAD)
+## [1.8.0](https://github.com/puppetlabs/vmfloaty/tree/1.8.0) (2023-03-21)
 
-[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.7.0...HEAD)
+[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.7.0...1.8.0)
+
+**Implemented enhancements:**
+
+- Docker, Actions, and Docs Updates [\#170](https://github.com/puppetlabs/vmfloaty/pull/170) ([yachub](https://github.com/yachub))
+
+**Fixed bugs:**
+
+- Fix `floaty list --active` for vmpooler api v2 [\#169](https://github.com/puppetlabs/vmfloaty/pull/169) ([yachub](https://github.com/yachub))
 
 **Merged pull requests:**
 

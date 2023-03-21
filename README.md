@@ -190,8 +190,8 @@ Please wait for multiple code owners to sign off on any notable change.
 
 Follow these steps to publish a new GitHub release, build and push the gem to <https://rubygems.org>, and build and push a Docker Image to GitHub Container Registry:
 
-1. Bump the "VERSION" in `lib/vmpooler/version.rb` appropriately based on changes in `CHANGELOG.md` since the last release.
-2. Run `./release-prep` to update `Gemfile.lock` if necessary and `CHANGELOG.md`.
+1. Bump the "VERSION" in `lib/vmfloaty/version.rb` appropriately based on changes in `CHANGELOG.md` since the last release.
+2. Run `./release-prep` to update `Gemfile.lock` and `CHANGELOG.md`.
 3. Commit and push changes to a new branch, then open a pull request against `main` and be sure to add the "maintenance" label.
 4. After the pull request is approved and merged, then navigate to <https://github.com/puppetlabs/vmfloaty/actions/workflows/release.yml> --> Run workflow --> select "main" branch --> Run workflow. This will publish a GitHub release, build and push the gem to RubyGems, and build and push a Docker Image to GitHub Container Registry.
 
