@@ -15,18 +15,18 @@ jobs:
 
     steps:
     - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-          clean: true
-          fetch-depth: 0
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+        clean: true
+        fetch-depth: 0
 
     - name: Get New Version
-        id: nv
-        run: |
-          version=$(grep VERSION lib/vmfloaty/version.rb |rev |cut -d "'" -f2 |rev)
-          echo "version=$version" >> $GITHUB_OUTPUT
-          echo "Found version $version from lib/vmfloaty/version.rb"
+      id: nv
+      run: |
+        version=$(grep VERSION lib/vmfloaty/version.rb |rev |cut -d "'" -f2 |rev)
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "Found version $version from lib/vmfloaty/version.rb"
 
     - name: Get Current Version
       uses: actions/github-script@v6
