@@ -85,7 +85,7 @@ GEM
       parser (>= 3.2.1.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
-    simplecov (0.21.2)
+    simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
@@ -108,7 +108,7 @@ DEPENDENCIES
   rb-readline
   rspec (~> 3.11.0)
   rubocop (~> 1.49)
-  simplecov (~> 0.21.2)
+  simplecov (~> 0.22.0)
   simplecov-html (~> 0.12.3)
   simplecov-lcov (~> 0.8.0)
   vmfloaty!
