@@ -12,7 +12,7 @@ group :test do
   gem 'simplecov-lcov', '~> 0.8.0'
   gem 'pry'
   gem 'rb-readline'
-  gem 'rspec', '~> 3.11.0'
+  gem 'rspec', '~> 3.12.0'
   gem 'rubocop', '~> 1.49'
   gem 'webmock', '~> 3.13'
 end
