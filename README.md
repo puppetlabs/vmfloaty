@@ -24,6 +24,7 @@ A CLI helper tool for [Puppet's VMPooler](https://github.com/puppetlabs/vmpooler
     - [Example Projects](#example-projects)
   - [Contributing](#contributing)
     - [Code Reviews](#code-reviews)
+  - [Submitting Issues](#submitting-issues)
   - [Releasing](#releasing)
   - [Special thanks](#special-thanks)
 
@@ -185,6 +186,10 @@ PR's are welcome! We always love to see how others think this tool can be made b
 ### Code Reviews
 
 Please wait for multiple code owners to sign off on any notable change.
+
+## Submitting Issues
+
+Please file any issues or requests in Jira at <https://puppet.atlassian.net/jira/software/c/projects/POOLER/issues> where project development is tracked across all VMPooler related components.
 
 ## Releasing
 
