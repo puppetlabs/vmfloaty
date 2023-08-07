@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.8.1](https://github.com/puppetlabs/vmfloaty/tree/1.8.1) (2023-08-07)
+
+[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.8.0...1.8.1)
+
+**Fixed bugs:**
+
+- status and summary broken for pooler service after v3 [\#185](https://github.com/puppetlabs/vmfloaty/issues/185)
+- \(RE-15687\) Use relative path for pooler status and summary [\#186](https://github.com/puppetlabs/vmfloaty/pull/186) ([yachub](https://github.com/yachub))
+
+**Merged pull requests:**
+
+- Bump rubocop from 1.54.2 to 1.55.1 [\#183](https://github.com/puppetlabs/vmfloaty/pull/183) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.52.0 to 1.54.2 [\#182](https://github.com/puppetlabs/vmfloaty/pull/182) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.51.0 to 1.52.0 [\#177](https://github.com/puppetlabs/vmfloaty/pull/177) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.50.2 to 1.51.0 [\#176](https://github.com/puppetlabs/vmfloaty/pull/176) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.49.0 to 1.50.2 [\#174](https://github.com/puppetlabs/vmfloaty/pull/174) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.48.1 to 1.49.0 [\#173](https://github.com/puppetlabs/vmfloaty/pull/173) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update simplecov requirement from ~\> 0.21.2 to ~\> 0.22.0 [\#167](https://github.com/puppetlabs/vmfloaty/pull/167) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update rspec requirement from ~\> 3.11.0 to ~\> 3.12.0 [\#166](https://github.com/puppetlabs/vmfloaty/pull/166) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [1.8.0](https://github.com/puppetlabs/vmfloaty/tree/1.8.0) (2023-03-21)
 
 [Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.7.0...1.8.0)
