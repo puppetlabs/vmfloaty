@@ -146,14 +146,14 @@ class Pooler
   def self.status(verbose, url)
     conn = Http.get_conn(verbose, url)
 
-    response = conn.get '/status'
+    response = conn.get 'status'
     JSON.parse(response.body)
   end
 
   def self.summary(verbose, url)
     conn = Http.get_conn(verbose, url)
 
-    response = conn.get '/summary'
+    response = conn.get 'summary'
     JSON.parse(response.body)
   end
 
