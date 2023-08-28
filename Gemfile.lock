@@ -8,7 +8,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.1)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
     base64 (0.1.1)
@@ -55,7 +55,7 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (5.0.1)
+    public_suffix (5.0.3)
     racc (1.7.1)
     rainbow (3.1.1)
     rake (13.0.6)
@@ -99,7 +99,7 @@ GEM
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
     unicode-display_width (2.4.2)
-    webmock (3.18.1)
+    webmock (3.19.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -118,7 +118,7 @@ DEPENDENCIES
   simplecov-html (~> 0.12.3)
   simplecov-lcov (~> 0.8.0)
   vmfloaty!
-  webmock (~> 3.13)
+  webmock (~> 3.19)
 
 BUNDLED WITH
    2.4.8
