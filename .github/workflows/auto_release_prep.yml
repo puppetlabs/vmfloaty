@@ -5,7 +5,7 @@ on:
 
 jobs:
   auto_release_prep:
-    uses: puppetlabs/release-engineering-repo-standards/.github/workflows/auto_release_prep.yml@v1
+    uses: puppetlabs/release-engineering-repo-standards/.github/workflows/auto_release_prep.yml@29f03e2a5b2cbfd05df088ad106423ba369507fd
     secrets: inherit
     with:
       project-type: ruby
