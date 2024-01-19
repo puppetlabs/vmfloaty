@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # bundle install
-docker run -it --rm \
+docker run -t --rm \
   -v $(pwd):/app \
   $(grep ^FROM ./Dockerfile |cut -d ' ' -f2) \
   /bin/bash -c 'apt-get update -qq && apt-get install -y --no-install-recommends build-essential make openssh-client && cd /app && gem install bundler && bundle install --jobs 3; echo "LOCK_FILE_UPDATE_EXIT_CODE=$?"'
 
 # Update Changelog
-docker run -it --rm -e CHANGELOG_GITHUB_TOKEN -v $(pwd):/usr/local/src/your-app \
+docker run -t --rm -e CHANGELOG_GITHUB_TOKEN -v $(pwd):/usr/local/src/your-app \
   githubchangeloggenerator/github-changelog-generator:1.16.2 \
   github_changelog_generator --future-release $(grep VERSION lib/vmfloaty/version.rb |rev |cut -d "'" -f2 |rev)
