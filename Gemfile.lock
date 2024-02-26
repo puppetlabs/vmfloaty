@@ -99,7 +99,7 @@ GEM
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
     unicode-display_width (2.5.0)
-    webmock (3.20.0)
+    webmock (3.23.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -118,7 +118,7 @@ DEPENDENCIES
   simplecov-html (~> 0.12.3)
   simplecov-lcov (~> 0.8.0)
   vmfloaty!
-  webmock (~> 3.20)
+  webmock (~> 3.23)
 
 BUNDLED WITH
    2.4.8
