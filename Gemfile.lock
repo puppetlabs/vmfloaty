@@ -45,7 +45,7 @@ GEM
     faraday-retry (1.0.3)
     hashdiff (1.1.0)
     highline (2.0.3)
-    json (2.7.1)
+    json (2.7.2)
     language_server-protocol (3.17.0.3)
     method_source (1.0.0)
     multipart-post (2.3.0)
@@ -76,7 +76,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.0)
-    rubocop (1.62.1)
+    rubocop (1.63.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -113,7 +113,7 @@ DEPENDENCIES
   rake
   rb-readline
   rspec (~> 3.13.0)
-  rubocop (~> 1.62)
+  rubocop (~> 1.63)
   simplecov (~> 0.22.0)
   simplecov-html (~> 0.12.3)
   simplecov-lcov (~> 0.8.0)
