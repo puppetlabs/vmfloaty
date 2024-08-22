@@ -62,7 +62,7 @@ GEM
     rake (13.2.1)
     rb-readline (0.5.5)
     regexp_parser (2.9.2)
-    rexml (3.3.4)
+    rexml (3.3.6)
       strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
