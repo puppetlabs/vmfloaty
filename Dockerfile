@@ -1,4 +1,4 @@
-FROM ruby:3.3.4-slim-bullseye
+FROM ruby:3.3.5-slim-bullseye
 
 LABEL org.opencontainers.image.authors="@puppetlabs/release-engineering"
 LABEL org.opencontainers.image.title="vmfloaty"
