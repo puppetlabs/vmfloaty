@@ -8,7 +8,7 @@ gem 'rake', require: false
 
 group :test do
   gem 'simplecov', '~> 0.22.0'
-  gem 'simplecov-html', '~> 0.12.3'
+  gem 'simplecov-html', '~> 0.13.1'
   gem 'simplecov-lcov', '~> 0.8.0'
   gem 'pry'
   gem 'rb-readline'

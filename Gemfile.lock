@@ -95,7 +95,7 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
-    simplecov-html (0.12.3)
+    simplecov-html (0.13.1)
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
     strscan (3.1.0)
@@ -116,7 +116,7 @@ DEPENDENCIES
   rspec (~> 3.13.0)
   rubocop (~> 1.66)
   simplecov (~> 0.22.0)
-  simplecov-html (~> 0.12.3)
+  simplecov-html (~> 0.13.1)
   simplecov-lcov (~> 0.8.0)
   vmfloaty!
   webmock (~> 3.23)
