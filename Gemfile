@@ -14,5 +14,5 @@ group :test do
   gem 'rb-readline'
   gem 'rspec', '~> 3.13.0'
   gem 'rubocop', '~> 1.66'
-  gem 'webmock', '~> 3.23'
+  gem 'webmock', '~> 3.24'
 end
