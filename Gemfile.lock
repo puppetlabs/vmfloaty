@@ -62,8 +62,7 @@ GEM
     rake (13.2.1)
     rb-readline (0.5.5)
     regexp_parser (2.9.2)
-    rexml (3.3.6)
-      strscan
+    rexml (3.3.9)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -98,7 +97,6 @@ GEM
     simplecov-html (0.13.1)
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
-    strscan (3.1.0)
     unicode-display_width (2.5.0)
     webmock (3.23.1)
       addressable (>= 2.8.0)
