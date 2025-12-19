@@ -135,9 +135,19 @@ class Pooler
     response_body = {}
 
     hosts.each do |host|
-      response = conn.delete "vm/#{host}"
-      res_body = JSON.parse(response.body)
-      response_body[host] = res_body
+      # Check if this looks like a request-id (UUID format)
+      # UUIDs are 36 characters with dashes: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      if host =~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+        # This is a request-id, use the ondemandvm endpoint
+        response = conn.delete "ondemandvm/#{host}"
+        res_body = JSON.parse(response.body)
+        response_body[host] = res_body
+      else
+        # This is a hostname, use the vm endpoint
+        response = conn.delete "vm/#{host}"
+        res_body = JSON.parse(response.body)
+        response_body[host] = res_body
+      end
     end
 
     response_body
