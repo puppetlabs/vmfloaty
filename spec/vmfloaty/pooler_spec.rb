@@ -145,6 +145,57 @@ describe Pooler do
     it 'raises a token error if no token provided' do
       expect { Pooler.delete(false, @vmpooler_url, ['myfakehost'], nil, nil) }.to raise_error(TokenError)
     end
+
+    context 'with ondemand request-id (UUID format)' do
+      before :each do
+        @request_id = 'e3ff6271-d201-4f31-a315-d17f4e15863a'
+        @delete_request_response = { @request_id => { 'ok' => true } }
+      end
+
+      it 'deletes an ondemand request via the ondemandvm endpoint' do
+        stub_request(:delete, "#{@vmpooler_url}/ondemandvm/#{@request_id}")
+          .with(headers: { 'X-Auth-Token' => 'mytokenfile' })
+          .to_return(status: 200, body: @delete_response_body_success, headers: {})
+
+        expect(Pooler.delete(false, @vmpooler_url, [@request_id], 'mytokenfile', nil)).to eq @delete_request_response
+      end
+
+      it 'handles multiple request-ids' do
+        request_id_2 = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+        expected_response = {
+          @request_id => { 'ok' => true },
+          request_id_2 => { 'ok' => true }
+        }
+
+        stub_request(:delete, "#{@vmpooler_url}/ondemandvm/#{@request_id}")
+          .with(headers: { 'X-Auth-Token' => 'mytokenfile' })
+          .to_return(status: 200, body: @delete_response_body_success, headers: {})
+
+        stub_request(:delete, "#{@vmpooler_url}/ondemandvm/#{request_id_2}")
+          .with(headers: { 'X-Auth-Token' => 'mytokenfile' })
+          .to_return(status: 200, body: @delete_response_body_success, headers: {})
+
+        expect(Pooler.delete(false, @vmpooler_url, [@request_id, request_id_2], 'mytokenfile', nil)).to eq expected_response
+      end
+
+      it 'handles mixed hostnames and request-ids' do
+        hostname = 'myvm-hostname'
+        expected_response = {
+          hostname => { 'ok' => true },
+          @request_id => { 'ok' => true }
+        }
+
+        stub_request(:delete, "#{@vmpooler_url}/vm/#{hostname}")
+          .with(headers: { 'X-Auth-Token' => 'mytokenfile' })
+          .to_return(status: 200, body: @delete_response_body_success, headers: {})
+
+        stub_request(:delete, "#{@vmpooler_url}/ondemandvm/#{@request_id}")
+          .with(headers: { 'X-Auth-Token' => 'mytokenfile' })
+          .to_return(status: 200, body: @delete_response_body_success, headers: {})
+
+        expect(Pooler.delete(false, @vmpooler_url, [hostname, @request_id], 'mytokenfile', nil)).to eq expected_response
+      end
+    end
   end
 
   describe '#status' do
