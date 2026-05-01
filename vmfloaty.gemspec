@@ -20,7 +20,8 @@ Gem::Specification.new do |s|
   s.files = Dir['LICENSE', 'README.md', 'lib/**/*', 'extras/**/*']
   s.test_files = Dir['spec/**/*']
   s.require_path = 'lib'
+  s.required_ruby_version = '>= 3.0'
 
   s.add_dependency 'commander', '>= 4.4.3', '< 4.7.0'
-  s.add_dependency 'faraday', '~> 1.5', '>= 1.5.1'
+  s.add_dependency 'faraday', '~> 2'
 end
