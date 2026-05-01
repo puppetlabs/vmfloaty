@@ -1,5 +1,67 @@
 # Changelog
 
+## [1.9.0](https://github.com/puppetlabs/vmfloaty/tree/1.9.0) (2026-05-01)
+
+[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.8.1...1.9.0)
+
+**Breaking changes:**
+
+- Bump faraday from ~\> 1.5 to ~\> 2; raise minimum Ruby to 3.0 (drops Ruby 2.7 support) [\#256](https://github.com/puppetlabs/vmfloaty/pull/256) ([isaac-jha](https://github.com/isaac-jha))
+
+**Implemented enhancements:**
+
+- Bump simplecov-html from 0.12.3 to 0.13.1 [\#241](https://github.com/puppetlabs/vmfloaty/pull/241) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.65.1 to 1.66.0 [\#239](https://github.com/puppetlabs/vmfloaty/pull/239) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.64.1 to 1.65.1 [\#237](https://github.com/puppetlabs/vmfloaty/pull/237) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rexml from 3.2.8 to 3.3.3 [\#236](https://github.com/puppetlabs/vmfloaty/pull/236) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.63.5 to 1.64.0 [\#228](https://github.com/puppetlabs/vmfloaty/pull/228) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.62.1 to 1.63.0 [\#221](https://github.com/puppetlabs/vmfloaty/pull/221) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rake from 13.1.0 to 13.2.1 [\#220](https://github.com/puppetlabs/vmfloaty/pull/220) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.61.0 to 1.62.0 [\#218](https://github.com/puppetlabs/vmfloaty/pull/218) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.60.2 to 1.61.0 [\#217](https://github.com/puppetlabs/vmfloaty/pull/217) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump webmock from 3.20.0 to 3.23.0 [\#216](https://github.com/puppetlabs/vmfloaty/pull/216) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump webmock from 3.19.1 to 3.20.0 [\#215](https://github.com/puppetlabs/vmfloaty/pull/215) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rspec from 3.12.0 to 3.13.0 [\#214](https://github.com/puppetlabs/vmfloaty/pull/214) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.59.0 to 1.60.1 [\#212](https://github.com/puppetlabs/vmfloaty/pull/212) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ruby from 3.2.2-slim-bullseye to 3.3.0-slim-bullseye [\#207](https://github.com/puppetlabs/vmfloaty/pull/207) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.58.0 to 1.59.0 [\#206](https://github.com/puppetlabs/vmfloaty/pull/206) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.56.4 to 1.58.0 [\#203](https://github.com/puppetlabs/vmfloaty/pull/203) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rake from 13.0.6 to 13.1.0 [\#201](https://github.com/puppetlabs/vmfloaty/pull/201) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+**Fixed bugs:**
+
+- Bump ruby from 3.3.4-slim-bullseye to 3.3.5-slim-bullseye [\#242](https://github.com/puppetlabs/vmfloaty/pull/242) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.66.0 to 1.66.1 [\#240](https://github.com/puppetlabs/vmfloaty/pull/240) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ruby from 3.3.3-slim-bullseye to 3.3.4-slim-bullseye [\#235](https://github.com/puppetlabs/vmfloaty/pull/235) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ruby from 3.3.2-slim-bullseye to 3.3.3-slim-bullseye [\#232](https://github.com/puppetlabs/vmfloaty/pull/232) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.64.0 to 1.64.1 [\#231](https://github.com/puppetlabs/vmfloaty/pull/231) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ruby from 3.3.1-slim-bullseye to 3.3.2-slim-bullseye [\#230](https://github.com/puppetlabs/vmfloaty/pull/230) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump webmock from 3.23.0 to 3.23.1 [\#229](https://github.com/puppetlabs/vmfloaty/pull/229) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rexml from 3.2.6 to 3.2.8 [\#227](https://github.com/puppetlabs/vmfloaty/pull/227) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.63.4 to 1.63.5 [\#226](https://github.com/puppetlabs/vmfloaty/pull/226) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ruby from 3.3.0-slim-bullseye to 3.3.1-slim-bullseye [\#225](https://github.com/puppetlabs/vmfloaty/pull/225) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.63.2 to 1.63.4 [\#224](https://github.com/puppetlabs/vmfloaty/pull/224) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.63.1 to 1.63.2 [\#223](https://github.com/puppetlabs/vmfloaty/pull/223) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.63.0 to 1.63.1 [\#222](https://github.com/puppetlabs/vmfloaty/pull/222) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.62.0 to 1.62.1 [\#219](https://github.com/puppetlabs/vmfloaty/pull/219) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.60.1 to 1.60.2 [\#213](https://github.com/puppetlabs/vmfloaty/pull/213) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+**Merged pull requests:**
+
+- Bump actions/setup-java from 3 to 4 [\#204](https://github.com/puppetlabs/vmfloaty/pull/204) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump actions/github-script from 6 to 7 [\#202](https://github.com/puppetlabs/vmfloaty/pull/202) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.56.3 to 1.56.4 [\#198](https://github.com/puppetlabs/vmfloaty/pull/198) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump docker/login-action from 2 to 3 [\#197](https://github.com/puppetlabs/vmfloaty/pull/197) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump docker/setup-buildx-action from 2 to 3 [\#196](https://github.com/puppetlabs/vmfloaty/pull/196) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump docker/build-push-action from 4 to 5 [\#195](https://github.com/puppetlabs/vmfloaty/pull/195) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump actions/checkout from 3 to 4 [\#194](https://github.com/puppetlabs/vmfloaty/pull/194) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.56.2 to 1.56.3 [\#193](https://github.com/puppetlabs/vmfloaty/pull/193) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.56.1 to 1.56.2 [\#192](https://github.com/puppetlabs/vmfloaty/pull/192) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump webmock from 3.19.0 to 3.19.1 [\#191](https://github.com/puppetlabs/vmfloaty/pull/191) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump webmock from 3.18.1 to 3.19.0 [\#190](https://github.com/puppetlabs/vmfloaty/pull/190) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.56.0 to 1.56.1 [\#189](https://github.com/puppetlabs/vmfloaty/pull/189) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rubocop from 1.55.1 to 1.56.0 [\#188](https://github.com/puppetlabs/vmfloaty/pull/188) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [1.8.1](https://github.com/puppetlabs/vmfloaty/tree/1.8.1) (2023-08-07)
 
 [Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.8.0...1.8.1)
