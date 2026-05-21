@@ -1,12 +1,16 @@
 # Changelog
 
+## [1.9.1](https://github.com/puppetlabs/vmfloaty/tree/1.9.1) (2026-05-21)
+
+[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.9.0...1.9.1)
+
+**Merged pull requests:**
+
+- \(PA-8499\) Relax commander constraint [\#258](https://github.com/puppetlabs/vmfloaty/pull/258) ([mhashizume](https://github.com/mhashizume))
+
 ## [1.9.0](https://github.com/puppetlabs/vmfloaty/tree/1.9.0) (2026-05-01)
 
 [Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/1.8.1...1.9.0)
-
-**Breaking changes:**
-
-- Bump faraday from ~\> 1.5 to ~\> 2; raise minimum Ruby to 3.0 (drops Ruby 2.7 support) [\#256](https://github.com/puppetlabs/vmfloaty/pull/256) ([isaac-jha](https://github.com/isaac-jha))
 
 **Implemented enhancements:**
 
@@ -48,6 +52,8 @@
 
 **Merged pull requests:**
 
+- Release prep for 1.9.0 [\#257](https://github.com/puppetlabs/vmfloaty/pull/257) ([isaac-jha](https://github.com/isaac-jha))
+- Bump faraday from ~\> 1.5 to ~\> 2 [\#256](https://github.com/puppetlabs/vmfloaty/pull/256) ([isaac-jha](https://github.com/isaac-jha))
 - Bump actions/setup-java from 3 to 4 [\#204](https://github.com/puppetlabs/vmfloaty/pull/204) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump actions/github-script from 6 to 7 [\#202](https://github.com/puppetlabs/vmfloaty/pull/202) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump rubocop from 1.56.3 to 1.56.4 [\#198](https://github.com/puppetlabs/vmfloaty/pull/198) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -242,19 +248,19 @@
 
 ## [v0.9.2-retag-for-gh-actions-for-real](https://github.com/puppetlabs/vmfloaty/tree/v0.9.2-retag-for-gh-actions-for-real) (2020-02-05)
 
-[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/v0.9.2...v0.9.2-retag-for-gh-actions-for-real)
+[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/v0.9.2-retag-for-gh-actions...v0.9.2-retag-for-gh-actions-for-real)
 
 **Merged pull requests:**
 
 - Update gempush action to remove GPR publish [\#66](https://github.com/puppetlabs/vmfloaty/pull/66) ([highb](https://github.com/highb))
 
-## [v0.9.2](https://github.com/puppetlabs/vmfloaty/tree/v0.9.2) (2020-02-05)
-
-[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/v0.9.2-retag-for-gh-actions...v0.9.2)
-
 ## [v0.9.2-retag-for-gh-actions](https://github.com/puppetlabs/vmfloaty/tree/v0.9.2-retag-for-gh-actions) (2020-02-05)
 
-[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/v0.9.0...v0.9.2-retag-for-gh-actions)
+[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/v0.9.2...v0.9.2-retag-for-gh-actions)
+
+## [v0.9.2](https://github.com/puppetlabs/vmfloaty/tree/v0.9.2) (2020-02-05)
+
+[Full Changelog](https://github.com/puppetlabs/vmfloaty/compare/v0.9.0...v0.9.2)
 
 **Merged pull requests:**
 
