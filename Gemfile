@@ -7,6 +7,8 @@ gemspec
 gem 'rake', require: false
 
 group :test do
+  # base64 is a bundled gem in Ruby >= 3.4, so it must be declared explicitly.
+  gem 'base64'
   gem 'simplecov', '~> 0.22.0'
   gem 'simplecov-html', '~> 0.13.1'
   gem 'simplecov-lcov', '~> 0.8.0'
