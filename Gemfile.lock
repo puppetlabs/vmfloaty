@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    vmfloaty (1.9.0)
+    vmfloaty (1.9.1)
       commander (>= 4.4.3, < 6)
       faraday (~> 2)
 
