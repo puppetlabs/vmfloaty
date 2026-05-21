@@ -22,6 +22,6 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.required_ruby_version = '>= 3.0'
 
-  s.add_dependency 'commander', '>= 4.4.3', '< 4.7.0'
+  s.add_dependency 'commander', '>= 4.4.3', '< 6'
   s.add_dependency 'faraday', '~> 2'
 end
