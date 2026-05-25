@@ -11,7 +11,7 @@ group :test do
   gem 'base64'
   gem 'simplecov', '~> 0.22.0'
   gem 'simplecov-html', '~> 0.13.1'
-  gem 'simplecov-lcov', '~> 0.8.0'
+  gem 'simplecov-lcov', '~> 0.9.0'
   gem 'pry'
   gem 'rb-readline'
   gem 'rspec', '~> 3.13.0'
