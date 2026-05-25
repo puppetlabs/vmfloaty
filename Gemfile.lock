@@ -30,7 +30,7 @@ GEM
     hashdiff (1.2.1)
     highline (3.0.1)
     io-console (0.8.2)
-    json (2.19.4)
+    json (2.19.5)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -68,7 +68,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
-    rubocop (1.86.1)
+    rubocop (1.86.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -111,7 +111,7 @@ DEPENDENCIES
   rake
   rb-readline
   rspec (~> 3.13.0)
-  rubocop (~> 1.66)
+  rubocop (~> 1.86)
   simplecov (~> 0.22.0)
   simplecov-html (~> 0.13.1)
   simplecov-lcov (~> 0.8.0)
