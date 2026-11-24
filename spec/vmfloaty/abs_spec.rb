@@ -54,6 +54,62 @@ describe ABS do
     end
   end
 
+  describe '#validate_queue_status_response' do
+    it 'accepts 200 and 202' do
+      expect { ABS.validate_queue_status_response(200, '', 'Check queue request', false) }.not_to raise_error
+      expect { ABS.validate_queue_status_response(202, '', 'Check queue request', false) }.not_to raise_error
+    end
+
+    it 'does not raise for 502 and 503 so the queue is polled again' do
+      expect { ABS.validate_queue_status_response(502, 'Bad Gateway', 'Check queue request', false) }.not_to raise_error
+      expect { ABS.validate_queue_status_response(503, 'Service Unavailable', 'Check queue request', false) }
+        .not_to raise_error
+    end
+
+    it 'says that ABS is not available when verbose' do
+      message = ABS.validate_queue_status_response(503, '', 'Check queue request', true)
+
+      expect(message).to include('503', 'will try again')
+    end
+
+    it 'raises for 404 with the body of the response' do
+      expect { ABS.validate_queue_status_response(404, 'Resources were not available', 'Initial request', false) }
+        .to raise_error(RuntimeError, /HTTP 404: Initial request request to ABS failed!\nResources were not available/)
+    end
+
+    it 'raises for other errors such as 422 and 500' do
+      [422, 500].each do |code|
+        expect { ABS.validate_queue_status_response(code, '{"ok":false}', 'Initial request', false) }
+          .to raise_error(RuntimeError, /HTTP #{code}/)
+      end
+    end
+
+    it 'raises AuthError for 401' do
+      expect { ABS.validate_queue_status_response(401, '', 'Initial request', false) }
+        .to raise_error(AuthError)
+    end
+  end
+
+  describe '#check_queue' do
+    let(:conn) { Http.get_conn(false, 'https://abs.example.com/api/v2/') }
+    let(:req_obj) { { 'resources' => { 'centos-7-x86_64' => 1 }, 'job' => { 'id' => '1' } } }
+
+    it 'returns the body for a 503 so the caller keeps polling' do
+      stub_request(:post, 'https://abs.example.com/api/v2/request').to_return(status: 503, body: 'Service Unavailable')
+
+      expect(ABS.check_queue(conn, '1', req_obj, false)).to eq('Service Unavailable')
+    end
+
+    it 'returns the hosts once ABS answers 200' do
+      stub_request(:post, 'https://abs.example.com/api/v2/request')
+        .to_return(status: 200, body: '[{"hostname":"h1","type":"centos-7-x86_64","engine":"vmpooler"}]')
+
+      hosts = [{ 'hostname' => 'h1', 'type' => 'centos-7-x86_64', 'engine' => 'vmpooler' }]
+
+      expect(ABS.check_queue(conn, '1', req_obj, false)).to eq(hosts)
+    end
+  end
+
   describe '#format' do
     it 'returns an hash formatted like a vmpooler return, plus the job_id' do
       job_id = 'generated_by_floaty_12345'

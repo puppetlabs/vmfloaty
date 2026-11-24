@@ -395,6 +395,10 @@ class ABS
       "#{request_name} returned success (Code 200)" if verbose
     when 202
       "#{request_name} returned accepted, processing (Code 202)" if verbose
+    when 502, 503
+      # ABS or the proxy in front of it is not able to answer right now. The
+      # queue is polled again, same as for a 202.
+      "#{request_name} returned #{status_code}, ABS is not available right now, will try again" if verbose
     when 401
       raise AuthError, "HTTP #{status_code}: The token provided could not authenticate.\n#{body}"
     else
