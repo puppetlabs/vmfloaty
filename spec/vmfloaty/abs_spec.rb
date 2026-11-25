@@ -100,6 +100,37 @@ describe ABS do
       expect(ABS.check_queue(conn, '1', req_obj, false)).to eq('Service Unavailable')
     end
 
+    it 'returns the body as text for a 503 whose body is a JSON object' do
+      stub_request(:post, 'https://abs.example.com/api/v2/request')
+        .to_return(status: 503, body: '{"error":"Service Unavailable"}')
+
+      expect(ABS.check_queue(conn, '1', req_obj, false)).to eq('{"error":"Service Unavailable"}')
+    end
+
+    it 'returns the body as text for a 502 whose body is a JSON array' do
+      stub_request(:post, 'https://abs.example.com/api/v2/request').to_return(status: 502, body: '[]')
+
+      expect(ABS.check_queue(conn, '1', req_obj, false)).to eq('[]')
+    end
+
+    it 'returns an empty string for a 503 with no body' do
+      stub_request(:post, 'https://abs.example.com/api/v2/request').to_return(status: 503, body: '')
+
+      expect(ABS.check_queue(conn, '1', req_obj, false)).to eq('')
+    end
+
+    it 'still parses a JSON body of a 202' do
+      stub_request(:post, 'https://abs.example.com/api/v2/request').to_return(status: 202, body: '{"a":1}')
+
+      expect(ABS.check_queue(conn, '1', req_obj, false)).to eq('a' => 1)
+    end
+
+    it 'raises for a 404 instead of returning its body' do
+      stub_request(:post, 'https://abs.example.com/api/v2/request').to_return(status: 404, body: 'gone')
+
+      expect { ABS.check_queue(conn, '1', req_obj, false) }.to raise_error(RuntimeError, /HTTP 404/)
+    end
+
     it 'returns the hosts once ABS answers 200' do
       stub_request(:post, 'https://abs.example.com/api/v2/request')
         .to_return(status: 200, body: '[{"hostname":"h1","type":"centos-7-x86_64","engine":"vmpooler"}]')
@@ -107,6 +138,82 @@ describe ABS do
       hosts = [{ 'hostname' => 'h1', 'type' => 'centos-7-x86_64', 'engine' => 'vmpooler' }]
 
       expect(ABS.check_queue(conn, '1', req_obj, false)).to eq(hosts)
+    end
+  end
+
+  describe '#generate_job_id' do
+    it 'is the user, the milliseconds and a random suffix' do
+      expect(ABS.generate_job_id('tester')).to match(/\Atester-\d{13}-[0-9a-f]{8}\z/)
+    end
+
+    it 'differs between calls in the same millisecond' do
+      now = DateTime.now
+      allow(DateTime).to receive(:now).and_return(now)
+
+      ids = Array.new(50) { ABS.generate_job_id('tester') }
+
+      expect(ids.uniq.length).to eq(50)
+    end
+  end
+
+  describe '#retrieve' do
+    let(:url) { 'https://abs.example.com/api/v2' }
+    let(:os_types) { { 'centos-7-x86_64' => 1 } }
+    let(:hosts_body) { '[{"hostname":"h1","type":"centos-7-x86_64","engine":"vmpooler"}]' }
+
+    before { allow(ABS).to receive(:sleep) }
+
+    def retrieve(continue = nil)
+      ABS.retrieve(false, os_types, 'token', url, 'tester', {}, nil, continue)
+    end
+
+    it 'keeps polling through a 503 with a JSON object body and returns the hosts' do
+      stub_request(:post, "#{url}/request").to_return(
+        { status: 202, body: '' },
+        { status: 503, body: '{"error":"Service Unavailable"}' },
+        { status: 502, body: 'Bad Gateway' },
+        { status: 200, body: hosts_body }
+      )
+
+      result = retrieve
+
+      expect(result['ok']).to be(true)
+      expect(result['centos-7-x86_64']['hostname']).to eq(['h1'])
+      expect(ABS).to have_received(:sleep).twice
+    end
+
+    it 'keeps polling when the initial request gets a 503' do
+      stub_request(:post, "#{url}/request").to_return(
+        { status: 503, body: 'Service Unavailable' },
+        { status: 200, body: hosts_body }
+      )
+
+      expect(retrieve['ok']).to be(true)
+    end
+
+    it 'fails on a 404 while polling' do
+      stub_request(:post, "#{url}/request").to_return({ status: 202, body: '' }, { status: 404, body: 'gone' })
+
+      expect { retrieve }.to raise_error(RuntimeError, /HTTP 404/)
+    end
+
+    it 'sends the same generated job_id on every poll' do
+      stub_request(:post, "#{url}/request").to_return(
+        { status: 202, body: '' }, { status: 503, body: '{}' }, { status: 200, body: hosts_body }
+      )
+
+      result = retrieve
+
+      ids = WebMock::RequestRegistry.instance.requested_signatures.hash.keys.map { |s| JSON.parse(s.body)['job']['id'] }
+      expect(ids.uniq.length).to eq(1)
+      expect(ids.first).to match(/\Atester-\d{13}-[0-9a-f]{8}\z/)
+      expect(result['job_id']).to eq(ids.first)
+    end
+
+    it 'uses the job_id given with --continue unchanged' do
+      stub_request(:post, "#{url}/request").to_return({ status: 202, body: '' }, { status: 200, body: hosts_body })
+
+      expect(retrieve('tester-1234567890123-deadbeef')['job_id']).to eq('tester-1234567890123-deadbeef')
     end
   end
 

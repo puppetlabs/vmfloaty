@@ -5,6 +5,7 @@ require 'vmfloaty/http'
 require 'vmfloaty/utils'
 require 'faraday'
 require 'json'
+require 'securerandom'
 
 class ABS
   # List active VMs in ABS
@@ -227,6 +228,13 @@ class ABS
     os_filter ? os_list.select { |i| i[/#{os_filter}/] } : os_list
   end
 
+  # A job_id names one request in ABS, and ABS answers a different request that uses an
+  # existing job_id with an error. The milliseconds alone are not unique: parallel runs
+  # under the same user can start in the same millisecond, so add a random suffix.
+  def self.generate_job_id(user)
+    "#{user}-#{DateTime.now.strftime('%Q')}-#{SecureRandom.hex(4)}"
+  end
+
   # Retrieve an OS from ABS.
   def self.retrieve(verbose, os_types, token, url, user, config, _ondemand = nil, continue = nil)
     #
@@ -248,11 +256,7 @@ class ABS
     conn = Http.get_conn(verbose, supported_abs_url(url))
     conn.headers['X-AUTH-TOKEN'] = token if token
 
-    saved_job_id = if continue.nil?
-                     "#{user}-#{DateTime.now.strftime('%Q')}"
-                   else
-                     continue
-                   end
+    saved_job_id = continue.nil? ? generate_job_id(user) : continue
 
     req_obj = {
       resources: os_types,
@@ -333,6 +337,10 @@ class ABS
   def self.check_queue(conn, _job_id, req_obj, verbose)
     res = conn.post 'request', req_obj.to_json
     status = validate_queue_status_response(res.status, res.body, 'Check queue request', verbose)
+    # ABS or its proxy is not available: hand the text back so the caller waits and polls
+    # again. Whatever the body is, even a JSON object, it is not a host list.
+    return res.body.to_s if [502, 503].include?(res.status)
+
     unless res.body.empty? || !valid_json?(res.body)
       res_body = JSON.parse(res.body)
       return res_body
